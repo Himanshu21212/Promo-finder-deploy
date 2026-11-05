@@ -23,8 +23,9 @@ st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "f
                    layout="wide", initial_sidebar_state="auto")
 
 APP_CSS = """
-[data-testid="stToolbar"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
+[data-testid="stToolbarActions"],[data-testid="stMainMenu"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
 header[data-testid="stHeader"]{background:transparent}
+[data-testid="stExpandSidebarButton"],[data-testid="stSidebarCollapsedControl"]{visibility:visible!important;opacity:1!important}
 .block-container{max-width:1200px;padding-top:2.2rem;padding-bottom:5rem}
 section[data-testid="stSidebar"]>div{padding-top:.4rem}
 .pf-sbh{font:600 12px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#55555f;margin:22px 0 4px;
@@ -120,7 +121,7 @@ with st.sidebar:
     st.html('<p class="pf-sbnote">Scripts are processed in memory. Nothing is saved on the server, '
             'and AI replies are not cached in the app.</p>')
 
-if demo and DEMO.exists():
+if (demo or st.session_state.pop("demo_req", False)) and DEMO.exists():
     class _Demo:  # make the demo look like an uploaded file
         name = DEMO.name
 
@@ -136,11 +137,12 @@ if "result" not in st.session_state and not go:
 <h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find promo cuts in a season of scripts</h1>
 <p>Upload the episode screenplays and get a ranked list of 20–60 second promo cuts. Each one comes with the exact
 timestamps to cut, the line it opens on, the moment it ends on, and a note on anything an editor should check.</p>
-<ol><li>Upload a <b>.zip</b> of the episode scripts in the sidebar.</li>
+<ol><li>Upload a <b>.zip</b> of the episode scripts in the sidebar (on a phone, tap <b>»</b> at the top left to open it).</li>
 <li>Check the show title (it's read from the zip).</li>
 <li>Press <b>Find promos</b>. A 50-episode season takes a few seconds with rules only.</li></ol>
-<p style="font-size:15px;color:var(--mute)">No scripts to hand? <b>Try the demo script</b> runs a short test script. This is the #1 promo it finds:</p></div>
-<div style="margin-top:16px">{example}</div></div>""")
+<p style="font-size:15px;color:var(--mute)">No scripts to hand? Run a short test script written for this project:</p></div></div>""")
+    st.button("Try the demo script", key="demo_main", type="primary", on_click=lambda: st.session_state.update(demo_req=True))
+    st.html(f'<div class="pf"><p style="font-size:15px;color:var(--mute);margin:4px 0 12px">This is the #1 promo it finds:</p>{example}</div>')
     st.stop()
 
 # ---------------------------------------------------------------- run
