@@ -33,6 +33,11 @@ header[data-testid="stHeader"]{background:transparent}
 @media (max-width:860px){.block-container{padding-top:4.6rem!important}}
 .block-container{max-width:1200px;padding-top:2.2rem;padding-bottom:5rem}
 section[data-testid="stSidebar"]>div{padding-top:.4rem}
+[data-testid="stSidebarHeader"]{height:0!important;min-height:0!important;padding:0!important;margin:0!important;position:relative;z-index:3}
+[data-testid="stSidebarCollapseButton"]{position:absolute!important;top:18px;right:14px}
+[data-testid="stSidebarUserContent"]{padding-top:20px!important}
+.pf-sbbrand .pf-brand{gap:12px;font-size:20px}
+.pf-sbbrand .pf-logo{transform:scale(1.3);transform-origin:left center;margin-right:9px}
 .pf-sbh{font:600 12px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#55555f;margin:22px 0 4px;
 display:flex;gap:8px;align-items:center}
 .pf-sbh b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:6px;background:#121216;color:#fff;font-size:11px;letter-spacing:0}
@@ -79,7 +84,7 @@ def demo_result():
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
-    st.html(f'<div class="pf" style="margin:4px 0 0">{ui.logo()}<p style="font-size:14px;color:var(--mute);margin-top:8px">'
+    st.html(f'<div class="pf pf-sbbrand" style="margin:0">{ui.logo()}<p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
     sb_head("1", "Upload scripts")
     files = st.file_uploader("Episode scripts", type=["zip", "txt"], accept_multiple_files=True, label_visibility="collapsed",
