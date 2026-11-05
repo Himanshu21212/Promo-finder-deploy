@@ -10,6 +10,8 @@ promo cuts. Each cut comes with:
 
 Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 
+**Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/ (try the demo script button)
+
 By default it runs on rules only: offline, free and deterministic. A 50-episode season takes about 4–5 s
 on a small cloud CPU. You can switch on an AI model to re-rate the shortlist.
 
