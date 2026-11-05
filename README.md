@@ -196,8 +196,3 @@ static/          fonts (Inter and JetBrains Mono, SIL Open Font License) and ico
 tests/
 ```
 
-## How this was built
-
-I used Claude (Anthropic's AI assistant) as the main coding tool. It wrote most of the code and tests,
-and the first drafts of these docs, working from my direction. I chose the problem, decided what the
-tool should do and what to cut, and I'm responsible for the submission.
