@@ -66,11 +66,24 @@ claim = re.search(r"Tally: (\d+) of 16 look postable as they are, (\d+) need a s
 if not claim or tuple(map(int, claim.groups())) != (tally["✅"], tally["⚠️"], tally["❌"]):
     die("the tally sentence in the spot check doesn't match its table")
 
+def short_link(url: str) -> str:
+    """Readable link text that keeps the links row on one line."""
+    host = re.sub(r"^https?://(www\.)?", "", url).split("/")[0]
+    path = re.sub(r"^https?://[^/]+/?", "", url).split("?")[0].rstrip("/")
+    if host == "github.com":
+        return path
+    if host in ("drive.google.com", "docs.google.com"):
+        return "Google Drive"
+    if host in ("youtu.be", "youtube.com", "loom.com"):
+        return host
+    return host
+
+
 links = json.loads((here / "links.json").read_text(encoding="utf-8"))
 shown = [(k, v.strip()) for k, v in links.items() if v.strip()]
 missing = [k for k, v in links.items() if not v.strip()]
 links_html = ('<div class="links">' + "".join(
-    f'<a href="{H.escape(v)}"><b>{H.escape(k)}</b> {H.escape(re.sub(r"^https?://(www\.)?", "", v)[:48])}</a>'
+    f'<a href="{H.escape(v)}"><b>{H.escape(k)}</b> {H.escape(short_link(v))}</a>'
     for k, v in shown) + "</div>") if shown else ""
 
 fill = {
