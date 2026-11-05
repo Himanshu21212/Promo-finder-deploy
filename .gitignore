@@ -1,0 +1,20 @@
+# Kuku's input pack is confidential: never commit it.
+data/
+*.zip
+!samples/demo_show.zip
+# Anything generated from the real scripts quotes them. Share these through a private link, not the repo.
+outputs/
+outputs_*/
+evaluation/
+docs/solution_doc.html
+docs/walkthrough_script.md
+docs/*.pdf
+# Local AI reply cache and secrets
+.llm_cache/
+.streamlit/secrets.toml
+.env
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
