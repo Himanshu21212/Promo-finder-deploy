@@ -74,8 +74,11 @@ font-feature-settings:"cv11","ss01";font-variant-numeric:tabular-nums}
 .pf-grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 /* brand */
 .pf-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.01em}
-.pf-logo{width:28px;height:28px;border-radius:8px;background:#d6194a;display:grid;place-items:center;flex:none}
-.pf-logo i{width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px}
+.pf-logo{width:28px;height:28px;border-radius:8px;background:#121216;position:relative;flex:none}
+.pf-logo i{position:absolute;left:6px;top:8px;width:16px;height:2px;background:rgba(255,255,255,.6);border-radius:1px}
+.pf-logo i::before{content:"";position:absolute;left:0;top:10px;width:11px;height:2px;background:rgba(255,255,255,.6);border-radius:1px}
+.pf-logo i::after{content:"";position:absolute;left:0;top:4px;width:13px;height:4px;background:#ff2d6a;border-radius:1px}
+.pf[data-theme=dark] .pf-logo{background:#26262e;box-shadow:inset 0 0 0 1px #3b3b45}
 /* badges */
 .pf-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;line-height:1;font-weight:600;padding:6px 10px;border-radius:8px;
 background:var(--surface2);color:var(--ink2);border:1px solid var(--line);white-space:nowrap}
