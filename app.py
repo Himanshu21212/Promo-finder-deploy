@@ -26,6 +26,11 @@ APP_CSS = """
 [data-testid="stToolbarActions"],[data-testid="stMainMenu"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
 header[data-testid="stHeader"]{background:transparent}
 [data-testid="stExpandSidebarButton"],[data-testid="stSidebarCollapsedControl"]{visibility:visible!important;opacity:1!important}
+[data-testid="stExpandSidebarButton"]{width:auto!important;height:auto!important;padding:9px 16px 9px 12px!important;border-radius:999px!important;background:#d6194a!important;box-shadow:0 2px 10px rgba(214,25,74,.35)!important;gap:6px!important}
+[data-testid="stExpandSidebarButton"]:hover{background:#b3133d!important}
+[data-testid="stExpandSidebarButton"] span{color:#fff!important}
+[data-testid="stExpandSidebarButton"]::after{content:"Upload & settings";font:600 14px/1 Inter,sans-serif;color:#fff;white-space:nowrap}
+@media (max-width:860px){.block-container{padding-top:4.6rem!important}}
 .block-container{max-width:1200px;padding-top:2.2rem;padding-bottom:5rem}
 section[data-testid="stSidebar"]>div{padding-top:.4rem}
 .pf-sbh{font:600 12px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#55555f;margin:22px 0 4px;
@@ -137,7 +142,7 @@ if "result" not in st.session_state and not go:
 <h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find promo cuts in a season of scripts</h1>
 <p>Upload the episode screenplays and get a ranked list of 20–60 second promo cuts. Each one comes with the exact
 timestamps to cut, the line it opens on, the moment it ends on, and a note on anything an editor should check.</p>
-<ol><li>Upload a <b>.zip</b> of the episode scripts in the sidebar (on a phone, tap <b>»</b> at the top left to open it).</li>
+<ol><li>Upload a <b>.zip</b> of the episode scripts in the sidebar (on a phone, tap <b>Upload &amp; settings</b> at the top).</li>
 <li>Check the show title (it's read from the zip).</li>
 <li>Press <b>Find promos</b>. A 50-episode season takes a few seconds with rules only.</li></ol>
 <p style="font-size:15px;color:var(--mute)">No scripts to hand? Run a short test script written for this project:</p></div></div>""")
