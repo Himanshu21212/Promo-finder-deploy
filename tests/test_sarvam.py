@@ -48,12 +48,13 @@ def test_sarvam_request_usage_and_timestamp_guards(monkeypatch):
     r = run(load_path(DEMO), "The Maid Was the Heiress", j, llm_top=10)
     assert r.model == j.spec and r.stats["ai"]["judged"] > 0
     assert run_checks(r)["passed"] == run_checks(r)["checked"]
-    assert sent and all(url == "https://api.sarvam.ai/v2/chat/completions" for url, _ in sent)
+    assert sent and all(url == "https://api.sarvam.ai/v1/chat/completions" for url, _ in sent)
     for _, request in sent:
         assert request["headers"]["Authorization"] == f"Bearer {KEY}"
         assert request["json"]["model"] == "sarvam-105b"
         assert request["json"]["response_format"] == {"type": "json_object"}
-        assert request["json"]["max_tokens"] == 4096
+        assert request["json"]["max_tokens"] == 768
+        assert "reasoning_effort" in request["json"] and request["json"]["reasoning_effort"] is None
     assert j.stats["prompt_tokens"] == 1000 * len(sent)
     assert j.stats["completion_tokens"] == 500 * len(sent)
     assert j.stats["reasoning_tokens"] == 300 * len(sent)
