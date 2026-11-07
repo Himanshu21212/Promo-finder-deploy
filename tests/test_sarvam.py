@@ -108,14 +108,13 @@ def test_streamlit_uses_sarvam_secret_and_displays_usage(monkeypatch):
     assert not app.exception
     assert not app.selectbox
     app.get("file_uploader")[0].upload("demo.zip", DEMO.read_bytes(), "application/zip").run()
-    next(b for b in app.button if b.label == "Find promos with AI").click().run()
+    next(b for b in app.button if b.label == "Find promos").click().run()
     assert not app.exception
     result = app.session_state["result"]
     assert result.model == "sarvam:sarvam-105b"
     assert result.stats["ai"]["judged"] > 0
     assert result.stats["ai"]["usage_calls"] > 0
-    ledger = app.session_state["usage_ledger"]
-    assert float(ledger.spend) == pytest.approx(result.stats["ai"]["estimated_cost_inr"])
+    assert result.stats["ai"]["estimated_cost_inr"] > 0
 
 
 @pytest.mark.parametrize("usage", [None, {}, {"prompt_tokens": 1000},

@@ -282,12 +282,10 @@ def test_cli_end_to_end_on_a_zip(tmp_path):
         assert (out / name).stat().st_size > 0
 
 
-def test_app_loads_and_runs_the_demo():
+def test_app_loads_with_a_clear_empty_state():
     AppTest = pytest.importorskip("streamlit.testing.v1").AppTest
     app = Path(__file__).resolve().parents[1] / "app.py"
     at = AppTest.from_file(str(app), default_timeout=60).run()
     assert not at.exception
-    demo = next(b for b in at.sidebar.button if b.label == "Preview sample report")
-    demo.click().run()
-    assert not at.exception
-    assert "result" in at.session_state
+    assert [b.label for b in at.sidebar.button] == ["Find promos"]
+    assert at.sidebar.button[0].disabled

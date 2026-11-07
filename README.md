@@ -10,13 +10,13 @@ promo cuts. Each cut comes with:
 
 Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 
-**Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/ (preview the sample report)
+**Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/
 
-The web app uses Sarvam automatically: upload scripts, check the title and press **Find promos with AI**.
+The web app uses Sarvam automatically: upload scripts, check the title and press **Find promos**.
 There is no provider picker, public API-key field, model name or endpoint field. Configure the
 server once with `SARVAM_API_KEY`; existing Sarvam `LLM_API_KEY` / `LLM_BASE_URL` secrets also work.
-The offline sample preview never spends credits. The CLI still defaults to rules and retains
-other model adapters for reproducible comparisons and interview-time model swaps.
+The sidebar contains only uploads, the show title and the primary action. The CLI defaults to
+rules and retains other model adapters for reproducible comparisons and interview-time model swaps.
 
 ## Run it
 
@@ -32,12 +32,11 @@ python -m promo_finder "path/to/scripts-folder-or.zip" -o outputs
 streamlit run app.py
 ```
 
-In the app, upload the .zip and press **Find promos with AI**.
+In the app, upload the .zip and press **Find promos**.
 The tested Streamlit runtime is pinned to 1.67.0 for reproducible UI and uploader tests.
 
 Kuku's script pack is confidential, so it isn't in this repo. To try the tool without it, use
-`samples/demo_show.zip`. It's a two-episode test script written for this project. In the app, the
-**Preview sample report** button runs it offline and labels the result as a sample.
+`samples/demo_show.zip`. It's a two-episode test script written for this project. Upload that demo ZIP to the app to test the real AI workflow, or run it offline with the CLI.
 
 ## What you get
 
@@ -142,8 +141,8 @@ characters each. That's roughly 38k input tokens and about 4k output tokens per 
 **Status.** Sarvam API-contract and Streamlit integration checks use simulated HTTP responses;
 no live model or real API key was used for those checks. They test request format, token accounting,
 fallback, rejected replies and timestamp guards, not editorial quality. After adding your key, upload
-the demo ZIP and use **Find promos with AI**, then run the full input pack with comparison enabled
-and manually review the results. **Preview sample report** always stays offline.
+the demo ZIP and use **Find promos**, then run the full input pack with comparison enabled
+and manually review the results.
 An AI reviewer cannot recover a strong moment excluded by the rules shortlist; inspect excluded cuts too.
 
 ## Tests
@@ -175,33 +174,29 @@ The tests cover:
 3. Under **App settings → Secrets**, add `SARVAM_API_KEY = "your-key"` and save. Copy the
    format from `.streamlit/secrets.toml.example`, replacing the placeholder only inside Streamlit.
 4. Reboot the app once after this update so every Python module reloads. The sidebar shows
-   **Sarvam AI enabled** when a server credential is configured; this is configuration status,
+   **AI review enabled** when a server credential is configured; this is configuration status,
    not a live authentication or balance check. The page never exposes the stored key.
-5. Upload the demo ZIP or real scripts and click **Find promos with AI**. Check successful review
-   counts and reported usage. Keep **Include baseline comparison** under Output preferences enabled
+5. Upload the demo ZIP or real scripts and click **Find promos**. Check successful review
+   counts and reported usage. The baseline comparison is included automatically
    for the assignment. Download the report, JSON and comparison CSV into a private submission folder.
 
 Optional owner setting: `SARVAM_MODEL` can be `sarvam-105b` (default) or
 `sarvam-105b-conversations`. The app selects a supported endpoint automatically. Other provider
 adapters are CLI-only and are not offered in the public web interface.
 
-## Credits and live usage
+## Editor interface and usage
 
-- The sidebar updates estimated spend, API request count and reported tokens after each response.
-  It records API-reported usage even when a response cannot become a valid rating.
-- **View actual balance in Sarvam** opens the official dashboard. There is no documented public
-  balance endpoint in the API reference reviewed for this implementation. The app does not invent
-  one, scrape authenticated billing pages, or claim its counters are an organisation-wide live wallet.
-- Sarvam has one shared organisation balance, covering all workspaces and products:
-  https://docs.sarvam.ai/api/platform/billing
-- For an estimate of remaining credits, enter the latest dashboard balance under **Update balance
-  snapshot**. The estimate subtracts subsequently reported spend in this browser session only.
-  It excludes tax and activity by other users, applications or sessions. It resets on a new browser
-  session/server restart and when the configured credential changes.
-- Rerendering the page does not count a run twice. If any later request has missing/incomplete usage,
-  the remaining estimate becomes unavailable until a fresh dashboard snapshot is saved.
-- A 402 response is shown as exhausted credits and stops further API requests for that run.
-- No balance is hardcoded from an old screenshot. No credentials or account balance are cached globally.
+The sidebar contains upload, show title and Find promos only. It has no balance card, manual
+balance snapshot, provider/model/key controls, preferences panel, sample button or technical footer.
+The opening screen explains the task without displaying a previous sample as a new result.
+
+When no AI review succeeds, the app shows a failure state and troubleshooting details. It does
+not present a completed AI report or export buttons. An explicitly selected **Show backup ranking**
+option exposes the rules fallback without making another API request. Partial AI coverage is labelled.
+
+Token usage and estimated cost remain in the downloadable report and the collapsed run log under
+Checks, rather than in the everyday editor flow. There is no invented zero-cost or remaining-balance
+claim when usage is unavailable. The app does not scrape or invent a wallet endpoint.
 
 ## Confidentiality
 
@@ -234,7 +229,7 @@ promo_finder/
   candidates.py  single and stitched cuts, hard rules, promo score, flags
   rank.py        selection, posting order, "why" lines
   llm.py         AI judge with guardrails
-  usage.py       Sarvam configuration and session-only usage / balance estimates
+  usage.py       server-side Sarvam configuration
   compare.py     rules-only vs AI ranking on the same scripts
   checks.py      post-run checks
   report.py      HTML / CSV / JSON / Markdown
