@@ -13,7 +13,7 @@ SARVAM_MODELS = {"sarvam-105b", "sarvam-105b-conversations"}
 class SarvamConfig:
     api_key: str = field(default="", repr=False)
     model: str = "sarvam-105b"
-    base_url: str = "https://api.sarvam.ai/v2"
+    base_url: str = "https://api.sarvam.ai/v1"
     error: str = ""
 
     @classmethod
@@ -30,8 +30,12 @@ class SarvamConfig:
         model = text("SARVAM_MODEL") or "sarvam-105b"
         if model not in SARVAM_MODELS:
             return cls(error="The app owner needs to check the Sarvam model configuration.")
-        base = "https://api.sarvam.ai/v1" if model.endswith("-conversations") else (
-            legacy_base if legacy else "https://api.sarvam.ai/v2")
+        explicit_base = text("SARVAM_BASE_URL").rstrip("/")
+        if explicit_base and explicit_base not in SARVAM_BASES:
+            return cls(error="The app owner needs to check the Sarvam endpoint configuration.")
+        base = explicit_base or "https://api.sarvam.ai/v1"
+        if model.endswith("-conversations"):
+            base = "https://api.sarvam.ai/v1"
         return cls(api_key=key, model=model, base_url=base)
 
     @property

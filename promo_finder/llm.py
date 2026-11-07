@@ -34,7 +34,7 @@ from .candidates import HOOK_WINDOW, MAX_LEN, MIN_LEN, Promo, Segment, _inside, 
 from .parser import Episode, fmt
 
 OPENAI_COMPAT = {
-    "sarvam": ("https://api.sarvam.ai/v2", "SARVAM_API_KEY", "sarvam-105b"),
+    "sarvam": ("https://api.sarvam.ai/v1", "SARVAM_API_KEY", "sarvam-105b"),
     "openai": ("https://api.openai.com/v1", "OPENAI_API_KEY", "gpt-4o-mini"),
     "groq": ("https://api.groq.com/openai/v1", "GROQ_API_KEY", "openai/gpt-oss-120b"),
     "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY", "meta-llama/llama-3.3-70b-instruct"),
@@ -79,9 +79,10 @@ Return exactly these keys:
 
 
 class JudgeError(RuntimeError):
-    def __init__(self, message: str, status_code: int | None = None):
+    def __init__(self, message: str, status_code: int | None = None, *, kind: str = ""):
         super().__init__(message)
         self.status_code = status_code
+        self.kind = kind
 
 
 class Judge:
@@ -170,7 +171,7 @@ class Judge:
                     continue
                 raise last_err
             except requests.Timeout:
-                raise JudgeError("API request timed out; no automatic timeout retry")
+                raise JudgeError("API request timed out; review stopped without retry", kind="timeout")
             except requests.ConnectionError as e:
                 last_err = JudgeError(f"network: {type(e).__name__}")
                 if attempt < 1:
@@ -208,12 +209,15 @@ class Judge:
         body = {"model": m, "temperature": 0,
                 "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]}
         if p == "sarvam":
-            body["max_tokens"] = 4096   # includes reasoning; stop rather than accept a truncated rating
+            body["max_tokens"] = 768  # a short rating object, not a long reasoning job
+            if self.base_url.rstrip("/") == "https://api.sarvam.ai/v1":
+                body["reasoning_effort"] = None  # documented V1 switch to disable thinking
         elif p == "groq" and m.startswith("openai/gpt-oss-"):
             body.update(max_completion_tokens=2048, reasoning_effort="low")
         if p in JSON_MODE:
             body["response_format"] = {"type": "json_object"}
-        r = requests.post(f"{self.base_url.rstrip('/')}/chat/completions", headers=headers, json=body, timeout=(5, 20))
+        r = requests.post(f"{self.base_url.rstrip('/')}/chat/completions", headers=headers, json=body,
+                          timeout=(5, 35 if p == "sarvam" else 20))
         r.raise_for_status()
         data = r.json()
         usage = data.get("usage") or {}
@@ -256,7 +260,10 @@ class Judge:
         p.llm = {"error": (prefix + detail)[:200]}
         if getattr(error, "status_code", None):
             self.stats["last_error_code"] = error.status_code
-        if getattr(error, "status_code", None) in (401, 402, 403, 404):
+        if getattr(error, "kind", "") == "timeout":
+            self.stats["error_kind"] = "timeout"
+            self.tripped = "stopped because the AI service request timed out"
+        elif getattr(error, "status_code", None) in (401, 402, 403, 404):
             self.tripped = f"stopped after HTTP {error.status_code}; check the key, credits, model and access"
         elif self._consecutive_fail >= 3:
             self.tripped = f"stopped after 3 failed calls in a row ({detail[:80]})"

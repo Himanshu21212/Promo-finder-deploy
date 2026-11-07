@@ -17,11 +17,12 @@ def test_timeouts_are_not_retried_and_each_candidate_has_progress(monkeypatch):
         raise requests.Timeout()
     monkeypatch.setattr("promo_finder.llm.requests.post", post)
     eps, _ = eps_from(*(script(i, DRAMA * 2) for i in range(1, 4)))
-    j = Judge("custom:test", api_key="test-only", base_url="https://example.invalid/v1",
+    j = Judge("sarvam:sarvam-105b", api_key="test-only",
               min_interval=0, use_cache=False)
     progress = []
     result = run(eps, "test", j, progress=progress.append)
-    assert len(calls) == 3 and all(c["timeout"] == (5, 20) for c in calls)
+    assert len(calls) == 1 and all(c["timeout"] == (5, 35) for c in calls)
+    assert result.stats["ai"]["error_kind"] == "timeout"
     assert result.model == "rules" and result.promos
     assert any("Reviewing candidate 1/" in line for line in progress)
     assert any("timed out" in line for line in progress)

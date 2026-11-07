@@ -16,6 +16,7 @@ from promo_finder.compare import compare, cut_key, to_csv as compare_csv, to_mar
 from promo_finder.llm import Judge
 from promo_finder.parser import finalize, fmt, load_zip_bytes, parse_text
 from promo_finder.pipeline import run
+from promo_finder.progress import ReviewProgress
 from promo_finder.report import to_csv, to_html, to_json, to_markdown
 from promo_finder.usage import SarvamConfig
 
@@ -35,7 +36,8 @@ header[data-testid="stHeader"]{background:transparent}
 .block-container{max-width:1200px;padding-top:2.2rem;padding-bottom:5rem}
 section[data-testid="stSidebar"]>div{padding-top:.4rem}
 [data-testid="stSidebarHeader"]{height:0!important;min-height:0!important;padding:0!important;margin:0!important;position:relative;z-index:3}
-[data-testid="stSidebarCollapseButton"]{position:absolute!important;top:18px;right:14px}
+[data-testid="stSidebarCollapseButton"]{position:absolute!important;top:18px;right:14px;visibility:visible!important;opacity:1!important}
+[data-testid="stSidebar"] button[aria-label="Collapse sidebar"]{visibility:visible!important;opacity:1!important}
 [data-testid="stSidebarUserContent"]{padding-top:20px!important}
 .pf-sbbrand .pf-brand{gap:12px;font-size:20px}
 .pf-sbbrand .pf-logo{transform:scale(1.3);transform-origin:left center;margin-right:9px}
@@ -52,6 +54,24 @@ display:flex;gap:8px;align-items:center}
 .pf-intro ol{margin:10px 0 0 20px!important;padding:0!important}.pf-intro ol li{margin:0 0 6px!important;font-size:16px;color:var(--ink2)}
 .pf-service{padding:12px 14px;background:#fafaf8;border:1px solid #e3e3de;border-radius:12px;font-size:14px;line-height:1.5}
 .pf-service .dot{display:inline-block;width:7px;height:7px;background:#33845b;border-radius:50%;margin-right:8px}
+.pf-review{max-width:900px;margin:24px auto;padding:30px;background:var(--surface);border:1px solid var(--line2);border-radius:16px}
+.pf-review-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:14px}
+.pf-review-heading h2{font-size:23px;line-height:1.4;font-weight:600;margin:0;display:flex;align-items:center;gap:12px}
+.pf-review-heading>span{font-size:13px;color:var(--mute);white-space:nowrap}
+.pf-review p{font-size:15px;line-height:1.6;color:var(--mute);margin:9px 0 24px}
+.pf-review-dot{width:8px;height:8px;border-radius:50%;background:var(--accent,#d6194a);animation:pf-breathe 1.6s ease-in-out infinite;flex-shrink:0}
+.pf-review-track{height:5px;background:var(--line);border-radius:999px;overflow:hidden}
+.pf-review-fill{height:100%;background:#d6194a;border-radius:999px;transition:width .25s ease}
+.pf-review-pulse{height:100%;width:30%;background:#d6194a;border-radius:999px;animation:pf-sweep 1.8s ease-in-out infinite}
+.pf-review-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:25px}
+.pf-review-step{display:flex;align-items:center;gap:7px;color:var(--mute);font-size:12px;line-height:1.4}
+.pf-review-step span{display:inline-grid;place-items:center;flex-shrink:0;width:21px;height:21px;background:var(--surface2);border-radius:50%;font-size:11px}
+.pf-review-step.active{color:#b3133d;font-weight:600}.pf-review-step.active span{background:#fbe8ed}
+.pf-review-step.done span{color:#33845b;background:#e8f3ec}
+@keyframes pf-sweep{from{transform:translateX(-100%)}to{transform:translateX(430%)}}
+@keyframes pf-breathe{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:600px){.pf-review{padding:23px 20px}.pf-review-heading{align-items:flex-start;flex-direction:column;gap:8px}.pf-review-heading h2{font-size:21px}.pf-review-steps{grid-template-columns:repeat(2,1fr);gap:13px}}
+@media(prefers-reduced-motion:reduce){.pf-review-dot,.pf-review-pulse{animation:none}.pf-review-fill{transition:none}}
 """
 
 st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
@@ -117,6 +137,9 @@ hooks and cliffhangers ready for an editor to review.</p></div>
 
 # ---------------------------------------------------------------- run
 if go:
+    review = ReviewProgress()
+    progress_panel = st.empty()
+    progress_panel.html(review.html())
     warnings: list[str] = []
     raw = []
     for f in files:
@@ -132,43 +155,50 @@ if go:
     for w in warnings:
         st.warning(w)
     if not eps:
+        progress_panel.empty()
         st.error("No timestamped episodes found. Each script needs blocks like '**SPEAKER:**' followed by "
                  "'Start: (MM:SS.ss) | End: (MM:SS.ss)'.")
         st.stop()
+    review.stage = 1
+    progress_panel.html(review.html())
     show_title = title.strip() or (f"Episode {eps[0].num}" if len(eps) == 1 else "Series promo report")
     if not config.configured:
+        progress_panel.empty()
         st.error("AI review is unavailable. Contact the app owner.")
         st.stop()
     try:
         judge = Judge(f"sarvam:{config.model}", api_key=config.api_key,
                       base_url=config.base_url, use_cache=False)
-    except (ValueError, TypeError):
-        st.error("The AI reviewer could not start. If the app was just updated, use Manage app → "
-                 "Reboot app. Otherwise contact the app owner.")
+    except (ValueError, TypeError) as e:
+        progress_panel.empty()
+        st.error("AI review is currently unavailable. Please contact the app owner.")
+        with st.expander("Run details"):
+            st.code(str(e).replace(config.api_key, "[redacted]"), language=None)
         st.stop()
 
     def show_progress(message: str) -> None:
-        st.write(message)
+        before = review.html()
+        review.update(message)
+        after = review.html()
+        if after != before:
+            progress_panel.html(after)
 
-    with st.status("Finding promos…", expanded=True) as status:
-        try:
-            if judge and compare_too:
-                rules_res, res, cmp = compare(eps, show_title, judge, llm_top, progress=show_progress,
-                                               n_single=n_single, n_stitched=n_stitched)
-                st.session_state.compare = (rules_res, cmp)
-            else:
-                res = run(eps, show_title, judge or "rules", n_single, n_stitched, llm_top,
-                          progress=show_progress, warnings=warnings)
-                st.session_state.pop("compare", None)
-        except Exception as e:  # show a clear message instead of a stack trace
-            status.update(label="Run failed", state="error")
-            detail = str(e).replace(config.api_key, "[redacted]") if config.api_key else str(e)
-            st.error(f"Something went wrong while ranking: {type(e).__name__}: {detail}")
-            st.stop()
-        if res.stats.get("ai", {}).get("judged", 0):
-            status.update(label=f"Report ready · {len(res.promos)} promos", state="complete", expanded=False)
+    try:
+        if compare_too:
+            rules_res, res, cmp = compare(eps, show_title, judge, llm_top, progress=show_progress,
+                                         n_single=n_single, n_stitched=n_stitched)
+            st.session_state.compare = (rules_res, cmp)
         else:
-            status.update(label="AI review unavailable", state="error", expanded=False)
+            res = run(eps, show_title, judge, n_single, n_stitched, llm_top,
+                      progress=show_progress, warnings=warnings)
+            st.session_state.pop("compare", None)
+    except Exception as e:
+        st.error("We couldn’t finish this review. Please try again.")
+        with st.expander("Run details"):
+            st.code(str(e).replace(config.api_key, "[redacted]"), language=None)
+        st.stop()
+    finally:
+        progress_panel.empty()
     st.session_state.result = res
     st.session_state.checks = run_checks(res)
 
@@ -184,6 +214,8 @@ if not ai.get("judged", 0):
         402: "AI review is paused because the service is out of credits.",
         429: "The AI service is busy. Please try again shortly.",
     }.get(ai.get("last_error_code"), "The AI service did not return a usable review. Please try again.")
+    if ai.get("error_kind") == "timeout":
+        reason = "The AI service took too long to respond. Please try again."
     st.error(reason)
     st.caption("No AI-ranked report was produced. Your scripts are still uploaded; choose Find promos to retry.")
     with st.expander("Run details"):

@@ -131,12 +131,20 @@ characters each. That's roughly 38k input tokens and about 4k output tokens per 
   tokens are already included in output tokens, so they are not counted twice in the cost estimate.
   Sarvam cost estimates appear in the run log and report; the provider dashboard is authoritative.
 - Sarvam calls are spaced at least 1 s apart. Groq's default is 30 s for short candidate prompts;
-  account token limits can still trigger retries. Every candidate reports progress and errors.
+  account token limits can still trigger retries. Diagnostics record every candidate; the UI
+  presents stage and clip progress without exposing those raw lines.
   The AI phase stops starting new reviews after 60 s; an in-flight request still has to finish.
-  HTTP connect/read inactivity timeouts are 5/20 s, not a strict wall-clock deadline. Remaining
+  Sarvam connect/read inactivity timeouts are 5/35 s, not a strict wall-clock deadline.
+  Other providers retain their 5/20 s inactivity timeouts.
+  The first request timeout stops the AI run; it does not repeat that wait for more candidates. Remaining
   candidates keep their rules scores. Run time includes model latency and retries.
-- Sarvam requests require JSON output and cap output at 4,096 tokens, including reasoning where
-  applicable. Groq GPT-OSS uses low reasoning effort and a 2,048-token completion cap.
+- Sarvam reviews default to V1 with `reasoning_effort: null` (the documented thinking-off switch)
+  and a 768-token JSON response cap. These requests need a short rating object, not a long reasoning
+  trace. Legacy Sarvam credentials are accepted on the V1 review path. An explicit owner
+  `SARVAM_BASE_URL` override is respected; V2 does not
+  receive the V1 thinking switch. This aims to reduce response overhead, but live latency has not
+  been verified by these simulated tests. Groq GPT-OSS retains a 2,048-token completion cap.
+  V1 reference: https://docs.sarvam.ai/api-reference/chat/chat-completions-v1
 
 **Status.** Sarvam API-contract and Streamlit integration checks use simulated HTTP responses;
 no live model or real API key was used for those checks. They test request format, token accounting,
@@ -189,6 +197,10 @@ adapters are CLI-only and are not offered in the public web interface.
 The sidebar contains upload, show title and Find promos only. It has no balance card, manual
 balance snapshot, provider/model/key controls, preferences panel, sample button or technical footer.
 The opening screen explains the task without displaying a previous sample as a new result.
+During processing, one compact card shows Read scripts → Find moments → Review clips → Prepare
+report. Clip counts come from real pipeline events; only successful reviews advance the clip bar.
+It shows no model IDs, trope labels, raw HTTP errors or expanding diagnostic transcript. Logs are
+retained in the collapsed Run details / Checks panels and downloadable reports.
 
 When no AI review succeeds, the app shows a failure state and troubleshooting details. It does
 not present a completed AI report or export buttons. An explicitly selected **Show backup ranking**
