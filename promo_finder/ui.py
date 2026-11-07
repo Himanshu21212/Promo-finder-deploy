@@ -362,12 +362,15 @@ def mode_badge(model: str, ai: dict | None = None) -> str:
 
 
 def run_summary(stats: dict, checks: dict | None = None) -> str:
-    bits = [f"<span><b>{stats['episodes']}</b> episodes ({stats['minutes']} min of script)</span>",
+    episode_label = "episode" if stats['episodes'] == 1 else "episodes"
+    source_label = "episode" if stats['episodes_covered'] == 1 else "episodes"
+    promo_label = "promo" if stats['promos'] == 1 else "promos"
+    bits = [f"<span><b>{stats['episodes']}</b> {episode_label} ({stats['minutes']} min of script)</span>",
             f"<span><b>{stats['candidates']:,}</b> possible cuts scored</span>",
-            f"<span><b>{stats['promos']}</b> promos ranked, from {stats['episodes_covered']} episodes</span>"]
+            f"<span><b>{stats['promos']}</b> {promo_label} ranked, from {stats['episodes_covered']} {source_label}</span>"]
     if checks:
         bits.append(f"<span><b>{checks['passed']}/{checks['checked']}</b> pass the rule checks</span>")
-    bits.append(f"<span>run time <b>{stats['seconds']} s</b></span>")
+    bits.append(f"<span>Run time <b>{stats['seconds']} s</b></span>")
     ai = stats.get("ai", {})
     if ai.get("usage_calls"):
         bits.append(f"<span>reported API tokens <b>{ai['prompt_tokens']:,} input / "
