@@ -13,6 +13,10 @@ Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 **Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/
 
 The web app uses Sarvam automatically: upload scripts, check the title and press **Find promos**.
+The starting page has a working upload area, title field and Find promos button in the main
+workspace. The sidebar offers the same workflow, with the current upload and title kept in sync.
+Choose **New analysis** above any finished or failed report to return to a clean starting page.
+Replacing scripts also clears the previous report; neither action calls the AI service.
 There is no provider picker, public API-key field, model name or endpoint field. Configure the
 server once with `SARVAM_API_KEY`; existing Sarvam `LLM_API_KEY` / `LLM_BASE_URL` secrets also work.
 The sidebar contains only uploads, the show title and the primary action. The CLI defaults to

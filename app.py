@@ -27,7 +27,8 @@ st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "f
 
 APP_CSS = """
 [data-testid="stToolbarActions"],[data-testid="stMainMenu"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
-header[data-testid="stHeader"]{background:transparent}
+header[data-testid="stHeader"]{background:transparent;pointer-events:none}
+header[data-testid="stHeader"] button{pointer-events:auto}
 [data-testid="stExpandSidebarButton"],[data-testid="stSidebarCollapsedControl"]{visibility:visible!important;opacity:1!important}
 [data-testid="stExpandSidebarButton"]{width:auto!important;height:auto!important;padding:9px 16px 9px 12px!important;border-radius:999px!important;background:#d6194a!important;box-shadow:0 2px 10px rgba(214,25,74,.35)!important;gap:6px!important}
 [data-testid="stExpandSidebarButton"]:hover{background:#b3133d!important}
@@ -74,7 +75,7 @@ display:flex;gap:8px;align-items:center}
 @media(max-width:600px){.pf-review{padding:23px 20px}.pf-review-heading{align-items:flex-start;flex-direction:column;gap:8px}.pf-review-heading h2{font-size:21px}.pf-review-steps{grid-template-columns:repeat(2,1fr);gap:13px}}
 @media(prefers-reduced-motion:reduce){.pf-review-dot,.pf-review-pulse{animation:none}.pf-review-fill{transition:none}}
 /* Final visual polish: keep the existing controls and report views. */
-.block-container{max-width:1360px;padding-top:2.4rem}
+.block-container{max-width:1360px;padding-top:3.8rem}
 .pf{--line:#e6e5ea;--line2:#d7d5de;--surface2:#f6f5f8;--surface3:#ebe9ef;--shadow:0 2px 8px rgba(25,18,40,.035)}
 .pf-sbbrand{padding:0 0 17px;border-bottom:1px solid #eceaf0}
 .pf-sbbrand .pf-brand{font-size:21px;letter-spacing:-.6px;gap:11px}
@@ -117,6 +118,15 @@ display:flex;gap:8px;align-items:center}
 .pf-mascot-welcome{width:88px;height:98px}
 @media(max-width:860px){.pf-report-head h1{font-size:26px;overflow-wrap:anywhere}.pf-mascot-mobile{display:block;width:52px;height:62px}.pf-summary{font-size:12px;padding:14px;gap:7px 18px}.stTabs [data-baseweb="tab"]{font-size:13px;padding:11px 12px}.cr-hook{font-size:15px}.pf-mascot-welcome{width:64px;height:74px}.pf-intro-top{gap:15px}}
 @media(prefers-reduced-motion:reduce){[data-testid="stBaseButton-secondary"],[data-testid="stDownloadButton"] button{transition:none}}
+.st-key-home_upload_panel{margin-top:26px;background:#fff;border:1px solid #e4e0e9;border-radius:16px;padding:25px}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{min-height:150px;padding:22px!important}
+.pf-home-title{font-size:21px;font-weight:600;letter-spacing:-.4px;margin:0 0 5px}
+.pf-home-hint{font-size:14px;color:var(--mute);line-height:1.6;margin-bottom:12px!important}
+.pf-start-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:25px}
+.pf-start-step{border:1px solid var(--line);border-radius:13px;padding:18px;background:var(--surface)}
+.pf-start-step .n{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:var(--hook-bg);color:var(--hook);font-size:12px;font-weight:600;margin-bottom:12px}
+.pf-start-step h3{font-size:14px;font-weight:600;margin-bottom:6px}.pf-start-step p{font-size:13px;color:var(--mute);line-height:1.7}
+@media(max-width:600px){.st-key-home_upload_panel{padding:18px}.pf-start-steps{grid-template-columns:1fr;gap:10px}.pf-start-step{padding:15px}.pf-start-step .n{float:left;margin:0 12px 20px 0}.pf-home-title{font-size:19px}}
 """
 
 st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
@@ -142,26 +152,62 @@ def mascot(class_name: str) -> str:
     return f'<img class="pf-mascot {class_name}" src="data:image/webp;base64,{image}" alt="Promo Finder clapperboard mascot" />'
 
 
+def guess_title(files) -> str:
+    z = next((f for f in files if f.name.lower().endswith(".zip")), None)
+    if not z:
+        return ""
+    try:
+        with zipfile.ZipFile(io.BytesIO(z.getvalue())) as zf:
+            tops = {n.split("/")[0] for n in zf.namelist() if "/" in n and not n.startswith("__MACOSX")}
+    except zipfile.BadZipFile:
+        tops = set()
+    base = tops.pop() if len(tops) == 1 else re.sub(r"\.zip$", "", z.name, flags=re.I)
+    return re.sub(r"[-_ ]?scripts.*$", "", base, flags=re.I).strip()
+
+
+def clear_report() -> None:
+    for name in ("result", "checks", "compare", "kind", "tiers", "kind2", "backup_ranking"):
+        st.session_state.pop(name, None)
+
+
+def select_uploads(origin: str, widget_key: str) -> None:
+    clear_report()
+    st.session_state.source_files = list(st.session_state.get(widget_key) or [])
+    suggested = guess_title(st.session_state.source_files)
+    st.session_state.show_title = suggested
+    st.session_state.home_title = suggested
+    other = "home" if origin == "sidebar" else "sidebar"
+    st.session_state[f"{other}_upload_version"] = st.session_state.get(f"{other}_upload_version", 0) + 1
+
+
+def sync_title(source: str, target: str) -> None:
+    st.session_state[target] = st.session_state[source]
+
+
+def new_analysis() -> None:
+    clear_report()
+    st.session_state.source_files = []
+    st.session_state.show_title = ""
+    st.session_state.home_title = ""
+    for origin in ("home", "sidebar"):
+        st.session_state[f"{origin}_upload_version"] = st.session_state.get(f"{origin}_upload_version", 0) + 1
+
+
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
     st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
     sb_head("1", "Upload scripts")
-    files = st.file_uploader("Episode scripts", type=["zip", "txt"], accept_multiple_files=True, label_visibility="collapsed",
-                             help="A .zip of the season, or the episode .txt files. Timestamped screenplays, one per episode.")
-    guess = ""
+    files = list(st.session_state.get("source_files", []))
     if files:
-        z = next((f for f in files if f.name.lower().endswith(".zip")), None)
-        if z:
-            try:
-                with zipfile.ZipFile(io.BytesIO(z.getvalue())) as zf:  # prefer the folder name inside the zip
-                    tops = {n.split("/")[0] for n in zf.namelist() if "/" in n and not n.startswith("__MACOSX")}
-            except zipfile.BadZipFile:
-                tops = set()
-            base = tops.pop() if len(tops) == 1 else re.sub(r"\.zip$", "", z.name, flags=re.I)
-            guess = re.sub(r"[-_ ]?scripts.*$", "", base, flags=re.I).strip()
+        st.caption("Current upload: " + ", ".join(f.name for f in files))
+    sidebar_upload_key = f'sidebar_files_{st.session_state.get("sidebar_upload_version", 0)}'
+    st.file_uploader("Episode scripts", type=["zip", "txt"], accept_multiple_files=True, label_visibility="collapsed",
+                             key=sidebar_upload_key, on_change=select_uploads, args=("sidebar", sidebar_upload_key),
+                             help="A .zip of the season, or the episode .txt files. Timestamped screenplays, one per episode.")
     sb_head("2", "Check the show title")
-    title = st.text_input("Show title", value=guess, placeholder="e.g. The Maid Was the Heiress",
+    title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
+                          on_change=sync_title, args=("show_title", "home_title"),
                           help="The title tells the tool what the show promises (for example a secret Duke), so promos that sell it rank higher.")
     sb_head("3", "Find promos")
     if config.configured:
@@ -176,14 +222,32 @@ if "result" not in st.session_state and not go:
 <h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find promo cuts in a season of scripts</h1>
 <p>Turn timestamped screenplays into a ranked shortlist of 20–60 second promos, with exact cut points,
 hooks and cliffhangers ready for an editor to review.</p></div>""" + mascot("pf-mascot-welcome") + """</div>
-<div style="margin-top:36px;padding:48px 28px;border:1px dashed var(--line2);border-radius:16px;text-align:center;background:var(--surface)">
-<div aria-hidden="true" style="font-size:30px;color:var(--mute);margin-bottom:16px">▷</div>
-<h2 style="font-size:21px;font-weight:600;margin:0 0 10px">Your promo shortlist starts here</h2>
-<p style="color:var(--mute);font-size:15px;margin:0">Upload a ZIP or episode scripts in the sidebar, check the show title, then choose Find promos.</p>
-<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px;font-size:13px;color:var(--mute)">
-<span>20–60 second clips</span><span aria-hidden="true">·</span><span>Exact cut points</span><span aria-hidden="true">·</span><span>Hooks &amp; cliffhangers</span>
-</div></div></div>""")
-    st.stop()
+</div>""")
+    with st.container(key="home_upload_panel"):
+        st.html('<div class="pf"><h2 class="pf-home-title">Upload scripts to get started</h2>'
+                '<p class="pf-home-hint">Choose a season ZIP or individual episode TXT files. You can also drag them into the upload area.</p></div>')
+        home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
+        st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
+                         key=home_upload_key, on_change=select_uploads, args=("home", home_upload_key),
+                         label_visibility="collapsed", help="Timestamped screenplays. ZIP and TXT files, up to 50 MB per file.")
+        if files:
+            st.caption("Ready: " + ", ".join(f.name for f in files))
+        home_title = st.text_input("Show title", key="home_title", placeholder="e.g. The Maid Was the Heiress",
+                      on_change=sync_title, args=("home_title", "show_title"),
+                      help="Check the title before starting. It helps the reviewer understand the show's premise.")
+        go = st.button("Find promos", key="find_home", type="primary", width="stretch",
+                       disabled=not files or not config.configured)
+        if go:
+            title = home_title
+        if not files:
+            st.caption("Upload your scripts to enable Find promos.")
+    if not go:
+        st.html('''<div class="pf"><div class="pf-start-steps">
+<div class="pf-start-step"><span class="n">1</span><h3>Upload your story</h3><p>One episode or a full season. Use timestamped screenplay files.</p></div>
+<div class="pf-start-step"><span class="n">2</span><h3>Review the strongest moments</h3><p>Compare 20–60 second cuts with opening hooks, cliffhangers and editorial notes.</p></div>
+<div class="pf-start-step"><span class="n">3</span><h3>Take it to your editor</h3><p>Export exact cut points and ranked recommendations, then start a new analysis anytime.</p></div>
+</div></div>''')
+        st.stop()
 
 # ---------------------------------------------------------------- run
 if go:
@@ -251,12 +315,16 @@ if go:
         progress_panel.empty()
     st.session_state.result = res
     st.session_state.checks = run_checks(res)
+    st.rerun()
 
 res = st.session_state.result
 checks = st.session_state.get("checks") or run_checks(res)
 s = res.stats
 
 ai = s.get("ai", {})
+nav_left, nav_right = st.columns([3, 1], vertical_alignment="center")
+nav_left.caption("Your promo report · Analyse another script whenever you’re ready.")
+nav_right.button("New analysis", key="new_analysis", on_click=new_analysis, width="stretch", icon=":material/add:")
 if not ai.get("judged", 0):
     reason = {
         401: "The AI connection needs attention. Contact the app owner.",
@@ -270,7 +338,7 @@ if not ai.get("judged", 0):
     st.caption("No AI-ranked report was produced. Your scripts are still uploaded; choose Find promos to retry.")
     with st.expander("Run details"):
         st.code("\n".join(res.log), language=None)
-    if not st.checkbox("Show backup ranking", value=False):
+    if not st.checkbox("Show backup ranking", value=False, key="backup_ranking"):
         st.stop()
     badge = '<span class="pf-mode">Backup ranking · AI review unavailable</span>'
 else:
