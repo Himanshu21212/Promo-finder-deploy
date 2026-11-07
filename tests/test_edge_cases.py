@@ -287,5 +287,5 @@ def test_app_loads_with_a_clear_empty_state():
     app = Path(__file__).resolve().parents[1] / "app.py"
     at = AppTest.from_file(str(app), default_timeout=60).run()
     assert not at.exception
-    assert [b.label for b in at.sidebar.button] == ["Find promos"]
-    assert at.sidebar.button[0].disabled
+    assert not at.sidebar.button and not at.sidebar.get('file_uploader')
+    assert at.button(key='find_home').disabled
