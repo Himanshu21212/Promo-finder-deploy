@@ -32,7 +32,7 @@ def main(argv=None) -> int:
     ap.add_argument("-o", "--out", default="outputs", help="output folder (default: outputs)")
     ap.add_argument("-t", "--title", default=None, help="show title (default: taken from the folder / zip name)")
     ap.add_argument("-m", "--model", default="rules",
-                    help="rules (default) | gemini[:model] | groq[:model] | openai:<model> | anthropic:<model> | "
+                    help="rules (default) | sarvam[:model] | gemini[:model] | groq[:model] | openai:<model> | anthropic:<model> | "
                          "openrouter:<model> | ollama[:model] | custom:<model>. Keys come from environment variables.")
     ap.add_argument("-n", "--top", type=int, default=20, help="single-clip promos in the ranked list (default 20)")
     ap.add_argument("-s", "--stitched", type=int, default=6, help="stitched promos in the ranked list (default 6)")
