@@ -74,7 +74,7 @@ def test_timeout_becomes_a_clean_error_after_one_request(monkeypatch):
     app.secrets['SARVAM_API_KEY'] = KEY
     app.run()
     app.get('file_uploader')[0].upload('demo.zip', (ROOT / 'samples/demo_show.zip').read_bytes(), 'application/zip').run()
-    app.sidebar.button[0].click().run()
+    app.button(key='find_home').click().run()
     assert not app.exception and len(sent) == 1
     assert any('took too long' in e.value for e in app.error)
     assert not app.get('status') and not app.get('download_button')

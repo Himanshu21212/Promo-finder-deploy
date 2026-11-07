@@ -33,7 +33,7 @@ header[data-testid="stHeader"] button{pointer-events:auto}
 [data-testid="stExpandSidebarButton"]{width:auto!important;height:auto!important;padding:9px 16px 9px 12px!important;border-radius:999px!important;background:#d6194a!important;box-shadow:0 2px 10px rgba(214,25,74,.35)!important;gap:6px!important}
 [data-testid="stExpandSidebarButton"]:hover{background:#b3133d!important}
 [data-testid="stExpandSidebarButton"] span{color:#fff!important}
-[data-testid="stExpandSidebarButton"]::after{content:"Upload scripts";font:600 14px/1 Inter,sans-serif;color:#fff;white-space:nowrap}
+[data-testid="stExpandSidebarButton"]::after{content:"Project";font:600 14px/1 Inter,sans-serif;color:#fff;white-space:nowrap}
 @media (max-width:860px){.block-container{padding-top:4.6rem!important}}
 .block-container{max-width:1200px;padding-top:2.2rem;padding-bottom:5rem}
 section[data-testid="stSidebar"]>div{padding-top:.4rem}
@@ -170,14 +170,12 @@ def clear_report() -> None:
         st.session_state.pop(name, None)
 
 
-def select_uploads(origin: str, widget_key: str) -> None:
+def select_uploads(widget_key: str) -> None:
     clear_report()
     st.session_state.source_files = list(st.session_state.get(widget_key) or [])
     suggested = guess_title(st.session_state.source_files)
     st.session_state.show_title = suggested
     st.session_state.home_title = suggested
-    other = "home" if origin == "sidebar" else "sidebar"
-    st.session_state[f"{other}_upload_version"] = st.session_state.get(f"{other}_upload_version", 0) + 1
 
 
 def sync_title(source: str, target: str) -> None:
@@ -189,32 +187,31 @@ def new_analysis() -> None:
     st.session_state.source_files = []
     st.session_state.show_title = ""
     st.session_state.home_title = ""
-    for origin in ("home", "sidebar"):
-        st.session_state[f"{origin}_upload_version"] = st.session_state.get(f"{origin}_upload_version", 0) + 1
+    st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
     st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
-    sb_head("1", "Upload scripts")
+    sb_head("1", "Your scripts")
     files = list(st.session_state.get("source_files", []))
     if files:
         st.caption("Current upload: " + ", ".join(f.name for f in files))
-    sidebar_upload_key = f'sidebar_files_{st.session_state.get("sidebar_upload_version", 0)}'
-    st.file_uploader("Episode scripts", type=["zip", "txt"], accept_multiple_files=True, label_visibility="collapsed",
-                             key=sidebar_upload_key, on_change=select_uploads, args=("sidebar", sidebar_upload_key),
-                             help="A .zip of the season, or the episode .txt files. Timestamped screenplays, one per episode.")
-    sb_head("2", "Check the show title")
-    title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
+    else:
+        st.caption("Add your ZIP or TXT scripts in the main workspace to get started.")
+    go = False
+    title = st.session_state.get("show_title", "")
+    if "result" in st.session_state:
+        sb_head("2", "Review settings")
+        title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
                           on_change=sync_title, args=("show_title", "home_title"),
                           help="The title tells the tool what the show promises (for example a secret Duke), so promos that sell it rank higher.")
-    sb_head("3", "Find promos")
+        go = st.button("Find promos", type="primary", width="stretch", disabled=not files or not config.configured)
     if config.configured:
         st.html('<div class="pf-service"><span class="dot"></span>AI review enabled</div>')
     else:
         st.info("AI review is unavailable. Contact the app owner.")
-    go = st.button("Find promos", type="primary", width="stretch", disabled=not files or not config.configured)
 
 # ---------------------------------------------------------------- first visit
 if "result" not in st.session_state and not go:
@@ -228,7 +225,7 @@ hooks and cliffhangers ready for an editor to review.</p></div>""" + mascot("pf-
                 '<p class="pf-home-hint">Choose a season ZIP or individual episode TXT files. You can also drag them into the upload area.</p></div>')
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
-                         key=home_upload_key, on_change=select_uploads, args=("home", home_upload_key),
+                         key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
                          label_visibility="collapsed", help="Timestamped screenplays. ZIP and TXT files, up to 50 MB per file.")
         if files:
             st.caption("Ready: " + ", ".join(f.name for f in files))

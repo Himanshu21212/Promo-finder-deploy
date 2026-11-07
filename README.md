@@ -14,12 +14,13 @@ Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 
 The web app uses Sarvam automatically: upload scripts, check the title and press **Find promos**.
 The starting page has a working upload area, title field and Find promos button in the main
-workspace. The sidebar offers the same workflow, with the current upload and title kept in sync.
+workspace. This is the only uploader. The sidebar shows the current scripts and service status;
+on a report, it also lets you adjust the title and rerun the review on the same files.
 Choose **New analysis** above any finished or failed report to return to a clean starting page.
-Replacing scripts also clears the previous report; neither action calls the AI service.
+Uploading or resetting scripts never calls the AI service; choose Find promos to start a review.
 There is no provider picker, public API-key field, model name or endpoint field. Configure the
 server once with `SARVAM_API_KEY`; existing Sarvam `LLM_API_KEY` / `LLM_BASE_URL` secrets also work.
-The sidebar contains only uploads, the show title and the primary action. The CLI defaults to
+The sidebar contains analysis context and report settings. The CLI defaults to
 rules and retains other model adapters for reproducible comparisons and interview-time model swaps.
 
 ## Run it
@@ -198,7 +199,7 @@ adapters are CLI-only and are not offered in the public web interface.
 
 ## Editor interface and usage
 
-The sidebar contains upload, show title and Find promos only. It has no balance card, manual
+Uploads happen in the main workspace; the sidebar contains analysis context and report settings. It has no balance card, manual
 balance snapshot, provider/model/key controls, preferences panel, sample button or technical footer.
 The opening screen explains the task without displaying a previous sample as a new result.
 During processing, one compact card shows Read scripts → Find moments → Review clips → Prepare
