@@ -1,6 +1,7 @@
 """Promo Finder — Streamlit UI.   Run:  streamlit run app.py"""
 from __future__ import annotations
 
+import base64
 import io
 import os
 import re
@@ -72,6 +73,50 @@ display:flex;gap:8px;align-items:center}
 @keyframes pf-breathe{0%,100%{opacity:1}50%{opacity:.3}}
 @media(max-width:600px){.pf-review{padding:23px 20px}.pf-review-heading{align-items:flex-start;flex-direction:column;gap:8px}.pf-review-heading h2{font-size:21px}.pf-review-steps{grid-template-columns:repeat(2,1fr);gap:13px}}
 @media(prefers-reduced-motion:reduce){.pf-review-dot,.pf-review-pulse{animation:none}.pf-review-fill{transition:none}}
+/* Final visual polish: keep the existing controls and report views. */
+.block-container{max-width:1360px;padding-top:2.4rem}
+.pf{--line:#e6e5ea;--line2:#d7d5de;--surface2:#f6f5f8;--surface3:#ebe9ef;--shadow:0 2px 8px rgba(25,18,40,.035)}
+.pf-sbbrand{padding:0 0 17px;border-bottom:1px solid #eceaf0}
+.pf-sbbrand .pf-brand{font-size:21px;letter-spacing:-.6px;gap:11px}
+.pf-mascot{object-fit:contain;flex-shrink:0;display:block}
+.pf-mascot-brand{width:48px;height:54px}
+.pf-sbbrand p{line-height:1.65!important;max-width:240px}
+.pf-sbh{letter-spacing:.065em;font-size:11px;margin-top:25px;color:#60606b}
+.pf-sbh b{background:#f4edf1;color:#9d2347;border:1px solid #ecdde3;border-radius:7px}
+[data-testid="stFileUploaderDropzone"]{border:1px dashed #d8d5df!important;background:#faf9fc!important;border-radius:14px!important;padding:18px 14px!important}
+[data-testid="stTextInput"] input{font-size:14px!important}
+[data-testid="stTextInputRootElement"],[data-baseweb="select"]>div{border-color:#e2dfe8!important;border-radius:10px!important}
+[data-testid="stBaseButton-primary"]{border-radius:10px!important;box-shadow:0 3px 8px rgba(214,25,74,.12);min-height:44px}
+[data-testid="stBaseButton-primary"]:disabled{box-shadow:none}
+[data-testid="stBaseButton-secondary"],[data-testid="stDownloadButton"] button{border-color:#e0dde6!important;border-radius:10px!important;min-height:42px;transition:border-color .15s,box-shadow .15s}
+[data-testid="stDownloadButton"] button:hover{border-color:#d394a7!important;box-shadow:0 2px 7px rgba(40,20,35,.045)}
+.pf-service{background:#fafafc;border-color:#e6e4eb;font-size:13px;padding:11px 13px;border-radius:10px}
+.pf-report-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:3px 0 17px}
+.pf-report-head h1{font-size:30px;letter-spacing:-.75px;margin:6px 0 12px}
+.pf-report-head .pf-label{font-size:11px;letter-spacing:.09em}
+.pf-mascot-mobile{display:none}
+.pf-mode{font-size:12px;border-radius:7px;padding:6px 10px}
+.pf-mode.ai{color:#59428a;background:#f1edf8}
+.pf-summary{border:1px solid #e6e4eb;border-radius:12px;background:#fff;padding:15px 18px;margin-bottom:4px;gap:9px 23px;font-size:13px;line-height:1.65}
+.pf-summary b{font-weight:600}
+.stTabs{margin-top:9px}
+.stTabs [data-baseweb="tab-list"]{gap:0;border-bottom-color:#e6e3eb}
+.stTabs [data-baseweb="tab"]{font-size:14px;font-weight:500;padding:12px 13px;white-space:nowrap}
+.pf-clist{border-color:#e4e1e9;border-radius:14px;box-shadow:0 2px 8px rgba(25,18,40,.035)}
+.pf-chead{background:#f8f7fa;font-size:11px;letter-spacing:.055em;padding-top:12px;padding-bottom:12px}
+.pf-crow>summary{padding-top:17px;padding-bottom:17px}
+.cr-hook{font-size:16px;line-height:1.6}
+.cr-cliff{line-height:1.65;font-size:13px}
+.cr-cuts{font-size:12px;color:#64616e}
+.cr-tags .pf-badge{font-size:11px;padding:5px 7px;border-radius:6px}
+.pf-rank.top{background:#24212a;border-color:#24212a}
+.pf-crow>summary:hover,.pf-crow[open]>summary{background:#fcfafd}
+.pf-review{box-shadow:0 3px 14px rgba(25,18,40,.035)}
+.pf-intro h1{letter-spacing:-.8px}
+.pf-intro-top{display:flex;align-items:center;justify-content:space-between;gap:25px}
+.pf-mascot-welcome{width:88px;height:98px}
+@media(max-width:860px){.pf-report-head h1{font-size:26px;overflow-wrap:anywhere}.pf-mascot-mobile{display:block;width:52px;height:62px}.pf-summary{font-size:12px;padding:14px;gap:7px 18px}.stTabs [data-baseweb="tab"]{font-size:13px;padding:11px 12px}.cr-hook{font-size:15px}.pf-mascot-welcome{width:64px;height:74px}.pf-intro-top{gap:15px}}
+@media(prefers-reduced-motion:reduce){[data-testid="stBaseButton-secondary"],[data-testid="stDownloadButton"] button{transition:none}}
 """
 
 st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
@@ -92,9 +137,14 @@ config = SarvamConfig.load(secret)
 n_single, n_stitched, llm_top, compare_too = 20, 6, 40, True
 
 
+def mascot(class_name: str) -> str:
+    image = base64.b64encode((ROOT / "static" / "mascot.webp").read_bytes()).decode("ascii")
+    return f'<img class="pf-mascot {class_name}" src="data:image/webp;base64,{image}" alt="Promo Finder clapperboard mascot" />'
+
+
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
-    st.html(f'<div class="pf pf-sbbrand" style="margin:0">{ui.logo()}<p style="font-size:14px;color:var(--mute);margin-top:10px">'
+    st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
     sb_head("1", "Upload scripts")
     files = st.file_uploader("Episode scripts", type=["zip", "txt"], accept_multiple_files=True, label_visibility="collapsed",
@@ -122,10 +172,10 @@ with st.sidebar:
 
 # ---------------------------------------------------------------- first visit
 if "result" not in st.session_state and not go:
-    st.html("""<div class="pf"><div class="pf-intro"><div class="pf-label accent">Promo Finder</div>
+    st.html(f'<div class="pf"><div class="pf-intro-top"><div class="pf-intro"><div class="pf-label accent">Promo Finder</div>' + """
 <h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find promo cuts in a season of scripts</h1>
 <p>Turn timestamped screenplays into a ranked shortlist of 20–60 second promos, with exact cut points,
-hooks and cliffhangers ready for an editor to review.</p></div>
+hooks and cliffhangers ready for an editor to review.</p></div>""" + mascot("pf-mascot-welcome") + """</div>
 <div style="margin-top:36px;padding:48px 28px;border:1px dashed var(--line2);border-radius:16px;text-align:center;background:var(--surface)">
 <div aria-hidden="true" style="font-size:30px;color:var(--mute);margin-bottom:16px">▷</div>
 <h2 style="font-size:21px;font-weight:600;margin:0 0 10px">Your promo shortlist starts here</h2>
@@ -230,9 +280,9 @@ else:
     badge = (f'<span class="pf-mode ai">AI reviewed {ai["judged"]} of '
              f'{ai.get("shortlisted", 0)} shortlisted clips</span>')
 
-st.html(f"""<div class="pf"><div class="pf-label accent">Promo report</div>
-<h1 class="pf-h2" style="font-size:28px;margin:4px 0 10px">{ui.e(res.title)}</h1>
-<div style="margin-bottom:8px">{badge}</div>{ui.run_summary({**s, "ai": {}}, checks)}</div>""")
+st.html(f"""<div class="pf"><div class="pf-report-head"><div><div class="pf-label accent">Promo report</div>
+<h1 class="pf-h2">{ui.e(res.title)}</h1><div>{badge}</div></div>{mascot("pf-mascot-mobile")}</div>
+{ui.run_summary({**s, "ai": {}}, checks)}</div>""")
 slug = re.sub(r"\W+", "_", res.title.lower()).strip("_")[:40] or "show"
 d1, d2, d3, d4 = st.columns(4)
 d1.download_button("Report (HTML)", to_html(res), f"{slug}_promo_report.html", "text/html", width="stretch")
