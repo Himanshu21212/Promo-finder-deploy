@@ -287,7 +287,7 @@ def test_app_loads_and_runs_the_demo():
     app = Path(__file__).resolve().parents[1] / "app.py"
     at = AppTest.from_file(str(app), default_timeout=60).run()
     assert not at.exception
-    demo = next(b for b in at.sidebar.button if b.label == "Try the demo script")
+    demo = next(b for b in at.sidebar.button if b.label == "Preview sample report")
     demo.click().run()
     assert not at.exception
     assert "result" in at.session_state

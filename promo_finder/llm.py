@@ -102,6 +102,8 @@ class Judge:
         self.api_key = api_key or (os.getenv(env) if env else None)
         self.base_url = base_url or (os.getenv("LLM_BASE_URL", "") if self.provider == "custom" else
                                      OPENAI_COMPAT.get(self.provider, ("",))[0])
+        if self.provider == "sarvam" and self.model == "sarvam-105b-conversations" and not base_url:
+            self.base_url = "https://api.sarvam.ai/v1"
         self.use_cache = use_cache
         self.cache_dir = Path(cache_dir or os.getenv("PROMO_CACHE", ".llm_cache"))
         env_gap = os.getenv("PROMO_LLM_MIN_INTERVAL")
@@ -215,15 +217,20 @@ class Judge:
         r.raise_for_status()
         data = r.json()
         usage = data.get("usage") or {}
-        if isinstance(usage, dict) and any(k in usage for k in ("prompt_tokens", "completion_tokens")):
+        if isinstance(usage, dict) and all(isinstance(usage.get(k), int) and not isinstance(usage[k], bool)
+                                          and usage[k] >= 0 for k in ("prompt_tokens", "completion_tokens")):
             def count(value):
                 return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else 0
             self.stats["usage_calls"] += 1
             for k in ("prompt_tokens", "completion_tokens"):
                 self.stats[k] += count(usage.get(k))
-            self.stats["cached_tokens"] += count((usage.get("prompt_tokens_details") or {}).get("cached_tokens"))
-            self.stats["reasoning_tokens"] += count((usage.get("completion_tokens_details") or {}).get("reasoning_tokens"))
-            if p == "sarvam" and m == "sarvam-105b":
+            prompt_details = usage.get("prompt_tokens_details")
+            completion_details = usage.get("completion_tokens_details")
+            if isinstance(prompt_details, dict):
+                self.stats["cached_tokens"] += min(count(prompt_details.get("cached_tokens")), usage["prompt_tokens"])
+            if isinstance(completion_details, dict):
+                self.stats["reasoning_tokens"] += min(count(completion_details.get("reasoning_tokens")), usage["completion_tokens"])
+            if p == "sarvam" and m in ("sarvam-105b", "sarvam-105b-conversations"):
                 # Published INR / 1M tokens: input 15, cached input 5, output 60; excludes tax.
                 s = self.stats
                 cached = min(s["cached_tokens"], s["prompt_tokens"])
@@ -247,6 +254,8 @@ class Judge:
         if self.api_key:
             detail = detail.replace(self.api_key, "[redacted]")
         p.llm = {"error": (prefix + detail)[:200]}
+        if getattr(error, "status_code", None):
+            self.stats["last_error_code"] = error.status_code
         if getattr(error, "status_code", None) in (401, 402, 403, 404):
             self.tripped = f"stopped after HTTP {error.status_code}; check the key, credits, model and access"
         elif self._consecutive_fail >= 3:

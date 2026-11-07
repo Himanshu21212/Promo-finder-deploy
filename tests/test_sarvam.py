@@ -106,10 +106,36 @@ def test_streamlit_uses_sarvam_secret_and_displays_usage(monkeypatch):
     app.secrets["SARVAM_API_KEY"] = KEY
     app.run()
     assert not app.exception
-    assert app.selectbox[0].value == "Sarvam (recommended)"
-    next(b for b in app.button if b.label == "Try the demo script").click().run()
+    assert not app.selectbox
+    app.get("file_uploader")[0].upload("demo.zip", DEMO.read_bytes(), "application/zip").run()
+    next(b for b in app.button if b.label == "Find promos with AI").click().run()
     assert not app.exception
     result = app.session_state["result"]
     assert result.model == "sarvam:sarvam-105b"
     assert result.stats["ai"]["judged"] > 0
     assert result.stats["ai"]["usage_calls"] > 0
+    ledger = app.session_state["usage_ledger"]
+    assert float(ledger.spend) == pytest.approx(result.stats["ai"]["estimated_cost_inr"])
+
+
+@pytest.mark.parametrize("usage", [None, {}, {"prompt_tokens": 1000},
+                                  {"prompt_tokens": 1000, "completion_tokens": "unknown"}])
+def test_missing_or_partial_usage_does_not_invent_a_cost(monkeypatch, usage):
+    reply = response()
+    payload = json.loads(reply.content)
+    payload["usage"] = usage
+    reply._content = json.dumps(payload).encode()
+    monkeypatch.setattr("promo_finder.llm.requests.post", lambda *a, **k: reply)
+    j = judge()
+    assert j._raw("Return JSON") == RATING
+    assert j.stats["usage_calls"] == 0
+    assert "estimated_cost_inr" not in j.stats
+
+
+def test_conversation_model_usage_has_the_same_published_cost(monkeypatch):
+    sent = []
+    monkeypatch.setattr("promo_finder.llm.requests.post", lambda url, **k: sent.append(url) or response())
+    j = Judge("sarvam:sarvam-105b-conversations", api_key=KEY, use_cache=False)
+    j._raw("Return JSON")
+    assert sent == ["https://api.sarvam.ai/v1/chat/completions"]
+    assert j.stats["estimated_cost_inr"] == pytest.approx(0.044)
