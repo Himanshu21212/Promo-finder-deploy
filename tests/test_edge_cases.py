@@ -234,7 +234,7 @@ def test_circuit_breaker_stops_a_broken_endpoint():
         r, j = _ai_run(down)
     finally:
         llm.time.sleep = real_sleep
-    assert j.tripped and calls["n"] == 3 * 4           # 3 candidates x 4 attempts, then it stops
+    assert j.tripped and calls["n"] == 3 * 2           # 3 candidates x 2 attempts, then it stops
     assert r.model == "rules" and r.promos              # falls back to the rules ranking
     assert any("rules only" in line for line in r.log)
 
