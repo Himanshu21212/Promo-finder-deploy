@@ -37,7 +37,7 @@ class ReviewProgress:
             self.stage = 3
 
     def html(self) -> str:
-        titles = ("Reading your scripts", "Finding compelling moments", "Reviewing your shortlist", "Preparing your report")
+        titles = ("Reading your scripts", "Finding compelling moments", "Finding your next standout promo", "Preparing your report")
         subtitles = ("Checking episode structure and cut points.", "Looking for strong openings and unresolved endings.",
                      "Checking hooks, cliffhangers and new-viewer clarity.", "Ranking your clips and checking the cut points.")
         detail = f"Clip {self.current} of {self.total}" if self.stage == 2 and self.current else ""
