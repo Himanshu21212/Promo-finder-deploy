@@ -54,8 +54,9 @@ display:flex;gap:8px;align-items:center}
 
 PROVIDERS = {
     "Rules only (free, offline)": ("rules", "", ""),
+    "Sarvam (recommended)": ("sarvam", "sarvam-105b", "SARVAM_API_KEY"),
     "Google Gemini": ("gemini", "gemini-3.8-flash", "GEMINI_API_KEY"),
-    "Groq (Llama)": ("groq", "llama-3.3-70b-versatile", "GROQ_API_KEY"),
+    "Groq (free plan)": ("groq", "openai/gpt-oss-120b", "GROQ_API_KEY"),
     "OpenAI": ("openai", "gpt-4o-mini", "OPENAI_API_KEY"),
     "Anthropic Claude": ("anthropic", "claude-sonnet-4-5", "ANTHROPIC_API_KEY"),
     "OpenRouter": ("openrouter", "meta-llama/llama-3.3-70b-instruct", "OPENROUTER_API_KEY"),
@@ -104,7 +105,8 @@ with st.sidebar:
     title = st.text_input("Show title", value=guess, placeholder="e.g. The Maid Was the Heiress",
                           help="The title tells the tool what the show promises (for example a secret Duke), so promos that sell it rank higher.")
     sb_head("3", "AI judge (optional)")
-    choice = st.selectbox("Model", list(PROVIDERS), index=0,
+    default_provider = "Sarvam (recommended)" if secret("SARVAM_API_KEY") else "Rules only (free, offline)"
+    choice = st.selectbox("Model", list(PROVIDERS), index=list(PROVIDERS).index(default_provider),
                           help="Rules find, cut and rank every candidate. An AI model can re-rate the top 50 and write the 'why' lines.")
     prov, default_model, env = PROVIDERS[choice]
     model_name, key, base_url = "", "", ""
@@ -117,6 +119,10 @@ with st.sidebar:
             key = st.text_input("API key", type="password",
                                 placeholder="used for this run only, never stored" if not sec else "using the app's secret")
             key = key or sec
+        if prov == "sarvam":
+            st.caption("Uses Sarvam credits. Add SARVAM_API_KEY in app Secrets or enter your key above.")
+        elif prov == "groq":
+            st.caption("Calls are spaced 30 seconds apart for short prompts; your account's token limits still apply.")
         compare_too = st.checkbox("Also show rules-only vs AI comparison", value=True)
     else:
         compare_too = False
@@ -182,7 +188,6 @@ if go:
         ok, why_not = judge.ready()
         if not ok:
             st.warning(f"AI judge not used ({why_not}). Ranking with rules only.")
-            judge = None
     with st.status("Finding promos…", expanded=True) as status:
         try:
             if judge and compare_too:
@@ -198,6 +203,10 @@ if go:
             st.error(f"Something went wrong while ranking: {type(e).__name__}: {e}")
             st.stop()
         status.update(label=f"Done: {len(res.promos)} promos in {res.stats['seconds']} s", state="complete", expanded=False)
+    if judge and res.model == "rules" and res.stats.get("ai", {}).get("calls"):
+        st.warning("AI review returned no usable ratings. This report uses rules only; see Checks → Run log.")
+    elif res.stats.get("ai", {}).get("failed"):
+        st.warning("Some AI reviews failed. Those candidates kept their rules scores; see Checks → Run log.")
     st.session_state.result = res
     st.session_state.checks = run_checks(res)
 
