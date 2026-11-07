@@ -10,11 +10,13 @@ promo cuts. Each cut comes with:
 
 Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 
-**Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/ (try the demo script button)
+**Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/ (preview the sample report)
 
-Without an API key it runs on rules only: offline, free and deterministic. A 50-episode season takes
-about 4–5 s on a small cloud CPU. When `SARVAM_API_KEY` is configured in Streamlit Secrets, the app
-defaults to Sarvam's `sarvam-105b` to review the shortlist. The CLI still defaults to rules.
+The web app uses Sarvam automatically: upload scripts, check the title and press **Find promos with AI**.
+There is no provider picker, public API-key field, model name or endpoint field. Configure the
+server once with `SARVAM_API_KEY`; existing Sarvam `LLM_API_KEY` / `LLM_BASE_URL` secrets also work.
+The offline sample preview never spends credits. The CLI still defaults to rules and retains
+other model adapters for reproducible comparisons and interview-time model swaps.
 
 ## Run it
 
@@ -30,11 +32,12 @@ python -m promo_finder "path/to/scripts-folder-or.zip" -o outputs
 streamlit run app.py
 ```
 
-In the app, upload the .zip and press **Find promos**.
+In the app, upload the .zip and press **Find promos with AI**.
+The tested Streamlit runtime is pinned to 1.67.0 for reproducible UI and uploader tests.
 
 Kuku's script pack is confidential, so it isn't in this repo. To try the tool without it, use
 `samples/demo_show.zip`. It's a two-episode test script written for this project. In the app, the
-**Try the demo script** button runs it.
+**Preview sample report** button runs it offline and labels the result as a sample.
 
 ## What you get
 
@@ -70,10 +73,10 @@ Kuku's script pack is confidential, so it isn't in this repo. To try the tool wi
 5. **Check (code).** After the run, every promo is checked again against the script. Soft risks become
    plain-language flags for the editor, for example "Opens mid-conversation" or "From late in the
    season (Ep 40): may spoil or need context".
-6. **Optional AI judge.** See below.
+6. **AI review.** Sarvam reviews the shortlist in the web app. See below for CLI model options.
 7. **Human.** An editor picks from the list, fixes flagged cuts and cuts the actual video.
 
-## Optional AI judge
+## AI review and CLI model options
 
 ```bash
 export SARVAM_API_KEY=...          # set your key locally; never commit it
@@ -138,8 +141,9 @@ characters each. That's roughly 38k input tokens and about 4k output tokens per 
 
 **Status.** Sarvam API-contract and Streamlit integration checks use simulated HTTP responses;
 no live model or real API key was used for those checks. They test request format, token accounting,
-fallback, rejected replies and timestamp guards, not editorial quality. After adding your key, run
-the demo first, then the full input pack with comparison enabled and manually review the results.
+fallback, rejected replies and timestamp guards, not editorial quality. After adding your key, upload
+the demo ZIP and use **Find promos with AI**, then run the full input pack with comparison enabled
+and manually review the results. **Preview sample report** always stays offline.
 An AI reviewer cannot recover a strong moment excluded by the rules shortlist; inspect excluded cuts too.
 
 ## Tests
@@ -170,18 +174,34 @@ The tests cover:
 2. In Streamlit Community Cloud, choose **Create app**, pick the repo, and set the main file to `app.py`.
 3. Under **App settings → Secrets**, add `SARVAM_API_KEY = "your-key"` and save. Copy the
    format from `.streamlit/secrets.toml.example`, replacing the placeholder only inside Streamlit.
-4. Reopen the app. **Sarvam (recommended)** is selected automatically when that secret exists;
-   the model is `sarvam-105b`. Click **Try the demo script** and check the report shows successful
-   model reviews and reported usage. A completed rules-only report does not establish API success.
-5. Run the full pack with **Also show rules-only vs AI comparison** enabled. Download the report,
-   JSON and comparison CSV. Keep outputs quoting the confidential pack in a private submission folder.
+4. Reboot the app once after this update so every Python module reloads. The sidebar shows
+   **Sarvam AI enabled** when a server credential is configured; this is configuration status,
+   not a live authentication or balance check. The page never exposes the stored key.
+5. Upload the demo ZIP or real scripts and click **Find promos with AI**. Check successful review
+   counts and reported usage. Keep **Include baseline comparison** under Output preferences enabled
+   for the assignment. Download the report, JSON and comparison CSV into a private submission folder.
 
-Optional free-plan comparison: add `GROQ_API_KEY` in Secrets and choose **Groq (free plan)**.
-Use the same scripts and settings; compare real hook, cliffhanger and standalone judgments manually.
-Neither provider has been shown to be the better editorial judge until this comparison is run.
+Optional owner setting: `SARVAM_MODEL` can be `sarvam-105b` (default) or
+`sarvam-105b-conversations`. The app selects a supported endpoint automatically. Other provider
+adapters are CLI-only and are not offered in the public web interface.
 
-Without a secret, users can paste their own key in the sidebar. It's used for that run only and
-isn't written to disk or to the environment.
+## Credits and live usage
+
+- The sidebar updates estimated spend, API request count and reported tokens after each response.
+  It records API-reported usage even when a response cannot become a valid rating.
+- **View actual balance in Sarvam** opens the official dashboard. There is no documented public
+  balance endpoint in the API reference reviewed for this implementation. The app does not invent
+  one, scrape authenticated billing pages, or claim its counters are an organisation-wide live wallet.
+- Sarvam has one shared organisation balance, covering all workspaces and products:
+  https://docs.sarvam.ai/api/platform/billing
+- For an estimate of remaining credits, enter the latest dashboard balance under **Update balance
+  snapshot**. The estimate subtracts subsequently reported spend in this browser session only.
+  It excludes tax and activity by other users, applications or sessions. It resets on a new browser
+  session/server restart and when the configured credential changes.
+- Rerendering the page does not count a run twice. If any later request has missing/incomplete usage,
+  the remaining estimate becomes unavailable until a fresh dashboard snapshot is saved.
+- A 402 response is shown as exhausted credits and stops further API requests for that run.
+- No balance is hardcoded from an old screenshot. No credentials or account balance are cached globally.
 
 ## Confidentiality
 
@@ -213,7 +233,8 @@ promo_finder/
   scoring.py     beat scores and the show's premise
   candidates.py  single and stitched cuts, hard rules, promo score, flags
   rank.py        selection, posting order, "why" lines
-  llm.py         optional AI judge with guardrails
+  llm.py         AI judge with guardrails
+  usage.py       Sarvam configuration and session-only usage / balance estimates
   compare.py     rules-only vs AI ranking on the same scripts
   checks.py      post-run checks
   report.py      HTML / CSV / JSON / Markdown
