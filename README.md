@@ -12,8 +12,9 @@ Built for Kuku's AI Generalist assignment (Problem 1, "Find the Promos").
 
 **Live app:** https://kuku-promo-finder-by-himanshu.streamlit.app/ (try the demo script button)
 
-By default it runs on rules only: offline, free and deterministic. A 50-episode season takes about 4–5 s
-on a small cloud CPU. You can switch on an AI model to re-rate the shortlist.
+Without an API key it runs on rules only: offline, free and deterministic. A 50-episode season takes
+about 4–5 s on a small cloud CPU. When `SARVAM_API_KEY` is configured in Streamlit Secrets, the app
+defaults to Sarvam's `sarvam-105b` to review the shortlist. The CLI still defaults to rules.
 
 ## Run it
 
@@ -75,16 +76,17 @@ Kuku's script pack is confidential, so it isn't in this repo. To try the tool wi
 ## Optional AI judge
 
 ```bash
-export GEMINI_API_KEY=...          # or the key for the provider you pick
-python -m promo_finder scripts.zip -m gemini -o outputs_ai
-python -m promo_finder scripts.zip -m gemini --compare -o outputs_ai   # also writes ai_vs_rules.md / .csv
+export SARVAM_API_KEY=...          # set your key locally; never commit it
+python -m promo_finder scripts.zip -m sarvam -o outputs_ai
+python -m promo_finder scripts.zip -m sarvam --compare -o outputs_ai   # also writes ai_vs_rules.md / .csv
 ```
 
 | `-m` / `--model` | Needs |
 |---|---|
 | `rules` (default) | nothing |
+| `sarvam` (recommended, default model `sarvam-105b`) | `SARVAM_API_KEY`; uses Sarvam credits |
 | `gemini` (default model `gemini-3.8-flash`) | `GEMINI_API_KEY` |
-| `groq:llama-3.3-70b-versatile` | `GROQ_API_KEY` |
+| `groq` (default model `openai/gpt-oss-120b`) | `GROQ_API_KEY`; account free-plan limits apply |
 | `openai:<model>` | `OPENAI_API_KEY` |
 | `anthropic:<model>` | `ANTHROPIC_API_KEY` |
 | `openrouter:<model>` | `OPENROUTER_API_KEY` |
@@ -105,23 +107,40 @@ It returns 1–10 scores, a reason and a risk, and may point at beat numbers to 
 **When it fails.**
 
 - With no key, it says so and ranks with rules only.
-- Rate limits and server errors are retried, honouring `Retry-After`.
+- Rate limits and server errors get at most one retry. A `Retry-After` over 5 s returns an error
+  rather than blocking the interactive run. Request timeouts are not retried.
 - A malformed reply keeps that cut's rules score.
-- After 3 connection failures in a row it stops calling and finishes on rules.
+- After 3 unusable reviews in a row it stops calling. If no review succeeded, it finishes on rules;
+  otherwise the report identifies a partial AI review.
+- An invalid key, exhausted credits, denied access or missing model (HTTP 401/402/403/404) stops
+  further calls immediately. The app never switches to another external provider automatically.
+- Empty, reasoning-only and token-truncated compatible-API responses are rejected as ratings.
 - The report header always shows which mode produced the ranking.
 
 **Cost.** I measured the prompts with a test transport on the 50-episode pack: 50 calls of about 3,000
 characters each. That's roughly 38k input tokens and about 4k output tokens per show (estimated at
 4 characters per token).
 
-- At Google's listed paid price for `gemini-3.8-flash` ($0.75 in / $3.75 out per 1M tokens, until
-  31 Dec 2026), that's about 5 cents per show, plus any "thinking" tokens the model bills as output.
-- The free tier also covers it. Calls are spaced 4 s apart, so a season takes about 3–4 minutes.
+- At Sarvam's published `sarvam-105b` price (INR 15 input / 5 cached input / 60 output per 1M
+  tokens), that illustrative workload is about INR 0.81 before additional reasoning, retries and tax.
+  This is an estimate, not a live billing measurement. Rates checked 7 November 2026:
+  https://docs.sarvam.ai/api/getting-started/pricing
+- The compatible-API path records reported input/output, cached and reasoning tokens. Reasoning
+  tokens are already included in output tokens, so they are not counted twice in the cost estimate.
+  Sarvam cost estimates appear in the run log and report; the provider dashboard is authoritative.
+- Sarvam calls are spaced at least 1 s apart. Groq's default is 30 s for short candidate prompts;
+  account token limits can still trigger retries. Every candidate reports progress and errors.
+  The AI phase stops starting new reviews after 60 s; an in-flight request still has to finish.
+  HTTP connect/read inactivity timeouts are 5/20 s, not a strict wall-clock deadline. Remaining
+  candidates keep their rules scores. Run time includes model latency and retries.
+- Sarvam requests require JSON output and cap output at 4,096 tokens, including reasoning where
+  applicable. Groq GPT-OSS uses low reasoning effort and a 2,048-token completion cap.
 
-**Status.** The AI path has not been run against a real model for this submission; no API key was
-used. The code path is covered by tests with a fake transport (retries, fallback, malformed replies,
-rejected trims, the timestamp guard) and by the `mock` judge. Treat any AI-mode result as untested
-until someone runs it with a real key.
+**Status.** Sarvam API-contract and Streamlit integration checks use simulated HTTP responses;
+no live model or real API key was used for those checks. They test request format, token accounting,
+fallback, rejected replies and timestamp guards, not editorial quality. After adding your key, run
+the demo first, then the full input pack with comparison enabled and manually review the results.
+An AI reviewer cannot recover a strong moment excluded by the rules shortlist; inspect excluded cuts too.
 
 ## Tests
 
@@ -130,7 +149,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-There are 29 tests. They cover:
+The tests cover:
 
 - **Bad input:** missing timestamps, wrong time formats, `HH:MM:SS` times, duplicate or missing episode
   numbers, missing scene headers, action-only scripts, a broken zip.
@@ -140,6 +159,8 @@ There are 29 tests. They cover:
 - **AI judge:** rejecting invalid AI trims, odd and broken AI replies, the AI being unable to move a
   timestamp, the circuit breaker, 429 retries, missing-key fallback.
 - **End to end:** determinism, the CLI, and the Streamlit app running the demo.
+- **Sarvam integration:** request format, usage/cost accounting, credential redaction, immediate
+  stop on invalid credentials/exhausted credits, empty/truncated replies and the Streamlit secret path.
 
 ## Deploy (free)
 
@@ -147,8 +168,17 @@ There are 29 tests. They cover:
 
 1. Push this repo to GitHub.
 2. In Streamlit Community Cloud, choose **Create app**, pick the repo, and set the main file to `app.py`.
-3. To offer the AI judge, add the key under **App settings → Secrets**, for example
-   `GEMINI_API_KEY = "..."`.
+3. Under **App settings → Secrets**, add `SARVAM_API_KEY = "your-key"` and save. Copy the
+   format from `.streamlit/secrets.toml.example`, replacing the placeholder only inside Streamlit.
+4. Reopen the app. **Sarvam (recommended)** is selected automatically when that secret exists;
+   the model is `sarvam-105b`. Click **Try the demo script** and check the report shows successful
+   model reviews and reported usage. A completed rules-only report does not establish API success.
+5. Run the full pack with **Also show rules-only vs AI comparison** enabled. Download the report,
+   JSON and comparison CSV. Keep outputs quoting the confidential pack in a private submission folder.
+
+Optional free-plan comparison: add `GROQ_API_KEY` in Secrets and choose **Groq (free plan)**.
+Use the same scripts and settings; compare real hook, cliffhanger and standalone judgments manually.
+Neither provider has been shown to be the better editorial judge until this comparison is run.
 
 Without a secret, users can paste their own key in the sidebar. It's used for that run only and
 isn't written to disk or to the environment.
