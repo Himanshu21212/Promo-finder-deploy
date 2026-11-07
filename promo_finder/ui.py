@@ -350,8 +350,13 @@ def mode_badge(model: str, ai: dict | None = None) -> str:
     if model == "mock":
         return '<span class="pf-mode mock">MOCK judge: test run only, no real model was called</span>'
     if model == "rules":
-        note = " (AI judge requested but not used)" if ai.get("shortlisted") == 0 else ""
-        return f'<span class="pf-mode">Ranked by rules only: no AI model was called{note}</span>'
+        if ai.get("calls"):
+            note = f"AI review returned no usable ratings after {ai['calls']} request(s); ranked by rules only"
+        elif ai.get("requested"):
+            note = "AI review unavailable or no candidates to review; ranked by rules only (no API requests made)"
+        else:
+            note = "Ranked by rules only: no AI model was called"
+        return f'<span class="pf-mode">{note}</span>'
     return (f'<span class="pf-mode ai">Rules + AI judge ({e(model)}): {ai.get("judged", 0)} of '
             f'{ai.get("shortlisted", 0)} shortlisted cuts rated by the model</span>')
 
@@ -363,6 +368,12 @@ def run_summary(stats: dict, checks: dict | None = None) -> str:
     if checks:
         bits.append(f"<span><b>{checks['passed']}/{checks['checked']}</b> pass the rule checks</span>")
     bits.append(f"<span>run time <b>{stats['seconds']} s</b></span>")
+    ai = stats.get("ai", {})
+    if ai.get("usage_calls"):
+        bits.append(f"<span>reported API tokens <b>{ai['prompt_tokens']:,} input / "
+                    f"{ai['completion_tokens']:,} output</b></span>")
+        if "estimated_cost_inr" in ai:
+            bits.append(f"<span>estimated model cost <b>₹{ai['estimated_cost_inr']:.4f}</b> (excludes tax)</span>")
     return '<div class="pf-summary">' + "".join(bits) + "</div>"
 
 
