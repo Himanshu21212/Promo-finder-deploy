@@ -223,6 +223,9 @@ with st.sidebar:
     else:
         st.info("AI review is unavailable. Contact the app owner.")
 
+# Reserve the first main-area slot so progress appears above the upload form.
+progress_panel = st.empty()
+
 # ---------------------------------------------------------------- first visit
 if "result" not in st.session_state and not go:
     st.html(f'<div class="pf"><div class="pf-intro-top"><div class="pf-intro"><div class="pf-label accent">Promo Finder</div>' + """
@@ -256,7 +259,6 @@ if "result" not in st.session_state and not go:
 # ---------------------------------------------------------------- run
 if go:
     review = ReviewProgress()
-    progress_panel = st.empty()
     progress_panel.html(review.html())
     warnings: list[str] = []
     raw = []
