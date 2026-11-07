@@ -82,7 +82,7 @@ def test_startup_configuration_error_is_handled_without_a_redacted_traceback(mon
     app.get('file_uploader')[0].upload('demo.zip', DEMO.read_bytes(), 'application/zip').run()
     app.sidebar.button[0].click().run()
     assert not app.exception
-    assert any('Reboot app' in e.value for e in app.error)
+    assert any('currently unavailable' in e.value for e in app.error)
     assert all(KEY not in e.value for e in app.error)
 
 
