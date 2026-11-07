@@ -60,6 +60,7 @@ def run(episodes: list[Episode], title: str = "Untitled show", model: str | Judg
     mode = "rules"
     ai = {}
     if judge.active:
+        ai = {"requested": judge.spec}
         ok, why_not = judge.ready()
         if not ok:
             say(f"AI judge {judge.spec} not used: {why_not}. Ranking with rules only.")
@@ -71,15 +72,33 @@ def run(episodes: list[Episode], title: str = "Untitled show", model: str | Judg
             label = "MOCK judge (test only, not a real model)" if judge.is_mock else f"AI judge {judge.spec}"
             say(f"{label}: rating {len(shortlist)} shortlisted candidates…")
             rescore = lambda p: score_promo(p, names, premise, eps)  # noqa: E731
+            review_started = time.monotonic()
             for i, p in enumerate(shortlist, 1):
+                if time.monotonic() - review_started >= 60:
+                    judge.tripped = "stopped starting new reviews after the 60-second AI review budget"
+                    break
+                say(f"  Reviewing candidate {i}/{len(shortlist)}…")
                 judge.judge(p, title, premise_txt, eps, rescore=rescore)
-                if progress and i % 10 == 0:
-                    progress(f"  judged {i}/{len(shortlist)}")
+                if p.llm and "error" in p.llm:
+                    detail = str(p.llm["error"])
+                    if judge.api_key:
+                        detail = detail.replace(judge.api_key, "[redacted]")
+                    say(f"  Candidate {i}: review failed ({detail}); keeping rules score.")
+                else:
+                    say(f"  Candidate {i}: review complete.")
+                if judge.tripped:
+                    break
             judged = sum(1 for p in shortlist if p.llm and "error" not in p.llm)
-            ai = dict(judge.stats, shortlisted=len(shortlist), judged=judged, stopped=judge.tripped)
+            ai = dict(judge.stats, requested=judge.spec, shortlisted=len(shortlist), judged=judged, stopped=judge.tripped)
             say(f"  {judged}/{len(shortlist)} rated by the model "
                 f"({judge.stats['calls']} calls, {judge.stats['cached']} from cache, {judge.stats['failed']} failed, "
                 f"{judge.stats['trims_applied']} trims applied, {judge.stats['trims_rejected']} rejected).")
+            if ai.get("usage_calls"):
+                say(f"  Reported API usage ({ai['usage_calls']} responses): {ai['prompt_tokens']} input tokens, "
+                    f"{ai['completion_tokens']} output tokens (includes {ai['reasoning_tokens']} reasoning tokens).")
+                if "estimated_cost_inr" in ai:
+                    say(f"  Estimated Sarvam model cost from reported usage: INR {ai['estimated_cost_inr']:.4f} "
+                        "(excludes tax; cached replies add no API usage; dashboard is authoritative).")
             if judge.tripped:
                 say(f"  AI judge {judge.tripped}; the rest keep their rules score.")
             if judged:
