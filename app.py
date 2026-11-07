@@ -113,20 +113,30 @@ display:flex;gap:8px;align-items:center}
 .pf-rank.top{background:#24212a;border-color:#24212a}
 .pf-crow>summary:hover,.pf-crow[open]>summary{background:#fcfafd}
 .pf-review{box-shadow:0 3px 14px rgba(25,18,40,.035)}
-.pf-intro h1{letter-spacing:-.8px}
-.pf-intro-top{display:flex;align-items:center;justify-content:space-between;gap:25px}
-.pf-mascot-welcome{width:88px;height:98px}
+.pf-intro h1{letter-spacing:-.9px}
+.pf-intro-top{display:flex;align-items:center;justify-content:space-between;gap:25px;max-width:1000px;margin:0 auto}
+.pf-intro-top .pf-intro{max-width:740px}
+.pf-intro-top .pf-intro p{font-size:15px;line-height:1.75;margin-top:10px}
+.pf-mascot-welcome{width:80px;height:90px}
 @media(max-width:860px){.pf-report-head h1{font-size:26px;overflow-wrap:anywhere}.pf-mascot-mobile{display:block;width:52px;height:62px}.pf-summary{font-size:12px;padding:14px;gap:7px 18px}.stTabs [data-baseweb="tab"]{font-size:13px;padding:11px 12px}.cr-hook{font-size:15px}.pf-mascot-welcome{width:64px;height:74px}.pf-intro-top{gap:15px}}
 @media(prefers-reduced-motion:reduce){[data-testid="stBaseButton-secondary"],[data-testid="stDownloadButton"] button{transition:none}}
-.st-key-home_upload_panel{margin-top:26px;background:#fff;border:1px solid #e4e0e9;border-radius:16px;padding:25px}
-.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{min-height:150px;padding:22px!important}
-.pf-home-title{font-size:21px;font-weight:600;letter-spacing:-.4px;margin:0 0 5px}
-.pf-home-hint{font-size:14px;color:var(--mute);line-height:1.6;margin-bottom:12px!important}
-.pf-start-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:25px}
-.pf-start-step{border:1px solid var(--line);border-radius:13px;padding:18px;background:var(--surface)}
-.pf-start-step .n{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:var(--hook-bg);color:var(--hook);font-size:12px;font-weight:600;margin-bottom:12px}
-.pf-start-step h3{font-size:14px;font-weight:600;margin-bottom:6px}.pf-start-step p{font-size:13px;color:var(--mute);line-height:1.7}
-@media(max-width:600px){.st-key-home_upload_panel{padding:18px}.pf-start-steps{grid-template-columns:1fr;gap:10px}.pf-start-step{padding:15px}.pf-start-step .n{float:left;margin:0 12px 20px 0}.pf-home-title{font-size:19px}}
+.block-container:has(.st-key-home_upload_panel){padding-top:2.8rem;padding-bottom:2.5rem}
+.st-key-home_upload_panel{max-width:1000px;margin:18px auto 0;background:#fff;border:1px solid #e4e0e9;border-radius:18px;padding:18px 25px;gap:10px!important;box-shadow:0 5px 22px rgba(30,20,40,.035)}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{min-height:116px;padding:16px 18px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;background:linear-gradient(125deg,#fff9fb,#faf8ff)!important;border-color:#d9c7d4!important;transition:border-color .15s,box-shadow .15s}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]>span{display:flex!important;justify-content:center!important;align-self:center!important;width:auto!important;margin:0!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"]{text-align:center!important;align-items:center!important;padding:0!important;width:auto!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"] button{min-width:160px;min-height:44px;margin:0!important;background:#d6194a!important;border:1px solid #d6194a!important;color:#fff!important;box-shadow:0 3px 8px rgba(214,25,74,.13);font-size:14px!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"] button:hover{background:#b61441!important;border-color:#b61441!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]:focus-within{border-color:#d6194a!important;box-shadow:0 0 0 3px #d6194a13}
+.pf-home-title{text-align:center;font-size:21px;font-weight:600;letter-spacing:-.4px;margin:0 0 5px}
+.pf-home-hint{text-align:center;font-size:13px;color:var(--mute);line-height:1.7;margin-bottom:2px!important}
+.st-key-home_upload_panel .st-key-find_home{max-width:260px;margin:0 auto;width:100%}
+.pf-start-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:1000px;margin:18px auto 0}
+.pf-start-step{display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:10px;row-gap:4px;border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface)}
+.pf-start-step .n{grid-row:1 / 3;display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:var(--hook-bg);color:var(--hook);font-size:12px;font-weight:600;margin:0}
+.pf-start-step h3{grid-column:2;font-size:13px;font-weight:600;margin:0}.pf-start-step p{grid-column:2;font-size:12px;color:var(--mute);line-height:1.65}
+@media(max-width:600px){.st-key-home_upload_panel{padding:19px 17px;margin-top:19px}.pf-start-steps{grid-template-columns:1fr;gap:9px}.pf-start-step{padding:14px}.pf-home-title{font-size:19px}.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{min-height:130px;padding:20px 12px!important}}
+@media(prefers-reduced-motion:reduce){.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{transition:none}}
 """
 
 st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
@@ -216,13 +226,12 @@ with st.sidebar:
 # ---------------------------------------------------------------- first visit
 if "result" not in st.session_state and not go:
     st.html(f'<div class="pf"><div class="pf-intro-top"><div class="pf-intro"><div class="pf-label accent">Promo Finder</div>' + """
-<h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find promo cuts in a season of scripts</h1>
-<p>Turn timestamped screenplays into a ranked shortlist of 20–60 second promos, with exact cut points,
-hooks and cliffhangers ready for an editor to review.</p></div>""" + mascot("pf-mascot-welcome") + """</div>
+<h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find the moments worth promoting</h1>
+<p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p></div>""" + mascot("pf-mascot-welcome") + """</div>
 </div>""")
     with st.container(key="home_upload_panel"):
         st.html('<div class="pf"><h2 class="pf-home-title">Upload scripts to get started</h2>'
-                '<p class="pf-home-hint">Choose a season ZIP or individual episode TXT files. You can also drag them into the upload area.</p></div>')
+                '<p class="pf-home-hint">Drag your scripts into the box below, or use Upload to choose your files.</p></div>')
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
                          key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
@@ -236,13 +245,11 @@ hooks and cliffhangers ready for an editor to review.</p></div>""" + mascot("pf-
                        disabled=not files or not config.configured)
         if go:
             title = home_title
-        if not files:
-            st.caption("Upload your scripts to enable Find promos.")
     if not go:
         st.html('''<div class="pf"><div class="pf-start-steps">
-<div class="pf-start-step"><span class="n">1</span><h3>Upload your story</h3><p>One episode or a full season. Use timestamped screenplay files.</p></div>
-<div class="pf-start-step"><span class="n">2</span><h3>Review the strongest moments</h3><p>Compare 20–60 second cuts with opening hooks, cliffhangers and editorial notes.</p></div>
-<div class="pf-start-step"><span class="n">3</span><h3>Take it to your editor</h3><p>Export exact cut points and ranked recommendations, then start a new analysis anytime.</p></div>
+<div class="pf-start-step"><span class="n">1</span><h3>Upload your story</h3><p>One episode or a full season of timestamped screenplays.</p></div>
+<div class="pf-start-step"><span class="n">2</span><h3>Review the strongest moments</h3><p>Ranked 20–60 second cuts, with hooks and cliffhangers.</p></div>
+<div class="pf-start-step"><span class="n">3</span><h3>Take it to your editor</h3><p>Exact cut points, editorial notes and reports to share.</p></div>
 </div></div>''')
         st.stop()
 
