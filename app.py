@@ -6,7 +6,6 @@ import io
 import os
 import re
 import zipfile
-import html as html_lib
 from pathlib import Path
 
 import pandas as pd
@@ -24,7 +23,7 @@ from promo_finder.usage import SarvamConfig
 
 ROOT = Path(__file__).parent
 st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "favicon.png"),
-                   layout="wide", initial_sidebar_state="expanded")
+                   layout="wide", initial_sidebar_state="auto")
 
 APP_CSS = """
 
@@ -193,155 +192,9 @@ display:flex;gap:8px;align-items:center}
 .pf-start-step h3{grid-column:2;font-size:13px;font-weight:600;margin:0}.pf-start-step p{grid-column:2;font-size:12px;color:var(--mute);line-height:1.65}
 @media(max-width:600px){.st-key-home_upload_panel{padding:19px 17px;margin-top:19px}.pf-start-steps{grid-template-columns:1fr;gap:9px}.pf-start-step{padding:14px}.pf-home-title{font-size:19px}.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{min-height:130px;padding:20px 12px!important}}
 @media(prefers-reduced-motion:reduce){.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"]{transition:none}}
-/* Exact desktop landing-page composition: Kuku black / white / red. */
-@media(min-width:861px){
-  section[data-testid="stSidebar"]{width:338px!important;min-width:338px!important;max-width:338px!important}
-  section[data-testid="stSidebar"]>div{width:338px!important}
-  .main .block-container{max-width:1392px!important;padding:34px 56px 48px!important}
-}
-.stApp,[data-testid="stAppViewContainer"]{background:#FBF9F9!important}
-
-[data-testid="stAppViewContainer"]{background-image:radial-gradient(ellipse at 96% 0%,rgba(245,190,196,.12),transparent 34%)!important}
-section[data-testid="stSidebar"]{background:linear-gradient(180deg,#0D0D0E 0%,#151516 100%)!important;border-right:1px solid #262629!important}
-
-section[data-testid="stSidebar"]{position:relative;overflow:hidden!important}
-section[data-testid="stSidebar"]::after{content:"";position:absolute;left:-35px;bottom:-18px;width:390px;height:126px;
-  background:linear-gradient(170deg,rgba(158,15,21,.05) 0%,rgba(215,25,32,.32) 75%,rgba(215,25,32,.20) 100%);
-  border-radius:58% 42% 0 0/48% 38% 0 0;transform:rotate(-4deg);pointer-events:none;z-index:0}
-section[data-testid="stSidebar"]>div{position:relative;z-index:1}
-section[data-testid="stSidebar"]>div{padding:28px 24px 28px!important}
-[data-testid="stSidebarUserContent"]{padding-top:0!important}
-.pf-sidebar-brand{display:flex;align-items:center;gap:12px;margin:0 0 8px}
-.pf-sidebar-brand img{width:44px;height:44px;object-fit:contain}
-.pf-sidebar-brand b{font-size:24px;font-weight:700;letter-spacing:-.6px;color:#fff}
-.pf-sidebar-tagline{font-size:15px;line-height:1.55;color:#B5B5BC;margin:6px 0 26px;max-width:250px}
-.pf-sidebar-nav{display:flex;align-items:center;gap:12px;margin:0 0 8px}
-.pf-sidebar-nav-icon{width:28px;min-width:28px;display:flex;align-items:center;justify-content:center;color:#fff}
-.pf-sidebar-nav .stButton{width:100%}
-.pf-sidebar-nav [data-testid="stBaseButton-primary"],
-.pf-sidebar-nav [data-testid="stBaseButton-secondary"]{
-  width:100%;height:56px;min-height:56px;border-radius:12px!important;
-  justify-content:flex-start!important;text-align:left!important;padding:0 16px!important;
-  font-size:16px!important;font-weight:600!important;box-shadow:none!important
-}
-section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"]{
-  color:#fff!important;background:linear-gradient(100deg,#D71920 0%,#9E0F15 100%)!important;border:1px solid #D71920!important
-}
-section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]{
-  color:#fff!important;background:transparent!important;border:1px solid transparent!important
-}
-section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover{background:#1F1F21!important;border-color:#2A2A2D!important}
-.pf-sidebar-divider{height:1px;background:#2A2A2D;margin:24px 0}
-.pf-sidebar-status{display:flex;align-items:center;gap:11px;padding:17px 16px;background:#161618;border:1px solid #232326;border-radius:14px;color:#fff;font-size:16px;font-weight:600;margin:0 0 28px}
-.pf-sidebar-status .dot{width:12px;height:12px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 4px rgba(34,197,94,.12),0 0 12px rgba(34,197,94,.55)}
-.pf-quickstats{padding:20px;background:#161618;border:1px solid #232326;border-radius:18px;margin:0}
-.pf-quickstats h4{font-size:18px;font-weight:700;color:#fff;margin:0 0 16px}
-.pf-quickstat{display:flex;align-items:center;gap:14px;margin:13px 0 0;color:#fff}
-.pf-quickstat .ico{width:48px;height:48px;min-width:48px;display:grid;place-items:center;border-radius:12px;background:#2A1213;color:#E11D26}
-.pf-quickstat b{display:block;font-size:18px;line-height:1.2;color:#fff;font-weight:700}
-.pf-quickstat small{display:block;font-size:14px;line-height:1.35;color:#B5B5BC;margin-top:3px}
-section[data-testid="stSidebar"] .pf-service{display:flex;align-items:center;gap:11px;padding:17px 16px;background:#161618;border:1px solid #232326;border-radius:14px;color:#fff;font-size:16px;font-weight:600;margin:0 0 26px}
-section[data-testid="stSidebar"] .pf-service .dot{width:12px;height:12px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 4px rgba(34,197,94,.12),0 0 12px rgba(34,197,94,.55);margin:0}
-section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p{color:#B5B5BC!important}
-section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button{width:100%;height:46px;border-radius:10px!important;border:1px solid #3a3a3e!important;background:#202024!important;color:#fff!important;margin-top:14px}
-.pf-home-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:174px;margin:0 0 14px;overflow:visible}
-.pf-home-hero-copy{position:relative;z-index:2;max-width:790px}
-.pf-home-eyebrow{font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.5px;color:#E11D26;text-transform:uppercase}
-.pf-home-hero h1{font-size:clamp(46px,4.2vw,64px);line-height:1.05;letter-spacing:-1.9px;font-weight:750;color:#1A1A1C;margin:12px 0 14px}
-.pf-home-hero h1 span{display:block;color:#E11D26}
-.pf-home-hero p{font-size:20px;line-height:1.5;color:#5B5B63;margin:0;max-width:790px}
-.pf-home-art{position:relative;width:300px;min-width:250px;height:178px;display:flex;align-items:center;justify-content:center}
-.pf-home-art .pf-mascot-welcome{position:relative;z-index:2;width:188px;height:188px;object-fit:contain;transform:rotate(4deg)}
-.pf-film-ribbon{position:absolute;inset:0;width:100%;height:100%;opacity:.25;pointer-events:none;z-index:1}
-.pf-feature-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:10px 0 30px}
-.pf-feature{display:flex;align-items:center;gap:14px;padding:6px 22px;border-right:1px solid #E5E5E8;min-width:0}
-.pf-feature:first-child{padding-left:0}
-.pf-feature:last-child{border:0;padding-right:0}
-.pf-feature-icon{width:48px;height:48px;min-width:48px;display:grid;place-items:center;border-radius:13px;background:#FDEBEC;color:#E11D26}
-.pf-feature b{display:block;font-size:17px;line-height:1.3;font-weight:650;color:#1A1A1C}
-.pf-feature small{display:block;font-size:15px;line-height:1.4;color:#5B5B63;margin-top:3px}
-.st-key-home_upload_panel{max-width:100%!important;width:100%;margin:0!important;padding:24px!important;background:#fff!important;border:1px solid #F0E6E7!important;border-radius:20px!important;box-shadow:0 8px 24px rgba(20,0,0,.06)!important;gap:0!important}
-.pf-upload-title{text-align:center;font-size:30px;line-height:1.25;font-weight:700;letter-spacing:-.65px;color:#1A1A1C;margin:0 0 5px}
-.pf-upload-sub{text-align:center;font-size:16px;line-height:1.5;color:#5B5B63;margin:0 0 17px}
-.pf-inline-link{color:#E11D26;text-decoration:underline;text-underline-offset:2px;font-weight:600}
-.st-key-upload_zone{position:relative;min-height:250px;margin:0 0 15px}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{
-  position:absolute!important;inset:0!important;min-height:250px!important;height:250px!important;width:100%!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important;
-  padding:10px!important;overflow:hidden!important
-}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"]:hover{border-color:#E11D26!important;background:#FFF3F3!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"]{position:absolute!important;inset:0!important;display:block!important;padding:0!important;pointer-events:none!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p{display:none!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button{
-  position:absolute!important;left:50%!important;bottom:43px!important;transform:translateX(-50%)!important;
-  width:260px!important;max-width:calc(100% - 32px)!important;height:56px!important;min-height:56px!important;
-  margin:0!important;padding:0 18px!important;border:1px solid #E11D26!important;border-radius:14px!important;
-  background:#E11D26!important;color:#fff!important;font-size:0!important;font-weight:700!important;
-  box-shadow:0 5px 14px rgba(225,29,38,.20)!important;pointer-events:auto!important
-}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button:hover{background:#C8141D!important;border-color:#C8141D!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button::before{
-  content:"";display:inline-block;width:21px;height:21px;margin-right:9px;vertical-align:middle;
-  background-repeat:no-repeat;background-position:center;background-size:21px 21px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4m-5 5 5-5 5 5'/%3E%3Cpath d='M20 16.5v2A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-2'/%3E%3C/svg%3E")
-}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button::after{content:"Choose Files";font-size:18px;line-height:1}
-.pf-dropzone-overlay{position:absolute;z-index:3;pointer-events:none;top:18px;left:10px;right:10px;text-align:center}
-.pf-dropzone-overlay .cloud{color:#E11D26;margin:0 auto 5px;display:flex;justify-content:center}
-.pf-dropzone-overlay h2{font-size:30px;line-height:1.22;font-weight:700;letter-spacing:-.6px;color:#1A1A1C;margin:0 0 7px}
-.pf-dropzone-overlay p{font-size:16px;line-height:1.4;color:#5B5B63;margin:0}
-.pf-dropzone-overlay .limit{position:absolute;top:202px;left:0;right:0;font-size:15px;color:#5B5B63}
-.pf-upload-error{display:flex;gap:8px;align-items:flex-start;padding:10px 13px;margin:8px 0 12px;border:1px solid #F3B7BA;background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5}
-.pf-upload-error svg{flex:0 0 auto;color:#B4232A;margin-top:1px}
-.st-key-upload_zone [role="alert"],.st-key-upload_zone [data-testid*="Error"]{color:#B4232A!important}
-.pf-action-row{display:grid;grid-template-columns:116px 1px minmax(180px,1fr) 200px;gap:16px;align-items:center;margin-top:2px}
-.pf-action-label{font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap}
-.pf-action-divider{height:42px;background:#E5E5E8;width:1px}
-.st-key-home_title input{height:56px!important;min-height:56px!important;border:1px solid #E3E3E7!important;border-radius:14px!important;background-color:#fff!important;background-repeat:no-repeat!important;background-position:15px center!important;background-size:22px 22px!important;padding-left:48px!important;font-size:16px!important;color:#1A1A1C!important}
-.st-key-home_title input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%235B5B63' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5h16v11H4z'/%3E%3Cpath d='M4 8.5 6.5 4H22l-2.5 4.5M8 4l-2 4.5M14 4l-2 4.5'/%3E%3Ccircle cx='9' cy='14' r='1.3'/%3E%3Cpath d='m12 18 3-2 2 2'/%3E%3C/svg%3E")!important}
-.st-key-home_title [data-testid="stTextInputRootElement"]{border:0!important;box-shadow:none!important}
-.st-key-home_title [data-testid="stTextInputRootElement"] input:focus{border-color:#E11D26!important;box-shadow:0 0 0 3px rgba(225,29,38,.10)!important}
-.st-key-find_home{width:200px}
-.st-key-find_home button{height:56px!important;min-height:56px!important;width:200px!important;border-radius:14px!important;font-size:18px!important;font-weight:700!important}
-.st-key-find_home button::before{content:"";display:inline-block;width:19px;height:19px;margin-right:10px;vertical-align:middle;background-repeat:no-repeat;background-position:center;background-size:19px 19px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='white' stroke='white' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 5 12 7-12 7z' stroke='none'/%3E%3C/svg%3E")}
-.st-key-find_home button:disabled{background:#E5E5E8!important;border-color:#E5E5E8!important;color:#8A8A92!important;cursor:not-allowed!important;box-shadow:none!important}
-.st-key-find_home button:disabled::before{opacity:.35}
-.pf-start-steps{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);gap:12px;max-width:100%;margin:22px auto 0;align-items:center}
-.pf-start-step{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:14px;row-gap:4px;align-items:center;border:1px solid #F0E6E7;border-radius:16px;padding:19px 18px;background:#fff;min-height:116px;box-shadow:0 5px 16px rgba(20,0,0,.035)}
-.pf-start-step .n{position:absolute;top:12px;left:12px;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#FDEBEC;color:#E11D26;font-size:13px;font-weight:700}
-.pf-start-step .step-icon{grid-row:1 / 3;display:grid;place-items:center;width:48px;height:48px;margin-left:18px;border-radius:12px;background:#FDEBEC;color:#E11D26}
-.pf-start-step h3{grid-column:2;font-size:16px;font-weight:700;color:#1A1A1C;margin:0}
-.pf-start-step p{grid-column:2;font-size:14px;line-height:1.5;color:#5B5B63;margin:0}
-.pf-step-arrow{font-size:26px;color:#E11D26;text-align:center;font-weight:400}
-.pf-step-svg{width:22px;height:22px;display:block}
-.pf-how-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(max-width:1100px){.pf-home-hero h1{font-size:48px}.pf-home-art{width:220px;min-width:180px}.pf-home-art .pf-mascot-welcome{width:150px;height:150px}.pf-action-row{grid-template-columns:100px 1px minmax(120px,1fr) 180px;gap:10px}.st-key-find_home,.st-key-find_home button{width:180px!important}.pf-start-step{padding:16px 12px;grid-template-columns:42px minmax(0,1fr)}}
-@media(max-width:860px){
-  .main .block-container{padding:28px 24px 40px!important}
-  section[data-testid="stSidebar"]{width:300px!important;min-width:300px!important}
-  .pf-home-hero{min-height:0}.pf-home-hero h1{font-size:42px}.pf-home-hero p{font-size:17px}
-  .pf-home-art{width:130px;min-width:110px;height:130px}.pf-home-art .pf-mascot-welcome{width:115px;height:115px}
-  .pf-feature-row{grid-template-columns:1fr;gap:10px;margin-bottom:22px}.pf-feature{padding:4px 0;border:0}
-  .pf-start-steps{grid-template-columns:1fr;gap:8px}.pf-step-arrow{display:none}
-  .pf-action-row{grid-template-columns:1fr;gap:8px}.pf-action-divider{display:none}.pf-action-label{font-size:15px}
-  .st-key-find_home,.st-key-find_home button{width:100%!important}
-}
-@media(max-width:600px){
-  .main .block-container{padding:22px 16px 32px!important}
-  .pf-home-hero h1{font-size:34px;letter-spacing:-1px}.pf-home-hero p{font-size:15px}
-  .pf-home-art{width:84px;min-width:76px;height:90px}.pf-home-art .pf-mascot-welcome{width:86px;height:86px}
-  .st-key-home_upload_panel{padding:16px!important}
-  .pf-dropzone-overlay h2{font-size:21px}.pf-dropzone-overlay p{font-size:13px}
-  .st-key-upload_zone,.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{min-height:230px!important;height:230px!important}
-  .pf-dropzone-overlay .limit{top:202px}
-  .st-key-upload_zone [data-testid="stFileUploaderDropzone"] button{width:220px!important;height:50px!important;min-height:50px!important;bottom:42px!important}
-}
-
 """
 
-st.markdown(ui.css("static") + f"<style>{APP_CSS}</style>", unsafe_allow_html=True)
+st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
 
 
 def sb_head(n: str, text: str) -> None:
@@ -364,45 +217,6 @@ def mascot(class_name: str) -> str:
     return f'<img class="pf-mascot {class_name}" src="data:image/webp;base64,{image}" alt="Promo Finder clapperboard mascot" />'
 
 
-def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
-    """Small inline Lucide-style SVGs used throughout the landing interface."""
-    paths = {
-        "home": '<path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/>',
-        "info": '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
-        "bolt": '<path d="m13 2-3 8h7l-6 12 2-9H6l7-11z"/>',
-        "target": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m16.5 7.5 4-4"/>',
-        "layers": '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/>',
-        "cloud-upload": '<path d="M16 16l-4-4-4 4"/><path d="M12 12v9"/><path d="M20 16.5a4.5 4.5 0 0 0-.7-8.95A7 7 0 0 0 5.2 9.4 4 4 0 0 0 5 17h3"/>',
-        "upload": '<path d="M12 16V4m-5 5 5-5 5 5"/><path d="M20 16.5v2A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-2"/>',
-        "play": '<path d="m8 5 12 7-12 7z"/>',
-        "list": '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
-        "clapper": '<path d="M4 8h16v12H4z"/><path d="m4 8 2-5h16l-2 5"/><path d="M9 3 7 8m7-5-2 5m7-5-2 5"/><circle cx="9" cy="14" r="1"/><path d="m12 18 3-2 2 2"/>',
-    }
-    body = paths.get(name, "")
-    return (f'<svg class="pf-step-svg {class_name}" width="{size}" height="{size}" viewBox="0 0 24 24" '
-            f'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
-            f'stroke-linejoin="round" aria-hidden="true">{body}</svg>')
-
-
-def feature_item(icon: str, title: str, detail: str) -> str:
-    return (f'<div class="pf-feature"><span class="pf-feature-icon">{svg_icon(icon, 24)}</span>'
-            f'<span><b>{title}</b><small>{detail}</small></span></div>')
-
-
-def process_step(number: int, icon: str, title: str, detail: str) -> str:
-    return (f'<div class="pf-start-step"><span class="n">{number}</span>'
-            f'<span class="step-icon">{svg_icon(icon, 25)}</span><h3>{title}</h3><p>{detail}</p></div>')
-
-
-def film_ribbon() -> str:
-    return """<svg class="pf-film-ribbon" viewBox="0 0 420 190" preserveAspectRatio="none" aria-hidden="true">
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F5C5C8" stroke-width="64"/>
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#FFF" stroke-width="49"/>
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
-<path d="M-20 116 C70 -4 128 6 190 81 S310 171 445 26" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
-</svg>"""
-
-
 def guess_title(files) -> str:
     z = next((f for f in files if f.name.lower().endswith(".zip")), None)
     if not z:
@@ -421,30 +235,12 @@ def clear_report() -> None:
         st.session_state.pop(name, None)
 
 
-MAX_FILE_BYTES = 50 * 1024 * 1024
-
-
 def select_uploads(widget_key: str) -> None:
-    """Store only permitted uploads; selection/removal never starts a model run."""
     clear_report()
-    incoming = list(st.session_state.get(widget_key) or [])
-    valid, errors = [], []
-    for uploaded in incoming:
-        suffix = Path(uploaded.name).suffix.lower()
-        if suffix not in {".zip", ".txt"}:
-            errors.append(f"{uploaded.name}: only ZIP and TXT files are accepted.")
-        elif uploaded.size > MAX_FILE_BYTES:
-            errors.append(f"{uploaded.name}: file exceeds the 50MB per-file limit.")
-        else:
-            valid.append(uploaded)
-    st.session_state.source_files = valid
-    st.session_state.upload_error = " ".join(errors)
-    suggested = guess_title(valid)
+    st.session_state.source_files = list(st.session_state.get(widget_key) or [])
+    suggested = guess_title(st.session_state.source_files)
     st.session_state.show_title = suggested
     st.session_state.home_title = suggested
-    # Reset the widget when a rejected file is present, while retaining valid files in session state.
-    if errors:
-        st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
 def sync_title(source: str, target: str) -> None:
@@ -456,8 +252,6 @@ def new_analysis() -> None:
     st.session_state.source_files = []
     st.session_state.show_title = ""
     st.session_state.home_title = ""
-    st.session_state.upload_error = ""
-    st.session_state.active_page = "Home"
     st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
@@ -488,63 +282,40 @@ def render_how_it_works_page() -> None:
 # ---------------------------------------------------------------- sidebar
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
-
-
-def sidebar_nav(label: str, key: str, icon: str) -> None:
-    active = st.session_state.active_page == label
-    icon_col, button_col = st.columns([0.55, 3.45], gap="small", vertical_alignment="center")
-    with icon_col:
-        st.markdown(f'<div class="pf-sidebar-nav-icon" style="color:#fff">{svg_icon(icon, 22)}</div>',
-                    unsafe_allow_html=True)
-    with button_col:
-        clicked = st.button(label, key=f"nav_{key}", type="primary" if active else "secondary",
-                            width="stretch")
-    if clicked:
-        st.session_state.active_page = label
-        st.rerun()
-
-
 with st.sidebar:
-    st.markdown(f'<div class="pf-sidebar-brand">{mascot("pf-mascot-brand")}<b>Promo Finder</b></div>'
-                '<p class="pf-sidebar-tagline">Finds promo cuts in microdrama scripts.</p>',
-                unsafe_allow_html=True)
-    sidebar_nav("Home", "home", "home")
-    sidebar_nav("How it Works", "how_it_works", "info")
-    st.markdown('<div class="pf-sidebar-divider"></div>', unsafe_allow_html=True)
-
-    if config.configured:
-        st.markdown('<div class="pf-sidebar-status"><span class="dot"></span><span>AI review enabled</span></div>',
-                    unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="pf-sidebar-status"><span class="dot" style="background:#F59E0B"></span>'
-                    '<span>AI review unavailable</span></div>', unsafe_allow_html=True)
-
-    if st.session_state.active_page == "Home":
-        st.markdown(f"""
-<div class="pf-quickstats">
-  <h4>Quick Stats</h4>
-  <div class="pf-quickstat"><span class="ico">{svg_icon("play", 24)}</span>
-    <div><b>20 – 60 sec</b><small>Promo length</small></div></div>
-  <div class="pf-quickstat"><span class="ico">{svg_icon("layers", 24)}</span>
-    <div><b>4</b><small>Export formats</small></div></div>
-</div>""", unsafe_allow_html=True)
-
-    page = st.session_state.active_page
+    st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
+            'Finds promo cuts in microdrama scripts.</p></div>')
+    page = st.radio("Navigation", ["Home", "How It Works"],
+                    key="active_page", label_visibility="collapsed",
+                    format_func=lambda value: {"Home": "⌂   Home",
+                                               "How It Works": "ⓘ   How It Works"}[value])
+    st.divider()
     go = False
     title = st.session_state.get("show_title", "")
     files = list(st.session_state.get("source_files", []))
-    if page == "Home" and "result" in st.session_state:
-        st.markdown('<div style="height:1px;background:#2A2A2D;margin:22px 0"></div>',
-                    unsafe_allow_html=True)
-        title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
+    if page == "Home":
+        sb_head("1", "Your scripts")
+        if files:
+            st.caption("Current upload: " + ", ".join(f.name for f in files))
+        else:
+            st.caption("Add your ZIP or TXT scripts in the main workspace to get started.")
+        if "result" in st.session_state:
+            sb_head("2", "Review settings")
+            title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
                               on_change=sync_title, args=("show_title", "home_title"),
-                              help="The title helps the system understand the show's premise.")
-        go = st.button("Find Promos", type="primary", width="stretch",
-                       disabled=not files)
-    if "result" in st.session_state:
-        if st.button("New analysis", key="sidebar_new_analysis", width="stretch"):
-            new_analysis()
-            st.rerun()
+                              help="The title tells the tool what the show promises, so promos that sell it rank higher.")
+            go = st.button("Find promos", type="primary", width="stretch",
+                           disabled=not files or not config.configured)
+    if config.configured:
+        st.html('<div class="pf-service"><span class="dot"></span>AI review enabled</div>')
+    else:
+        st.caption("AI review unavailable. Contact the app owner.")
+
+    if page == "Home":
+        st.html("""<div class="pf-quickstats"><h4>Quick facts</h4>
+<div class="pf-quickstat"><span class="ico">▶</span><div><b>20–60 sec</b><small>Promo length</small></div></div>
+<div class="pf-quickstat"><span class="ico">▱</span><div><b>ZIP · TXT</b><small>Script formats</small></div></div>
+<div class="pf-quickstat"><span class="ico">✦</span><div><b>AI + Rules</b><small>Editorial workflow</small></div></div></div>""")
 
 # The guide page is independent of the upload and analysis workflow.
 if page == "How It Works":
@@ -555,73 +326,38 @@ if page == "How It Works":
 progress_panel = st.empty()
 
 # ---------------------------------------------------------------- first visit
-if page == "Home" and "result" not in st.session_state and not go:
-    features = "".join([
-        feature_item("bolt", "AI + Rules Engine", "Scores & reranks promos"),
-        feature_item("target", "Script-accurate", "Exact timestamps"),
-        feature_item("layers", "Editor-ready", "Reports, CSV & more"),
-    ])
-    steps = (
-        process_step(1, "upload", "Upload your story",
-                     "One episode or a full season of timestamped screenplays.")
-        + '<div class="pf-step-arrow">→</div>'
-        + process_step(2, "list", "Review the strongest moments",
-                       "Ranked 20–60 second cuts, with hooks and cliffhangers.")
-        + '<div class="pf-step-arrow">→</div>'
-        + process_step(3, "clapper", "Take it to your editor",
-                       "Exact cut points, editorial notes and reports to share.")
-    )
-    st.markdown(f"""
-<div class="pf-home-hero">
-  <div class="pf-home-hero-copy">
-    <div class="pf-home-eyebrow">PROMO FINDER</div>
-    <h1>Find the moments<span>worth promoting</span></h1>
-    <p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p>
-  </div>
-  <div class="pf-home-art">{film_ribbon()}{mascot("pf-mascot-welcome")}</div>
-</div>
-<div class="pf-feature-row">{features}</div>
-""", unsafe_allow_html=True)
-
+if "result" not in st.session_state and not go:
+    st.html(f"""<div class="pf-home-hero"><div><div class="pf-label accent">PROMO FINDER</div>
+<h1>Find the moments<br><span>worth promoting</span></h1>
+<p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p></div>{mascot("pf-mascot-welcome")}</div>
+<div class="pf-value-row">
+<div class="pf-value"><span class="ic">ϟ</span><div><b>AI + Rules Engine</b><small>Scores and reranks promos</small></div></div>
+<div class="pf-value"><span class="ic">◎</span><div><b>Script-accurate</b><small>Exact source timestamps</small></div></div>
+<div class="pf-value"><span class="ic">▱</span><div><b>Editor-ready</b><small>Reports, CSV and more</small></div></div>
+</div>""")
     with st.container(key="home_upload_panel"):
+        st.html('<div class="pf-upload-title">Upload your microdrama scripts</div>'
+                '<p class="pf-upload-sub">Drag and drop a ZIP or TXT file here, or choose files below.</p>')
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
-        with st.container(key="upload_zone"):
-            st.file_uploader(
-                "Upload microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
-                key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
-                label_visibility="collapsed", help="ZIP or TXT screenplays · 50MB maximum per file.",
-                max_upload_size=50,
-            )
-            st.markdown(f"""
-<div class="pf-dropzone-overlay">
-  <div class="cloud">{svg_icon("cloud-upload", 56)}</div>
-  <h2>Upload your microdrama scripts</h2>
-  <p>Drag &amp; drop a ZIP or TXT file here, or <span class="pf-inline-link">choose files</span></p>
-  <div class="limit">Up to 50MB per file • ZIP, TXT</div>
-</div>""", unsafe_allow_html=True)
-        upload_error = st.session_state.get("upload_error", "")
-        if upload_error:
-            st.markdown(f'<div class="pf-upload-error">{svg_icon("info", 17)}'
-                        f'<span>{html_lib.escape(upload_error)}</span></div>', unsafe_allow_html=True)
-
-        label_col, divider_col, input_col, action_col = st.columns([0.78, 0.02, 3.7, 1.45],
-                                                                   gap="small", vertical_alignment="center")
-        with label_col:
-            st.markdown('<div class="pf-action-label">Show title</div>', unsafe_allow_html=True)
-        with divider_col:
-            st.markdown('<div class="pf-action-divider"></div>', unsafe_allow_html=True)
-        with input_col:
-            home_title = st.text_input("Show title", key="home_title",
-                                       placeholder="e.g. The Maid Was the Heiress",
-                                       label_visibility="collapsed",
-                                       on_change=sync_title, args=("home_title", "show_title"))
-        with action_col:
-            go = st.button("Find Promos", key="find_home", type="primary",
-                           width="stretch", disabled=not files)
+        st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
+                         key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
+                         label_visibility="collapsed", help="Timestamped screenplays. ZIP and TXT files, up to 50 MB per file.")
+        if files:
+            st.caption("Ready: " + ", ".join(f.name for f in files))
+        st.html('<div class="pf-upload-foot">Up to 50MB per file · ZIP, TXT</div>')
+        home_title = st.text_input("Show title", key="home_title", placeholder="e.g. The Maid Was the Heiress",
+                      on_change=sync_title, args=("home_title", "show_title"),
+                      help="Check the title before starting. It helps the reviewer understand the show's premise.")
+        go = st.button("Find promos", key="find_home", type="primary", width="stretch",
+                       disabled=not files or not config.configured)
         if go:
             title = home_title
     if not go:
-        st.markdown(f'<div class="pf-start-steps">{steps}</div>', unsafe_allow_html=True)
+        st.html('''<div class="pf"><div class="pf-start-steps">
+<div class="pf-start-step"><span class="n">1</span><h3>Upload your story</h3><p>One episode or a full season of timestamped screenplays.</p></div>
+<div class="pf-start-step"><span class="n">2</span><h3>Review the strongest moments</h3><p>Ranked 20–60 second cuts, with hooks and cliffhangers.</p></div>
+<div class="pf-start-step"><span class="n">3</span><h3>Take it to your editor</h3><p>Exact cut points, editorial notes and reports to share.</p></div>
+</div></div>''')
         st.stop()
 
 # ---------------------------------------------------------------- run
@@ -696,7 +432,9 @@ checks = st.session_state.get("checks") or run_checks(res)
 s = res.stats
 
 ai = s.get("ai", {})
-st.caption("Your promo report · Analyse another script whenever you’re ready.")
+nav_left, nav_right = st.columns([3, 1], vertical_alignment="center")
+nav_left.caption("Your promo report · Analyse another script whenever you’re ready.")
+nav_right.button("New analysis", key="new_analysis", on_click=new_analysis, width="stretch", icon=":material/add:")
 if not ai.get("judged", 0):
     reason = {
         401: "The AI connection needs attention. Contact the app owner.",
