@@ -389,7 +389,8 @@ section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#1d1d20!impo
 
 """
 
-st.html(ui.css("static") + f"<style>{APP_CSS}</style>")
+st.html(ui.css("static"))
+st.html(ROOT / "static" / "promo-finder.css")
 
 
 def sb_head(n: str, text: str) -> None:
@@ -409,7 +410,17 @@ n_single, n_stitched, llm_top, compare_too = 20, 6, 40, True
 
 def mascot(class_name: str) -> str:
     image = base64.b64encode((ROOT / "static" / "mascot.webp").read_bytes()).decode("ascii")
-    return f'<img class="pf-mascot {class_name}" src="data:image/webp;base64,{image}" alt="Promo Finder clapperboard mascot" />'
+    # Explicit dimensions are a hard fallback if a browser/theme drops custom CSS.
+    dimensions = {
+        "pf-mascot-brand": (44, 44),
+        "pf-mascot-welcome": (188, 188),
+        "pf-mascot-mobile": (52, 62),
+    }.get(class_name, (44, 44))
+    width, height = dimensions
+    return (f'<img class="pf-mascot {class_name}" width="{width}" height="{height}" '
+            f'style="width:{width}px;height:{height}px;max-width:{width}px;max-height:{height}px;object-fit:contain;'
+            f'display:block;flex:0 0 auto" src="data:image/webp;base64,{image}" '
+            f'alt="Promo Finder clapperboard mascot" />')
 
 
 def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
@@ -622,10 +633,10 @@ if page == "Home" and "result" not in st.session_state and not go:
 <div class="pf-home-hero">
   <div class="pf-home-hero-copy">
     <div class="pf-home-eyebrow">PROMO FINDER</div>
-    <h1>Find the moments<span>worth promoting</span></h1>
+    <h1 style="font-size:clamp(48px,4.1vw,64px);line-height:1.05;letter-spacing:-1.9px;font-weight:750;color:#1A1A1C;margin:12px 0 13px">Find the moments<br><span style="color:#E11D26">worth promoting</span></h1>
     <p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p>
   </div>
-  <div class="pf-home-art">{feature_hero_art()}</div>
+  <div class="pf-home-art" style="position:relative;width:300px;min-width:250px;height:190px;flex:0 0 300px;display:flex;align-items:center;justify-content:center;overflow:hidden">{feature_hero_art()}</div>
 </div>
 <div class="pf-feature-row">{features}</div>
 """)
