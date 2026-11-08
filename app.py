@@ -26,6 +26,34 @@ st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "f
                    layout="wide", initial_sidebar_state="auto")
 
 APP_CSS = """
+
+/* Restrained Kuku corporate palette: charcoal, white and signature red. */
+section[data-testid="stSidebar"]{background:#111113!important;border-right:1px solid #29292d!important}
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] [data-testid="stCaptionContainer"]{color:#e8e8eb!important}
+section[data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"]{gap:5px}
+section[data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label{border-radius:9px;padding:8px 10px;color:#ededf0!important;background:transparent}
+section[data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked){background:#321719!important;color:#fff!important;border-left:3px solid #e31e24;padding-left:7px}
+section[data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label p{color:inherit!important;font-weight:600}
+section[data-testid="stSidebar"] .pf-service{background:#202024;border-color:#38383f;color:#f4f4f5}
+section[data-testid="stSidebar"] .pf-service .dot{background:#22c55e}
+section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#202024;color:#eee}
+.pf{--hook:#e31e24;--hook-bg:#fff0f0;--accent:#e31e24;--grad:linear-gradient(135deg,#e31e24 0%,#b71920 100%)}
+[data-testid="stBaseButton-primary"]{background:#e31e24!important;border-color:#e31e24!important}
+[data-testid="stBaseButton-primary"]:hover{background:#bd171d!important;border-color:#bd171d!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"] button{background:#e31e24!important;border-color:#e31e24!important}
+.st-key-home_upload_panel [data-testid="stFileUploaderDropzone"] button:hover{background:#bd171d!important;border-color:#bd171d!important}
+.pf-how-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
+.pf-how-card{background:#fff;border:1px solid #e7e5e7;border-radius:14px;padding:20px 22px;box-shadow:0 2px 10px rgba(18,18,22,.035)}
+.pf-how-card .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#fff0f0;color:#e31e24;font-size:13px;font-weight:700;margin-bottom:12px}
+.pf-how-card h3{font-size:16px;line-height:1.35;margin:0 0 6px;color:#171719}
+.pf-how-card p{font-size:14px;line-height:1.65;color:#5b5b63;margin:0}
+.pf-how-note{margin-top:18px;border-left:3px solid #e31e24;background:#fff7f7;padding:15px 18px;border-radius:0 10px 10px 0;color:#414148;font-size:14px;line-height:1.65}
+.pf-page-head{margin:4px 0 22px}
+.pf-page-head h1{font-size:30px;letter-spacing:-.7px;margin:6px 0;color:#171719}
+.pf-page-head p{font-size:15px;color:#666670;margin:0}
+@media(max-width:700px){.pf-how-grid{grid-template-columns:1fr}.pf-page-head h1{font-size:25px}}
 [data-testid="stToolbarActions"],[data-testid="stMainMenu"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
 header[data-testid="stHeader"]{background:transparent;pointer-events:none}
 header[data-testid="stHeader"] button{pointer-events:auto}
@@ -200,28 +228,65 @@ def new_analysis() -> None:
     st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
+def render_how_it_works_page() -> None:
+    st.html("""<div class="pf pf-page-head">
+<div class="pf-label accent">PRODUCT GUIDE</div><h1>How Promo Finder works</h1>
+<p>From timestamped screenplay files to a ranked, editor-ready promo shortlist.</p>
+</div>
+<div class="pf pf-how-grid">
+  <article class="pf-how-card"><span class="num">01</span><h3>Upload your scripts</h3>
+  <p>Upload a ZIP of episode .txt files or individual .txt screenplays. Promo Finder reads dialogue, action and source timestamps, and reports files or blocks it cannot parse.</p></article>
+  <article class="pf-how-card"><span class="num">02</span><h3>Find hooks and cliffhangers</h3>
+  <p>The rules engine scores screenplay beats for hook strength, cliffhanger strength, intensity and dependence on backstory. The show premise is inferred from its title and early episode loglines.</p></article>
+  <article class="pf-how-card"><span class="num">03</span><h3>Generate valid promo cuts</h3>
+  <p>It builds single-episode and stitched candidates. Each cut must run 20–60 seconds, hook the viewer within the first 3 seconds, use real source timestamps and avoid cutting through a spoken line.</p></article>
+  <article class="pf-how-card"><span class="num">04</span><h3>Rank the strongest moments</h3>
+  <p>The rules score weighs hook (28%), cliffhanger (24%), momentum (20%), new-viewer clarity (16%), length fit (6%) and premise fit (6%). Selection avoids overlapping cuts and repeated hook or cliffhanger lines.</p></article>
+  <article class="pf-how-card"><span class="num">05</span><h3>AI editorial review</h3>
+  <p>The configured AI reviewer evaluates a shortlist, returns scores, reasons and risks, and may suggest trims by referring to numbered screenplay beats. Its score is blended with the rules score.</p></article>
+  <article class="pf-how-card"><span class="num">06</span><h3>Validate every cut</h3>
+  <p>Code checks AI trim suggestions against the original screenplay. It rejects suggestions that break duration, timestamp, hook or spoken-line constraints. Unusable AI replies retain the rules score.</p></article>
+  <article class="pf-how-card"><span class="num">07</span><h3>Review and export</h3>
+  <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download HTML, CSV, JSON and Markdown reports to take the cut points into editing.</p></article>
+</div>
+<div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
+
+
 # ---------------------------------------------------------------- sidebar
+if "active_page" not in st.session_state:
+    st.session_state.active_page = "Home"
 with st.sidebar:
     st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
-    sb_head("1", "Your scripts")
-    files = list(st.session_state.get("source_files", []))
-    if files:
-        st.caption("Current upload: " + ", ".join(f.name for f in files))
-    else:
-        st.caption("Add your ZIP or TXT scripts in the main workspace to get started.")
+    page = st.radio("Navigation", ["Home", "How It Works"],
+                    key="active_page", label_visibility="collapsed",
+                    format_func=lambda value: {"Home": "⌂   Home", "How It Works": "ⓘ   How It Works"}[value])
+    st.divider()
     go = False
     title = st.session_state.get("show_title", "")
-    if "result" in st.session_state:
-        sb_head("2", "Review settings")
-        title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
-                          on_change=sync_title, args=("show_title", "home_title"),
-                          help="The title tells the tool what the show promises (for example a secret Duke), so promos that sell it rank higher.")
-        go = st.button("Find promos", type="primary", width="stretch", disabled=not files or not config.configured)
+    files = list(st.session_state.get("source_files", []))
+    if page == "Home":
+        sb_head("1", "Your scripts")
+        if files:
+            st.caption("Current upload: " + ", ".join(f.name for f in files))
+        else:
+            st.caption("Add your ZIP or TXT scripts in the main workspace to get started.")
+        if "result" in st.session_state:
+            sb_head("2", "Review settings")
+            title = st.text_input("Show title", key="show_title", placeholder="e.g. The Maid Was the Heiress",
+                              on_change=sync_title, args=("show_title", "home_title"),
+                              help="The title tells the tool what the show promises, so promos that sell it rank higher.")
+            go = st.button("Find promos", type="primary", width="stretch",
+                           disabled=not files or not config.configured)
     if config.configured:
         st.html('<div class="pf-service"><span class="dot"></span>AI review enabled</div>')
     else:
-        st.info("AI review is unavailable. Contact the app owner.")
+        st.caption("AI review unavailable. Contact the app owner.")
+
+# The guide page is independent of the upload and analysis workflow.
+if page == "How It Works":
+    render_how_it_works_page()
+    st.stop()
 
 # Reserve the first main-area slot so progress appears above the upload form.
 progress_panel = st.empty()
