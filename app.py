@@ -80,14 +80,39 @@ def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
             f'stroke-linejoin="round" aria-hidden="true">{paths.get(name, "")}</svg>')
 
 
-def feature_item(icon: str, title: str, detail: str) -> str:
-    return (f'<div class="pf-feature"><span class="pf-feature-icon">{svg_icon(icon, 25)}</span>'
-            f'<span><b>{title}</b><small>{detail}</small></span></div>')
+def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> str:
+    symbols = {"bolt": "ϟ", "target": "◎", "layers": "▱"}
+    glyph = symbols.get(icon, "•")
+    border = "border-right:1px solid #E5E5E8;" if bordered else ""
+    return (
+        f'<div style="display:flex;align-items:center;gap:14px;min-width:0;padding:6px 22px;{border}">'
+        f'<span style="width:48px;height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;'
+        f'border-radius:13px;background:#FDEBEC;color:#E11D26;font-size:29px;font-weight:700;line-height:1">{glyph}</span>'
+        f'<span style="display:flex;flex-direction:column;gap:4px;min-width:0">'
+        f'<b style="display:block;font-size:17px;line-height:1.3;font-weight:650;color:#1A1A1C">{title}</b>'
+        f'<small style="display:block;font-size:15px;line-height:1.35;font-weight:400;color:#5B5B63">{detail}</small>'
+        f'</span></div>'
+    )
 
 
 def process_step(number: int, icon: str, title: str, detail: str) -> str:
-    return (f'<div class="pf-start-step"><span class="n">{number}</span>'
-            f'<span class="step-icon">{svg_icon(icon, 25)}</span><h3>{title}</h3><p>{detail}</p></div>')
+    symbols = {"upload": "↑", "list": "☷", "clapper": "▤"}
+    glyph = symbols.get(icon, "•")
+    return (
+        f'<div style="position:relative;display:flex;align-items:center;gap:14px;min-height:112px;'
+        f'box-sizing:border-box;padding:18px 16px 16px 25px;background:#FFFFFF;border:1px solid #F0E6E7;'
+        f'border-radius:16px;box-shadow:0 5px 16px rgba(20,0,0,.035)">'
+        f'<span style="position:absolute;top:12px;left:12px;width:25px;height:25px;display:flex;'
+        f'align-items:center;justify-content:center;border-radius:50%;background:#FDEBEC;color:#E11D26;'
+        f'font-size:13px;font-weight:700">{number}</span>'
+        f'<span style="width:48px;height:48px;min-width:48px;margin-left:15px;display:flex;'
+        f'align-items:center;justify-content:center;border-radius:12px;background:#FDEBEC;color:#E11D26;'
+        f'font-size:27px;font-weight:700">{glyph}</span>'
+        f'<span style="display:flex;flex-direction:column;gap:5px;min-width:0">'
+        f'<b style="display:block;font-size:16px;line-height:1.3;color:#1A1A1C;font-weight:700">{title}</b>'
+        f'<small style="display:block;font-size:14px;line-height:1.45;color:#5B5B63">{detail}</small>'
+        f'</span></div>'
+    )
 
 
 def film_ribbon() -> str:
