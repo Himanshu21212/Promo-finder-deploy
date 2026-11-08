@@ -24,7 +24,7 @@ from promo_finder.usage import SarvamConfig
 
 ROOT = Path(__file__).parent
 st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "favicon.png"),
-                   layout="wide", initial_sidebar_state="auto")
+                   layout="wide", initial_sidebar_state="expanded")
 
 APP_CSS = """
 
@@ -294,6 +294,8 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button{width:100%;
 .pf-dropzone-overlay p{font-size:16px;line-height:1.4;color:#5B5B63;margin:0}
 .pf-dropzone-overlay .limit{position:absolute;top:202px;left:0;right:0;font-size:15px;color:#5B5B63}
 .pf-upload-error{display:flex;gap:8px;align-items:flex-start;padding:10px 13px;margin:8px 0 12px;border:1px solid #F3B7BA;background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5}
+.pf-upload-error svg{flex:0 0 auto;color:#B4232A;margin-top:1px}
+.st-key-upload_zone [role="alert"],.st-key-upload_zone [data-testid*="Error"]{color:#B4232A!important}
 .pf-action-row{display:grid;grid-template-columns:116px 1px minmax(180px,1fr) 200px;gap:16px;align-items:center;margin-top:2px}
 .pf-action-label{font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap}
 .pf-action-divider{height:42px;background:#E5E5E8;width:1px}
