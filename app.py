@@ -313,6 +313,8 @@ section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#1d1d20!impo
 .pf-upload-error{display:flex;gap:8px;align-items:flex-start;padding:10px 13px;margin:8px 0 12px;
   border:1px solid #F3B7BA;background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5}
 .pf-upload-error svg{flex:0 0 auto;color:#B4232A;margin-top:1px}
+.st-key-upload_zone [data-testid="stAlert"]{border:1px solid #F3B7BA!important;background:#FFF1F1!important;color:#B4232A!important;border-radius:10px!important}
+.st-key-upload_zone [data-testid="stAlert"] p{color:#B4232A!important;font-size:13px!important}
 .pf-ready-files{font-size:13px;color:#4F5964;margin:-5px 0 12px;line-height:1.5}
 .pf-action-row{display:grid;grid-template-columns:116px 1px minmax(180px,1fr) 200px;gap:16px;align-items:center;margin-top:0}
 .pf-action-label{font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap}
@@ -638,7 +640,8 @@ if page == "Home" and "result" not in st.session_state and not go:
                 label_visibility="collapsed",
                 help="ZIP or TXT screenplays · 50MB maximum per file.",
             )
-            st.html(f"""
+            if not files:
+                st.html(f"""
 <div class="pf-dropzone-overlay">
   <div class="cloud">{svg_icon("cloud-upload", 56)}</div>
   <h2>Upload your microdrama scripts</h2>
