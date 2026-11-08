@@ -101,16 +101,19 @@ def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
 
 
 def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> str:
-    symbols = {"bolt": "ϟ", "target": "◎", "layers": "▱"}
-    glyph = symbols.get(icon, "•")
     border = "border-right:1px solid #E5E5E8;" if bordered else ""
     return (
-        f'<div style="display:flex;align-items:center;gap:14px;min-width:0;padding:6px 22px;{border}">'
-        f'<span style="width:48px;height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;'
-        f'border-radius:13px;background:#FDEBEC;color:#E11D26;font-size:29px;font-weight:700;line-height:1">{glyph}</span>'
-        f'<span style="display:flex;flex-direction:column;gap:4px;min-width:0">'
-        f'<b style="display:block;font-size:17px;line-height:1.3;font-weight:650;color:#1A1A1C">{title}</b>'
-        f'<small style="display:block;font-size:15px;line-height:1.35;font-weight:400;color:#5B5B63">{detail}</small>'
+        f'<div style="display:flex;align-items:center;gap:12px;min-width:0;box-sizing:border-box;'
+        f'padding:7px 16px;{border}">'
+        f'<span style="width:46px;height:46px;min-width:46px;display:flex;align-items:center;'
+        f'justify-content:center;border-radius:12px;background:#FDEBEC;color:#E11D26">'
+        f'{svg_icon(icon, 24)}</span>'
+        f'<span style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;'
+        f'gap:3px;min-width:0;text-align:left">'
+        f'<b style="display:block;font-size:16px;line-height:1.25;font-weight:700;color:#1A1A1C;'
+        f'white-space:normal;overflow-wrap:anywhere">{title}</b>'
+        f'<small style="display:block;font-size:14px;line-height:1.35;font-weight:400;color:#5B5B63;'
+        f'white-space:normal;overflow-wrap:anywhere">{detail}</small>'
         f'</span></div>'
     )
 
