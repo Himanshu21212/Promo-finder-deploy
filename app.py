@@ -409,8 +409,8 @@ if "result" not in st.session_state and not go:
 <div class="pf-value"><span class="ic">▱</span><div><b>Editor-ready</b><small>Reports, CSV and more</small></div></div>
 </div>""")
     with st.container(key="home_upload_panel"):
-        st.html('<div class="pf-upload-shell"><h2 class="pf-upload-title">Upload your microdrama scripts</h2>'
-                '<p class="pf-upload-sub">Drag and drop a ZIP or TXT file here, or choose files below.</p></div>')
+        st.html('<div class="pf-upload-title">Upload your microdrama scripts</div>'
+                '<p class="pf-upload-sub">Drag and drop a ZIP or TXT file here, or choose files below.</p>')
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
                          key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
