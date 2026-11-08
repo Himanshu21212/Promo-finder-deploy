@@ -200,7 +200,15 @@ display:flex;gap:8px;align-items:center}
   .main .block-container{max-width:1392px!important;padding:34px 56px 48px!important}
 }
 .stApp,[data-testid="stAppViewContainer"]{background:#FBF9F9!important}
+
+[data-testid="stAppViewContainer"]{background-image:radial-gradient(ellipse at 96% 0%,rgba(245,190,196,.12),transparent 34%)!important}
 section[data-testid="stSidebar"]{background:linear-gradient(180deg,#0D0D0E 0%,#151516 100%)!important;border-right:1px solid #262629!important}
+
+section[data-testid="stSidebar"]{position:relative;overflow:hidden!important}
+section[data-testid="stSidebar"]::after{content:"";position:absolute;left:-35px;bottom:-18px;width:390px;height:126px;
+  background:linear-gradient(170deg,rgba(158,15,21,.05) 0%,rgba(215,25,32,.32) 75%,rgba(215,25,32,.20) 100%);
+  border-radius:58% 42% 0 0/48% 38% 0 0;transform:rotate(-4deg);pointer-events:none;z-index:0}
+section[data-testid="stSidebar"]>div{position:relative;z-index:1}
 section[data-testid="stSidebar"]>div{padding:28px 24px 28px!important}
 [data-testid="stSidebarUserContent"]{padding-top:0!important}
 .pf-sidebar-brand{display:flex;align-items:center;gap:12px;margin:0 0 8px}
@@ -284,7 +292,7 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button{width:100%;
 .pf-dropzone-overlay .cloud{color:#E11D26;margin:0 auto 5px;display:flex;justify-content:center}
 .pf-dropzone-overlay h2{font-size:30px;line-height:1.22;font-weight:700;letter-spacing:-.6px;color:#1A1A1C;margin:0 0 7px}
 .pf-dropzone-overlay p{font-size:16px;line-height:1.4;color:#5B5B63;margin:0}
-.pf-dropzone-overlay .limit{position:absolute;top:198px;left:0;right:0;font-size:15px;color:#5B5B63}
+.pf-dropzone-overlay .limit{position:absolute;top:220px;left:0;right:0;font-size:15px;color:#5B5B63}
 .pf-upload-error{display:flex;gap:8px;align-items:flex-start;padding:10px 13px;margin:8px 0 12px;border:1px solid #F3B7BA;background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5}
 .pf-action-row{display:grid;grid-template-columns:116px 1px minmax(180px,1fr) 200px;gap:16px;align-items:center;margin-top:2px}
 .pf-action-label{font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap}
@@ -325,7 +333,7 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button{width:100%;
   .st-key-home_upload_panel{padding:16px!important}
   .pf-dropzone-overlay h2{font-size:21px}.pf-dropzone-overlay p{font-size:13px}
   .st-key-upload_zone,.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{min-height:230px!important;height:230px!important}
-  .pf-dropzone-overlay .limit{top:181px}
+  .pf-dropzone-overlay .limit{top:202px}
   .st-key-upload_zone [data-testid="stFileUploaderDropzone"] button{width:220px!important;height:50px!important;min-height:50px!important;bottom:42px!important}
 }
 
@@ -573,10 +581,6 @@ if page == "Home" and "result" not in st.session_state and not go:
 """, unsafe_allow_html=True)
 
     with st.container(key="home_upload_panel"):
-        st.markdown('<div class="pf-upload-title">Upload your microdrama scripts</div>'
-                    '<p class="pf-upload-sub">Drag &amp; drop a ZIP or TXT file here, or '
-                    '<span class="pf-inline-link">choose files</span></p>',
-                    unsafe_allow_html=True)
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         with st.container(key="upload_zone"):
             st.file_uploader(
