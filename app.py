@@ -573,9 +573,8 @@ with st.sidebar:
 </div>""")
 
     if "result" in st.session_state:
-        if st.button("New analysis", key="sidebar_new_analysis", width="stretch",
-                     on_click=new_analysis):
-            st.rerun()
+        st.button("New analysis", key="sidebar_new_analysis", width="stretch",
+                  on_click=new_analysis)
 
     page = st.session_state.active_page
     go = False
@@ -590,14 +589,6 @@ with st.sidebar:
                        disabled=not files)
 
 # The guide page is independent of the upload and analysis workflow.
-if page == "How It Works":
-    render_how_it_works_page()
-    st.stop()
-
-# Reserve the first main-area slot so progress appears above the upload form.
-progress_panel = st.empty()
-
-# ---------------------------------------------------------------- first visit
 if page == "How it Works":
     render_how_it_works_page()
     st.stop()
