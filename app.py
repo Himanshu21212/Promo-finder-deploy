@@ -10,9 +10,6 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
-from datetime import datetime
-import uuid
 
 from promo_finder import ui
 from promo_finder.checks import run_checks
@@ -258,73 +255,6 @@ def new_analysis() -> None:
     st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
-def save_report_history(result) -> None:
-    """Save report exports for the current Streamlit session; screenplay source files are not stored."""
-    history = list(st.session_state.get("report_history", []))
-    history.insert(0, {
-        "id": uuid.uuid4().hex[:10],
-        "title": result.title,
-        "created": datetime.now().astimezone().strftime("%d %b %Y, %I:%M %p"),
-        "episodes": result.stats.get("episodes", 0),
-        "promos": result.stats.get("promos", len(result.promos)),
-        "candidates": result.stats.get("candidates", 0),
-        "model": result.model,
-        "html": to_html(result),
-        "csv": to_csv(result.promos),
-        "json": to_json(result),
-        "markdown": to_markdown(result),
-    })
-    st.session_state.report_history = history[:10]
-
-
-def render_report_history() -> None:
-    st.html("""<div class="pf pf-page-head"><div class="pf-label accent">YOUR WORKSPACE</div>
-<h1>Report History</h1><p>Find and reopen reports created during this browser session.</p></div>""")
-    history = list(st.session_state.get("report_history", []))
-    if not history:
-        st.info("No reports yet. Complete an analysis from Home and it will appear here.")
-        st.caption("For privacy, only generated report exports are kept in this session. Original screenplay uploads are not saved.")
-        return
-    query = st.text_input("Search reports", placeholder="Search by show title…", key="report_history_search").strip().lower()
-    filtered = [item for item in history if query in item["title"].lower()]
-    st.caption(f"{len(filtered)} reports · up to 10 recent runs in this session")
-    selected = st.session_state.get("open_history_report")
-    if selected:
-        item = next((x for x in history if x["id"] == selected), None)
-        if item:
-            c1, c2 = st.columns([4, 1], vertical_alignment="center")
-            c1.subheader(item["title"])
-            c2.caption(item["created"])
-            if st.button("← Back to history", key="history_back"):
-                st.session_state.pop("open_history_report", None)
-                st.rerun()
-            d1, d2, d3, d4 = st.columns(4)
-            d1.download_button("HTML report", item["html"], f"{item['id']}_report.html", "text/html", width="stretch")
-            d2.download_button("Ranked CSV", item["csv"], f"{item['id']}_promos.csv", "text/csv", width="stretch")
-            d3.download_button("Full JSON", item["json"], f"{item['id']}_report.json", "application/json", width="stretch")
-            d4.download_button("Summary", item["markdown"], f"{item['id']}_summary.md", "text/markdown", width="stretch")
-            components.html(item["html"], height=1050, scrolling=True)
-            return
-        st.session_state.pop("open_history_report", None)
-    if not filtered:
-        st.info("No reports match that search.")
-    for item in filtered:
-        with st.container(border=True):
-            left, action = st.columns([5, 1.3], vertical_alignment="center")
-            with left:
-                st.markdown(f"**{item['title']}**")
-                st.caption(f"{item['created']}  ·  {item['episodes']} episodes  ·  {item['promos']} promos  ·  {item['candidates']:,} candidates  ·  {item['model']}")
-            with action:
-                if st.button("Open report", key=f"open_history_{item['id']}", type="primary", width="stretch"):
-                    st.session_state.open_history_report = item["id"]
-                    st.rerun()
-            a, b, c, d = st.columns(4)
-            a.download_button("HTML", item["html"], f"{item['id']}_report.html", "text/html", key=f"hhtml_{item['id']}", width="stretch")
-            b.download_button("CSV", item["csv"], f"{item['id']}_promos.csv", "text/csv", key=f"hcsv_{item['id']}", width="stretch")
-            c.download_button("JSON", item["json"], f"{item['id']}_report.json", "application/json", key=f"hjson_{item['id']}", width="stretch")
-            d.download_button("Markdown", item["markdown"], f"{item['id']}_summary.md", "text/markdown", key=f"hmd_{item['id']}", width="stretch")
-
-
 def render_how_it_works_page() -> None:
     st.html("""<div class="pf pf-page-head">
 <div class="pf-label accent">PRODUCT GUIDE</div><h1>How Promo Finder works</h1>
@@ -355,9 +285,9 @@ if "active_page" not in st.session_state:
 with st.sidebar:
     st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
-    page = st.radio("Navigation", ["Home", "Report History", "How It Works"],
+    page = st.radio("Navigation", ["Home", "How It Works"],
                     key="active_page", label_visibility="collapsed",
-                    format_func=lambda value: {"Home": "⌂   Home", "Report History": "▤   Report History",
+                    format_func=lambda value: {"Home": "⌂   Home",
                                                "How It Works": "ⓘ   How It Works"}[value])
     st.divider()
     go = False
@@ -387,10 +317,7 @@ with st.sidebar:
 <div class="pf-quickstat"><span class="ico">▱</span><div><b>ZIP · TXT</b><small>Script formats</small></div></div>
 <div class="pf-quickstat"><span class="ico">✦</span><div><b>AI + Rules</b><small>Editorial workflow</small></div></div></div>""")
 
-# Secondary pages are independent of the upload and analysis workflow.
-if page == "Report History":
-    render_report_history()
-    st.stop()
+# The guide page is independent of the upload and analysis workflow.
 if page == "How It Works":
     render_how_it_works_page()
     st.stop()
@@ -498,7 +425,6 @@ if go:
         progress_panel.empty()
     st.session_state.result = res
     st.session_state.checks = run_checks(res)
-    save_report_history(res)
     st.rerun()
 
 res = st.session_state.result
