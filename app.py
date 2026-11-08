@@ -56,6 +56,54 @@ st.markdown("<style>\n/* Final overrides appended after all base styles. */\n@me
 st.markdown("<style>\n.st-key-upload_zone{position:relative!important;height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{height:190px!important;min-height:190px!important;max-height:190px!important;padding-bottom:42px!important}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){position:absolute!important;left:0!important;right:0!important;bottom:8px!important;z-index:6!important;pointer-events:none!important}\n.pf-upload-limit{font-family:Inter,system-ui,sans-serif!important;font-size:14px!important;line-height:18px!important;text-align:center!important;color:#5B5B63!important;margin:0!important;padding:0!important}\n.st-key-home_upload_panel{padding-bottom:16px!important}\n</style>", unsafe_allow_html=True)
 
 
+st.markdown("<style>
+/* A single real uploader action button; no pseudo-button duplicates. */
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] > button,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzone"] > button{display:none!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"],
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"]{
+  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;
+  justify-content:center!important;width:100%!important;height:100%!important;min-height:0!important;
+  padding:0!important;margin:0!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important
+}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p,
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] span,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] p,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] span{display:none!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  position:relative!important;inset:auto!important;transform:none!important;left:auto!important;bottom:auto!important;
+  width:240px!important;height:54px!important;min-height:54px!important;margin:0 auto!important;padding:0 18px!important;
+  border:1px solid #E11D26!important;border-radius:14px!important;background:#E11D26!important;color:#FFFFFF!important;
+  font-size:17px!important;font-weight:700!important;text-indent:0!important;box-shadow:0 4px 12px rgba(225,29,38,.17)!important
+}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button::before,
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button::after,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button::before,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button::after{content:none!important;display:none!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button:hover,
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button:hover{background:#C8141D!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{
+  min-height:180px!important;height:180px!important;max-height:180px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:10px!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important
+}
+.st-key-upload_zone_compact{min-height:108px!important;padding:12px!important;border:1px dashed #F1B7BB!important;
+  border-radius:16px!important;background:#FFF5F5!important}
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzone"]{
+  height:78px!important;min-height:78px!important;max-height:78px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border:0!important;background:transparent!important;padding:0!important
+}
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{width:220px!important;height:52px!important;min-height:52px!important}
+.st-key-upload_zone_compact [data-testid="stFileUploaderFile"],
+.st-key-upload_zone_compact [data-testid="stFileUploaderFileName"],
+.st-key-upload_zone_compact .stFileUploaderFile{display:none!important}
+.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"]{height:auto!important}
+</style>", unsafe_allow_html=True)
+
+
 
 def sb_head(n: str, text: str) -> None:
     st.html(f'<div class="pf-sbh"><b>{n}</b>{text}</div>')
@@ -372,27 +420,53 @@ if page == "Home" and "result" not in st.session_state and not go:
             'text-underline-offset:2px;font-weight:600">choose files</span></div></div>'
         )
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
-        with st.container(key="upload_zone"):
-            st.file_uploader(
-                "Upload your microdrama scripts",
-                type=["zip", "txt"],
-                accept_multiple_files=True,
-                key=upload_key,
-                on_change=select_uploads,
-                args=(upload_key,),
-                label_visibility="collapsed",
-                max_upload_size=50,
-            )
-            st.html('<div class="pf-upload-limit">Up to 50MB per file • ZIP, TXT</div>')
+
+        if files:
+            # Selected state: one native picker button on the left, selected scripts listed on the right.
+            with st.container(key="upload_zone_compact"):
+                upload_col, selected_col = st.columns([0.95, 1.55], gap="large", vertical_alignment="center")
+                with upload_col:
+                    st.file_uploader(
+                        "Upload more scripts", type=["zip", "txt"], accept_multiple_files=True,
+                        key=upload_key, on_change=select_uploads, args=(upload_key,),
+                        label_visibility="collapsed", max_upload_size=50,
+                    )
+                with selected_col:
+                    cards = []
+                    for uploaded in files:
+                        size_kb = uploaded.size / 1024
+                        size_label = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb / 1024:.2f} MB"
+                        safe_name = html_escape(uploaded.name)
+                        cards.append(
+                            '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;'
+                            'background:#FFFFFF;border:1px solid #E8E3E4;border-radius:12px;margin:5px 0;'
+                            'min-width:0;max-width:100%">'
+                            '<span style="width:38px;height:38px;min-width:38px;display:flex;align-items:center;'
+                            'justify-content:center;border-radius:10px;background:#202024;color:#FFFFFF;'
+                            'font-size:19px">▤</span>'
+                            '<span style="display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden">'
+                            f'<b style="display:block;color:#1A1A1C;font-size:14px;line-height:1.25;'
+                            f'font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{safe_name}</b>'
+                            f'<small style="display:block;color:#777780;font-size:12px;line-height:1.2">{size_label}</small>'
+                            '</span></div>'
+                        )
+                    st.html('<div style="width:100%;min-width:0">' + "".join(cards) + '</div>')
+        else:
+            with st.container(key="upload_zone"):
+                st.file_uploader(
+                    "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
+                    key=upload_key, on_change=select_uploads, args=(upload_key,),
+                    label_visibility="collapsed", max_upload_size=50,
+                )
+
+        st.html('<div style="font-size:14px;line-height:1.3;text-align:center;color:#5B5B63;margin:7px 0 12px">'
+                'Up to 50MB per file • ZIP, TXT</div>')
 
         upload_error = st.session_state.get("upload_error", "")
         if upload_error:
             st.html(f'<div style="padding:10px 13px;margin:5px 0 12px;border:1px solid #F3B7BA;'
                     f'background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5">'
                     f'{html_escape(upload_error)}</div>')
-        if files:
-            names = ", ".join(html_escape(file.name) for file in files)
-            st.html(f'<div style="font-size:13px;color:#4F5964;margin:0 0 12px">Selected: {names}</div>')
 
         label_col, divider_col, input_col, action_col = st.columns(
             [0.72, 0.02, 4.25, 1.45], gap="small", vertical_alignment="center"
