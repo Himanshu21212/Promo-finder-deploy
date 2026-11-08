@@ -657,7 +657,7 @@ if page == "Home" and "result" not in st.session_state and not go:
             st.html(f'<div class="pf-ready-files">Selected: {names}</div>')
 
         label_col, divider_col, input_col, action_col = st.columns(
-            [0.80, 0.02, 4.30, 1.45], gap="small", vertical_alignment="center"
+            [0.65, 0.02, 4.30, 1.45], gap="small", vertical_alignment="center"
         )
         with label_col:
             st.html('<div class="pf-action-label">Show title</div>')
