@@ -10,6 +10,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
+from datetime import datetime
+import uuid
 
 from promo_finder import ui
 from promo_finder.checks import run_checks
@@ -54,6 +57,33 @@ section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#202024;colo
 .pf-page-head h1{font-size:30px;letter-spacing:-.7px;margin:6px 0;color:#171719}
 .pf-page-head p{font-size:15px;color:#666670;margin:0}
 @media(max-width:700px){.pf-how-grid{grid-template-columns:1fr}.pf-page-head h1{font-size:25px}}
+
+/* Home layout: screenshot-matched, restrained Kuku black / white / red. */
+section[data-testid="stSidebar"]{background:#111113!important}
+section[data-testid="stSidebar"] [data-testid="stRadio"] label{padding:10px 12px!important;border-radius:10px!important}
+section[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked){background:linear-gradient(100deg,#e31e24,#9f171c)!important;border-left:0!important}
+section[data-testid="stSidebar"] [data-testid="stRadio"] label p{font-size:15px!important}
+.pf-home-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 24px}
+.pf-home-hero h1{font-size:36px;line-height:1.12;letter-spacing:-1.2px;margin:8px 0 10px;color:#171719}
+.pf-home-hero h1 span{color:#e31e24}
+.pf-home-hero p{font-size:16px;color:#62616a;margin:0;line-height:1.6}
+.pf-home-hero .pf-mascot-welcome{width:112px;height:122px}
+.pf-value-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:16px 0 26px}
+.pf-value{display:flex;align-items:center;gap:12px;padding:7px 20px;border-right:1px solid #e6e3e7}
+.pf-value:first-child{padding-left:0}.pf-value:last-child{border:0}
+.pf-value .ic{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#fff0f0;color:#e31e24;font-size:22px;font-weight:700}
+.pf-value b{display:block;font-size:14px;color:#171719}.pf-value small{display:block;font-size:12px;color:#666670;margin-top:3px}
+.pf-upload-shell{background:#fff;border:1px solid #eee7e9;border-radius:18px;padding:22px 24px 18px;box-shadow:0 7px 26px rgba(30,20,24,.045)}
+.pf-upload-title{text-align:center;font-size:23px;font-weight:700;color:#171719;margin:0 0 3px}
+.pf-upload-sub{text-align:center;color:#666670;font-size:14px;margin:0 0 14px}
+.pf-upload-foot{font-size:12px;color:#777680;text-align:center;margin-top:7px}
+.pf-quickstats{margin-top:22px;padding:16px;border:1px solid #303034;border-radius:14px;background:#1b1b1f}
+.pf-quickstats h4{color:#fff;font-size:14px;margin:0 0 13px}
+.pf-quickstat{display:flex;align-items:center;gap:11px;margin:11px 0;color:#fff}
+.pf-quickstat .ico{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#39191c;color:#ff4449;font-size:17px}
+.pf-quickstat b{display:block;font-size:14px}.pf-quickstat small{display:block;color:#b9b9bf;font-size:12px;margin-top:1px}
+.pf-start-steps{margin-top:22px}
+@media(max-width:850px){.pf-home-hero h1{font-size:29px}.pf-value-row{grid-template-columns:1fr;gap:8px}.pf-value{border:0;padding:6px 0}.pf-home-hero .pf-mascot-welcome{width:78px;height:90px}}
 [data-testid="stToolbarActions"],[data-testid="stMainMenu"],[data-testid="stDecoration"],#MainMenu,footer{display:none!important}
 header[data-testid="stHeader"]{background:transparent;pointer-events:none}
 header[data-testid="stHeader"] button{pointer-events:auto}
@@ -228,6 +258,73 @@ def new_analysis() -> None:
     st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
+def save_report_history(result) -> None:
+    """Save report exports for the current Streamlit session; screenplay source files are not stored."""
+    history = list(st.session_state.get("report_history", []))
+    history.insert(0, {
+        "id": uuid.uuid4().hex[:10],
+        "title": result.title,
+        "created": datetime.now().astimezone().strftime("%d %b %Y, %I:%M %p"),
+        "episodes": result.stats.get("episodes", 0),
+        "promos": result.stats.get("promos", len(result.promos)),
+        "candidates": result.stats.get("candidates", 0),
+        "model": result.model,
+        "html": to_html(result),
+        "csv": to_csv(result.promos),
+        "json": to_json(result),
+        "markdown": to_markdown(result),
+    })
+    st.session_state.report_history = history[:10]
+
+
+def render_report_history() -> None:
+    st.html("""<div class="pf pf-page-head"><div class="pf-label accent">YOUR WORKSPACE</div>
+<h1>Report History</h1><p>Find and reopen reports created during this browser session.</p></div>""")
+    history = list(st.session_state.get("report_history", []))
+    if not history:
+        st.info("No reports yet. Complete an analysis from Home and it will appear here.")
+        st.caption("For privacy, only generated report exports are kept in this session. Original screenplay uploads are not saved.")
+        return
+    query = st.text_input("Search reports", placeholder="Search by show title…", key="report_history_search").strip().lower()
+    filtered = [item for item in history if query in item["title"].lower()]
+    st.caption(f"{len(filtered)} reports · up to 10 recent runs in this session")
+    selected = st.session_state.get("open_history_report")
+    if selected:
+        item = next((x for x in history if x["id"] == selected), None)
+        if item:
+            c1, c2 = st.columns([4, 1], vertical_alignment="center")
+            c1.subheader(item["title"])
+            c2.caption(item["created"])
+            if st.button("← Back to history", key="history_back"):
+                st.session_state.pop("open_history_report", None)
+                st.rerun()
+            d1, d2, d3, d4 = st.columns(4)
+            d1.download_button("HTML report", item["html"], f"{item['id']}_report.html", "text/html", width="stretch")
+            d2.download_button("Ranked CSV", item["csv"], f"{item['id']}_promos.csv", "text/csv", width="stretch")
+            d3.download_button("Full JSON", item["json"], f"{item['id']}_report.json", "application/json", width="stretch")
+            d4.download_button("Summary", item["markdown"], f"{item['id']}_summary.md", "text/markdown", width="stretch")
+            components.html(item["html"], height=1050, scrolling=True)
+            return
+        st.session_state.pop("open_history_report", None)
+    if not filtered:
+        st.info("No reports match that search.")
+    for item in filtered:
+        with st.container(border=True):
+            left, action = st.columns([5, 1.3], vertical_alignment="center")
+            with left:
+                st.markdown(f"**{item['title']}**")
+                st.caption(f"{item['created']}  ·  {item['episodes']} episodes  ·  {item['promos']} promos  ·  {item['candidates']:,} candidates  ·  {item['model']}")
+            with action:
+                if st.button("Open report", key=f"open_history_{item['id']}", type="primary", width="stretch"):
+                    st.session_state.open_history_report = item["id"]
+                    st.rerun()
+            a, b, c, d = st.columns(4)
+            a.download_button("HTML", item["html"], f"{item['id']}_report.html", "text/html", key=f"hhtml_{item['id']}", width="stretch")
+            b.download_button("CSV", item["csv"], f"{item['id']}_promos.csv", "text/csv", key=f"hcsv_{item['id']}", width="stretch")
+            c.download_button("JSON", item["json"], f"{item['id']}_report.json", "application/json", key=f"hjson_{item['id']}", width="stretch")
+            d.download_button("Markdown", item["markdown"], f"{item['id']}_summary.md", "text/markdown", key=f"hmd_{item['id']}", width="stretch")
+
+
 def render_how_it_works_page() -> None:
     st.html("""<div class="pf pf-page-head">
 <div class="pf-label accent">PRODUCT GUIDE</div><h1>How Promo Finder works</h1>
@@ -258,9 +355,10 @@ if "active_page" not in st.session_state:
 with st.sidebar:
     st.html(f'<div class="pf pf-sbbrand" style="margin:0"><div class="pf-brand">{mascot("pf-mascot-brand")}<span>Promo Finder</span></div><p style="font-size:14px;color:var(--mute);margin-top:10px">'
             'Finds promo cuts in microdrama scripts.</p></div>')
-    page = st.radio("Navigation", ["Home", "How It Works"],
+    page = st.radio("Navigation", ["Home", "Report History", "How It Works"],
                     key="active_page", label_visibility="collapsed",
-                    format_func=lambda value: {"Home": "⌂   Home", "How It Works": "ⓘ   How It Works"}[value])
+                    format_func=lambda value: {"Home": "⌂   Home", "Report History": "▤   Report History",
+                                               "How It Works": "ⓘ   How It Works"}[value])
     st.divider()
     go = False
     title = st.session_state.get("show_title", "")
@@ -283,7 +381,16 @@ with st.sidebar:
     else:
         st.caption("AI review unavailable. Contact the app owner.")
 
-# The guide page is independent of the upload and analysis workflow.
+    if page == "Home":
+        st.html("""<div class="pf-quickstats"><h4>Quick facts</h4>
+<div class="pf-quickstat"><span class="ico">▶</span><div><b>20–60 sec</b><small>Promo length</small></div></div>
+<div class="pf-quickstat"><span class="ico">▱</span><div><b>ZIP · TXT</b><small>Script formats</small></div></div>
+<div class="pf-quickstat"><span class="ico">✦</span><div><b>AI + Rules</b><small>Editorial workflow</small></div></div></div>""")
+
+# Secondary pages are independent of the upload and analysis workflow.
+if page == "Report History":
+    render_report_history()
+    st.stop()
 if page == "How It Works":
     render_how_it_works_page()
     st.stop()
@@ -293,19 +400,24 @@ progress_panel = st.empty()
 
 # ---------------------------------------------------------------- first visit
 if "result" not in st.session_state and not go:
-    st.html(f'<div class="pf"><div class="pf-intro-top"><div class="pf-intro"><div class="pf-label accent">Promo Finder</div>' + """
-<h1 class="pf-h2" style="font-size:32px;margin-top:8px">Find the moments worth promoting</h1>
-<p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p></div>""" + mascot("pf-mascot-welcome") + """</div>
+    st.html(f"""<div class="pf-home-hero"><div><div class="pf-label accent">PROMO FINDER</div>
+<h1>Find the moments<br><span>worth promoting</span></h1>
+<p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p></div>{mascot("pf-mascot-welcome")}</div>
+<div class="pf-value-row">
+<div class="pf-value"><span class="ic">ϟ</span><div><b>AI + Rules Engine</b><small>Scores and reranks promos</small></div></div>
+<div class="pf-value"><span class="ic">◎</span><div><b>Script-accurate</b><small>Exact source timestamps</small></div></div>
+<div class="pf-value"><span class="ic">▱</span><div><b>Editor-ready</b><small>Reports, CSV and more</small></div></div>
 </div>""")
     with st.container(key="home_upload_panel"):
-        st.html('<div class="pf"><h2 class="pf-home-title">Upload scripts to get started</h2>'
-                '<p class="pf-home-hint">Drag your scripts into the box below, or use Upload to choose your files.</p></div>')
+        st.html('<div class="pf-upload-shell"><h2 class="pf-upload-title">Upload your microdrama scripts</h2>'
+                '<p class="pf-upload-sub">Drag and drop a ZIP or TXT file here, or choose files below.</p></div>')
         home_upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         st.file_uploader("Upload scripts", type=["zip", "txt"], accept_multiple_files=True,
                          key=home_upload_key, on_change=select_uploads, args=(home_upload_key,),
                          label_visibility="collapsed", help="Timestamped screenplays. ZIP and TXT files, up to 50 MB per file.")
         if files:
             st.caption("Ready: " + ", ".join(f.name for f in files))
+        st.html('<div class="pf-upload-foot">Up to 50MB per file · ZIP, TXT</div>')
         home_title = st.text_input("Show title", key="home_title", placeholder="e.g. The Maid Was the Heiress",
                       on_change=sync_title, args=("home_title", "show_title"),
                       help="Check the title before starting. It helps the reviewer understand the show's premise.")
@@ -386,6 +498,7 @@ if go:
         progress_panel.empty()
     st.session_state.result = res
     st.session_state.checks = run_checks(res)
+    save_report_history(res)
     st.rerun()
 
 res = st.session_state.result
