@@ -56,52 +56,7 @@ st.markdown("<style>\n/* Final overrides appended after all base styles. */\n@me
 st.markdown("<style>\n.st-key-upload_zone{position:relative!important;height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{height:190px!important;min-height:190px!important;max-height:190px!important;padding-bottom:42px!important}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){position:absolute!important;left:0!important;right:0!important;bottom:8px!important;z-index:6!important;pointer-events:none!important}\n.pf-upload-limit{font-family:Inter,system-ui,sans-serif!important;font-size:14px!important;line-height:18px!important;text-align:center!important;color:#5B5B63!important;margin:0!important;padding:0!important}\n.st-key-home_upload_panel{padding-bottom:16px!important}\n</style>", unsafe_allow_html=True)
 
 
-st.markdown("<style>
-/* A single real uploader action button; no pseudo-button duplicates. */
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] > button,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzone"] > button{display:none!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"],
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"]{
-  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;
-  justify-content:center!important;width:100%!important;height:100%!important;min-height:0!important;
-  padding:0!important;margin:0!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important
-}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p,
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] span,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] p,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] span{display:none!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  position:relative!important;inset:auto!important;transform:none!important;left:auto!important;bottom:auto!important;
-  width:240px!important;height:54px!important;min-height:54px!important;margin:0 auto!important;padding:0 18px!important;
-  border:1px solid #E11D26!important;border-radius:14px!important;background:#E11D26!important;color:#FFFFFF!important;
-  font-size:17px!important;font-weight:700!important;text-indent:0!important;box-shadow:0 4px 12px rgba(225,29,38,.17)!important
-}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button::before,
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button::after,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button::before,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button::after{content:none!important;display:none!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button:hover,
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button:hover{background:#C8141D!important}
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{
-  min-height:180px!important;height:180px!important;max-height:180px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:10px!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important
-}
-.st-key-upload_zone_compact{min-height:108px!important;padding:12px!important;border:1px dashed #F1B7BB!important;
-  border-radius:16px!important;background:#FFF5F5!important}
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzone"]{
-  height:78px!important;min-height:78px!important;max-height:78px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  border:0!important;background:transparent!important;padding:0!important
-}
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{width:220px!important;height:52px!important;min-height:52px!important}
-.st-key-upload_zone_compact [data-testid="stFileUploaderFile"],
-.st-key-upload_zone_compact [data-testid="stFileUploaderFileName"],
-.st-key-upload_zone_compact .stFileUploaderFile{display:none!important}
-.st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"]{height:auto!important}
-</style>", unsafe_allow_html=True)
+st.markdown("<style>\n/* A single real uploader action button; no pseudo-button duplicates. */\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"] > button,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzone\"] > button{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"],\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"]{\n  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;\n  justify-content:center!important;width:100%!important;height:100%!important;min-height:0!important;\n  padding:0!important;margin:0!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] span,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] span{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button{\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  position:relative!important;inset:auto!important;transform:none!important;left:auto!important;bottom:auto!important;\n  width:240px!important;height:54px!important;min-height:54px!important;margin:0 auto!important;padding:0 18px!important;\n  border:1px solid #E11D26!important;border-radius:14px!important;background:#E11D26!important;color:#FFFFFF!important;\n  font-size:17px!important;font-weight:700!important;text-indent:0!important;box-shadow:0 4px 12px rgba(225,29,38,.17)!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after{content:none!important;display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover{background:#C8141D!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{\n  min-height:180px!important;height:180px!important;max-height:180px!important;\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  padding:10px!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important\n}\n.st-key-upload_zone_compact{min-height:108px!important;padding:12px!important;border:1px dashed #F1B7BB!important;\n  border-radius:16px!important;background:#FFF5F5!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzone\"]{\n  height:78px!important;min-height:78px!important;max-height:78px!important;\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  border:0!important;background:transparent!important;padding:0!important\n}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button{width:220px!important;height:52px!important;min-height:52px!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderFile\"],\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderFileName\"],\n.st-key-upload_zone_compact .stFileUploaderFile{display:none!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"]{height:auto!important}\n</style>", unsafe_allow_html=True)
 
 
 
