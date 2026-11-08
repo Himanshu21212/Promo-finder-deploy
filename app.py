@@ -539,6 +539,7 @@ with st.sidebar:
                               help="The title helps the system understand the show's premise.")
         go = st.button("Find Promos", type="primary", width="stretch",
                        disabled=not files)
+    if "result" in st.session_state:
         if st.button("New analysis", key="sidebar_new_analysis", width="stretch"):
             new_analysis()
             st.rerun()
