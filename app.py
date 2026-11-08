@@ -408,6 +408,7 @@ if page == "Home" and "result" not in st.session_state and not go:
                             '</span></div>'
                         )
                     st.html('<div style="width:100%;min-width:0">' + "".join(cards) + '</div>')
+                st.html('<div style="font-size:14px;line-height:1.3;text-align:center;color:#5B5B63;margin:8px 0 0">Up to 50MB per file • ZIP, TXT</div>')
         else:
             with st.container(key="upload_zone"):
                 st.file_uploader(
@@ -415,9 +416,7 @@ if page == "Home" and "result" not in st.session_state and not go:
                     key=upload_key, on_change=select_uploads, args=(upload_key,),
                     label_visibility="collapsed", max_upload_size=50,
                 )
-
-        st.html('<div style="font-size:14px;line-height:1.3;text-align:center;color:#5B5B63;margin:7px 0 12px">'
-                'Up to 50MB per file • ZIP, TXT</div>')
+                st.html('<div class="pf-upload-limit">Up to 50MB per file • ZIP, TXT</div>')
 
         upload_error = st.session_state.get("upload_error", "")
         if upload_error:
