@@ -297,33 +297,49 @@ progress_panel = st.empty()
 # ---------------------------------------------------------------- first visit
 if page == "Home" and "result" not in st.session_state and not go:
     features = "".join([
-        feature_item("bolt", "AI + Rules Engine", "Scores & reranks promos"),
-        feature_item("target", "Script-accurate", "Exact timestamps"),
-        feature_item("layers", "Editor-ready", "Reports, CSV & more"),
+        feature_item("bolt", "AI + Rules Engine", "Scores & reranks promos", True),
+        feature_item("target", "Script-accurate", "Exact timestamps", True),
+        feature_item("layers", "Editor-ready", "Reports, CSV & more", False),
     ])
     steps = (
         process_step(1, "upload", "Upload your story",
                      "One episode or a full season of timestamped screenplays.")
-        + '<div class="pf-step-arrow">→</div>'
+        + '<div style="font-size:27px;color:#E11D26;text-align:center">→</div>'
         + process_step(2, "list", "Review the strongest moments",
                        "Ranked 20–60 second cuts, with hooks and cliffhangers.")
-        + '<div class="pf-step-arrow">→</div>'
+        + '<div style="font-size:27px;color:#E11D26;text-align:center">→</div>'
         + process_step(3, "clapper", "Take it to your editor",
                        "Exact cut points, editorial notes and reports to share.")
     )
     st.html(f"""
-<div class="pf-home-hero">
-  <div class="pf-home-hero-copy">
-    <div class="pf-home-eyebrow">PROMO FINDER</div>
-    <h1 style="font-size:clamp(48px,4.1vw,64px);line-height:1.05;letter-spacing:-1.9px;font-weight:750;color:#1A1A1C;margin:12px 0 13px">Find the moments<br><span style="color:#E11D26">worth promoting</span></h1>
-    <p>Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.</p>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:158px;margin:0 0 14px">
+  <div style="flex:1 1 auto;min-width:0;max-width:820px">
+    <div style="font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.5px;color:#E11D26;text-transform:uppercase">PROMO FINDER</div>
+    <h1 style="font-family:Inter,system-ui,sans-serif;font-size:56px;line-height:1.04;letter-spacing:-1.8px;font-weight:750;color:#1A1A1C;margin:10px 0 12px">
+      Find the moments<br><span style="color:#E11D26">worth promoting</span>
+    </h1>
+    <p style="font-size:18px;line-height:1.45;color:#5B5B63;margin:0;max-width:820px">
+      Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.
+    </p>
   </div>
-  <div class="pf-home-art" style="position:relative;width:300px;min-width:250px;height:190px;flex:0 0 300px;display:flex;align-items:center;justify-content:center;overflow:hidden">{feature_hero_art()}</div>
+  <div style="position:relative;display:flex;align-items:center;justify-content:center;width:230px;min-width:210px;height:160px;overflow:hidden">
+    {mascot("pf-mascot-welcome")}
+  </div>
 </div>
-<div class="pf-feature-row">{features}</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:8px 0 24px">
+  {features}
+</div>
 """)
 
     with st.container(key="home_upload_panel"):
+        st.html(
+            '<div style="text-align:center;padding:0 0 14px">'
+            '<div style="font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
+            'Upload your microdrama scripts</div>'
+            '<div style="font-size:15px;line-height:1.45;color:#5B5B63;margin-top:5px">'
+            'Drag &amp; drop a ZIP or TXT file here, or <span style="color:#E11D26;text-decoration:underline;'
+            'text-underline-offset:2px;font-weight:600">choose files</span></div></div>'
+        )
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
         with st.container(key="upload_zone"):
             st.file_uploader(
@@ -334,31 +350,27 @@ if page == "Home" and "result" not in st.session_state and not go:
                 on_change=select_uploads,
                 args=(upload_key,),
                 label_visibility="collapsed",
-                help="ZIP or TXT screenplays · 50MB maximum per file.",
+                max_upload_size=50,
             )
-            if not files:
-                st.html(f"""
-<div class="pf-dropzone-overlay">
-  <div class="cloud">{svg_icon("cloud-upload", 56)}</div>
-  <h2>Upload your microdrama scripts</h2>
-  <p>Drag &amp; drop a ZIP or TXT file here, or <span class="pf-inline-link">choose files</span></p>
-  <div class="limit">Up to 50MB per file • ZIP, TXT</div>
-</div>""")
+        st.html('<div style="font-size:14px;line-height:1.3;text-align:center;color:#5B5B63;margin:8px 0 16px">'
+                'Up to 50MB per file • ZIP, TXT</div>')
 
         upload_error = st.session_state.get("upload_error", "")
         if upload_error:
-            st.html(f'<div class="pf-upload-error">{svg_icon("info", 17)}<span>{html_escape(upload_error)}</span></div>')
+            st.html(f'<div style="padding:10px 13px;margin:5px 0 12px;border:1px solid #F3B7BA;'
+                    f'background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5">'
+                    f'{html_escape(upload_error)}</div>')
         if files:
             names = ", ".join(html_escape(file.name) for file in files)
-            st.html(f'<div class="pf-ready-files">Selected: {names}</div>')
+            st.html(f'<div style="font-size:13px;color:#4F5964;margin:0 0 12px">Selected: {names}</div>')
 
         label_col, divider_col, input_col, action_col = st.columns(
-            [0.65, 0.02, 4.30, 1.45], gap="small", vertical_alignment="center"
+            [0.72, 0.02, 4.25, 1.45], gap="small", vertical_alignment="center"
         )
         with label_col:
-            st.html('<div class="pf-action-label">Show title</div>')
+            st.html('<div style="font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap">Show title</div>')
         with divider_col:
-            st.html('<div class="pf-action-divider"></div>')
+            st.html('<div style="height:42px;background:#E5E5E8;width:1px"></div>')
         with input_col:
             home_title = st.text_input(
                 "Show title",
@@ -371,12 +383,12 @@ if page == "Home" and "result" not in st.session_state and not go:
         with action_col:
             go = st.button("Find Promos", key="find_home", type="primary",
                            width="stretch", disabled=not files)
-
         if go:
             title = home_title
 
     if not go:
-        st.html(f'<div class="pf-start-steps">{steps}</div>')
+        st.html(f'<div style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
+                f'gap:12px;align-items:center;margin:18px auto 0">{steps}</div>')
         st.stop()
 
 # ---------------------------------------------------------------- run
