@@ -255,9 +255,11 @@ with st.sidebar:
         '<p style="font-size:15px;line-height:1.55;color:#B5B5BC;margin:7px 0 26px;max-width:250px">'
         'Finds promo cuts in microdrama scripts.</p>'
     )
-    for label, key, symbol in (("Home", "home", "⌂"), ("How it Works", "how", "ⓘ")):
+    for label, key, nav_icon in (("Home", "home", ":material/home:"),
+                                      ("How it Works", "how", ":material/info:")):
         active = st.session_state.active_page == label
-        st.button(f"{symbol}   {label}", key=f"nav_{key}", type="primary" if active else "secondary",
+        st.button(label, key=f"nav_{key}", icon=nav_icon,
+                  type="primary" if active else "secondary",
                   width="stretch", on_click=set_active_page, args=(label,))
 
     st.html('<div style="height:1px;background:#2A2A2D;margin:24px 0"></div>')
