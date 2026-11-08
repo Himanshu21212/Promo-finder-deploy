@@ -73,4 +73,23 @@ Cost estimate
 About ₹0.81 for a 50-episode AI review, based on roughly 37.6k input and 3.9k output tokens. This excludes retries and tax.
 This is a prompt-size estimate, not a billing measurement. The Sarvam dashboard is authoritative.
 
+promo_finder/
+  parser.py      screenplay → timed beats; input warnings
+  lexicon.py     hook words, cliffhanger cues, themes, context words
+  scoring.py     beat scores and show premise
+  candidates.py  single/stitched cuts, hard rules, candidate scores, flags
+  rank.py        selection, posting order, rationale
+  llm.py         AI judge and guardrails
+  usage.py       server-side Sarvam configuration and usage
+  compare.py     rules-only vs AI comparison
+  checks.py      post-run validation
+  report.py      HTML / CSV / JSON / Markdown exports
+  ui.py          shared report and app UI components
+  cli.py         command-line interface
+app.py           Streamlit application
+docs/            solution document source and PDF build script
+samples/         demo screenplay ZIP
+static/          fonts and app assets
+tests/           automated tests
+tools/           benchmark and prompt measurement utilities
 
