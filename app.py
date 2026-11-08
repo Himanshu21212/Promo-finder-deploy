@@ -286,7 +286,7 @@ section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#1d1d20!impo
 }
 .st-key-upload_zone [data-testid="stFileUploaderDropzone"]:hover{border-color:#E11D26!important;background:#FFF3F3!important}
 .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"]{position:absolute!important;inset:0!important;
-  padding:0!important;opacity:0!important;pointer-events:none!important}
+  padding:0!important;color:transparent!important;font-size:0!important;pointer-events:none!important}
 .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p{display:none!important}
 .st-key-upload_zone [data-testid="stElementContainer"]:has(.pf-dropzone-overlay){
   position:absolute!important;inset:0!important;height:250px!important;z-index:3!important;pointer-events:none!important}
@@ -298,6 +298,9 @@ section[data-testid="stSidebar"] [data-testid="stAlert"]{background:#1d1d20!impo
 .pf-dropzone-overlay p{position:absolute;left:8px;right:8px;top:116px;font-size:16px;line-height:1.4;color:#5B5B63;margin:0}
 .pf-inline-link{color:#E11D26;text-decoration:underline;text-underline-offset:2px;font-weight:600}
 .pf-dropzone-overlay .limit{position:absolute;left:0;right:0;bottom:13px;font-size:15px;line-height:1.2;color:#5B5B63}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important
+}
 .st-key-upload_zone [data-testid="stFileUploaderDropzone"] button{
   position:absolute!important;left:50%!important;bottom:42px!important;transform:translateX(-50%)!important;
   width:260px!important;max-width:calc(100% - 32px)!important;height:56px!important;min-height:56px!important;
