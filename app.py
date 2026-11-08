@@ -224,32 +224,51 @@ def set_active_page(name: str) -> None:
 
 
 with st.sidebar:
-    st.html(f'<div class="pf-sidebar-brand">{mascot("pf-mascot-brand")}<b>Promo Finder</b></div>'
-            '<p class="pf-sidebar-tagline">Finds promo cuts in microdrama scripts.</p>')
-    for label, key, icon in (("Home", "home", "home"), ("How it Works", "how", "info")):
+    st.html(
+        f'<div style="display:flex;align-items:center;gap:12px;margin:0 0 7px">'
+        f'{mascot("pf-mascot-brand")}'
+        '<b style="font-size:24px;line-height:1.1;font-weight:700;letter-spacing:-.6px;color:#FFFFFF">Promo Finder</b>'
+        '</div>'
+        '<p style="font-size:15px;line-height:1.55;color:#B5B5BC;margin:7px 0 26px;max-width:250px">'
+        'Finds promo cuts in microdrama scripts.</p>'
+    )
+    for label, key, symbol in (("Home", "home", "⌂"), ("How it Works", "how", "ⓘ")):
         active = st.session_state.active_page == label
-        icon_col, button_col = st.columns([0.42, 3.58], gap="small", vertical_alignment="center")
-        with icon_col:
-            st.html(f'<div class="pf-sidebar-nav-icon">{svg_icon(icon, 22)}</div>')
-        with button_col:
-            st.button(label, key=f"nav_{key}", type="primary" if active else "secondary",
-                      width="stretch", on_click=set_active_page, args=(label,))
+        st.button(f"{symbol}   {label}", key=f"nav_{key}", type="primary" if active else "secondary",
+                  width="stretch", on_click=set_active_page, args=(label,))
 
-    st.html('<div class="pf-sidebar-divider"></div>')
+    st.html('<div style="height:1px;background:#2A2A2D;margin:24px 0"></div>')
     if config.configured:
-        st.html('<div class="pf-sidebar-status"><span class="dot"></span><span>AI review enabled</span></div>')
+        st.html('<div style="display:flex;align-items:center;gap:11px;padding:17px 16px;'
+                'background:#161618;border:1px solid #232326;border-radius:14px;color:#FFFFFF;'
+                'font-size:16px;font-weight:600;margin:0 0 28px">'
+                '<span style="width:12px;height:12px;border-radius:50%;background:#22C55E;'
+                'box-shadow:0 0 0 4px rgba(34,197,94,.12),0 0 12px rgba(34,197,94,.55)"></span>'
+                'AI review enabled</div>')
     else:
-        st.html('<div class="pf-sidebar-status"><span class="dot" style="background:#F59E0B"></span>'
-                '<span>AI review unavailable</span></div>')
+        st.html('<div style="display:flex;align-items:center;gap:11px;padding:17px 16px;'
+                'background:#161618;border:1px solid #232326;border-radius:14px;color:#FFFFFF;'
+                'font-size:16px;font-weight:600;margin:0 0 28px">'
+                '<span style="width:12px;height:12px;border-radius:50%;background:#F59E0B"></span>'
+                'AI review unavailable</div>')
 
-    st.html(f"""
-<div class="pf-quickstats">
-  <h4>Quick Stats</h4>
-  <div class="pf-quickstat"><span class="ico">{svg_icon("play", 24)}</span>
-    <div><b>20 – 60 sec</b><small>Promo length</small></div></div>
-  <div class="pf-quickstat"><span class="ico">{svg_icon("layers", 24)}</span>
-    <div><b>4</b><small>Export formats</small></div></div>
-</div>""")
+    st.html(
+        '<div style="padding:20px;background:#161618;border:1px solid #232326;border-radius:18px;margin:0">'
+        '<div style="font-size:18px;font-weight:700;color:#FFFFFF;margin:0 0 16px">Quick Stats</div>'
+        '<div style="display:flex;align-items:center;gap:14px;margin:13px 0 0">'
+        '<span style="width:48px;height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;'
+        'border-radius:12px;background:#2A1213;color:#E11D26;font-size:25px;font-weight:700">▶</span>'
+        '<span style="display:flex;flex-direction:column;gap:3px">'
+        '<b style="font-size:18px;line-height:1.2;color:#FFFFFF">20 – 60 sec</b>'
+        '<small style="font-size:14px;line-height:1.3;color:#B5B5BC">Promo length</small></span></div>'
+        '<div style="display:flex;align-items:center;gap:14px;margin:13px 0 0">'
+        '<span style="width:48px;height:48px;min-width:48px;display:flex;align-items:center;justify-content:center;'
+        'border-radius:12px;background:#2A1213;color:#E11D26;font-size:24px;font-weight:700">▱</span>'
+        '<span style="display:flex;flex-direction:column;gap:3px">'
+        '<b style="font-size:18px;line-height:1.2;color:#FFFFFF">4</b>'
+        '<small style="font-size:14px;line-height:1.3;color:#B5B5BC">Export formats</small></span></div>'
+        '</div>'
+    )
 
     if "result" in st.session_state:
         st.button("New analysis", key="sidebar_new_analysis", width="stretch",
