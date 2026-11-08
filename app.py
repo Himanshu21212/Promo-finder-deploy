@@ -29,7 +29,8 @@ st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "f
 
 
 st.html(ui.css("static"))
-st.html(ROOT / "static" / "promo-finder.css")
+PROMO_FINDER_CSS = (ROOT / "static" / "promo-finder.css").read_text(encoding="utf-8")
+st.html(f"<style>{PROMO_FINDER_CSS}</style>")
 
 
 def sb_head(n: str, text: str) -> None:
