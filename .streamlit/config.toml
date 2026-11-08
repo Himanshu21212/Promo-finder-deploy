@@ -1,15 +1,15 @@
 [theme]
 base = "light"
-primaryColor = "#E11D26"
-backgroundColor = "#FBF9F9"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#1A1A1C"
-linkColor = "#E11D26"
-borderColor = "#F0E6E7"
+primaryColor = "#d6194a"
+backgroundColor = "#f6f6f3"
+secondaryBackgroundColor = "#ecece8"
+textColor = "#121216"
+linkColor = "#b3133d"
+borderColor = "#d9d9d3"
 showWidgetBorder = true
 showSidebarBorder = true
-baseRadius = "14px"
-buttonRadius = "14px"
+baseRadius = "10px"
+buttonRadius = "10px"
 font = "Inter, sans-serif"
 headingFont = "Inter, sans-serif"
 codeFont = "'JetBrains Mono', monospace"
@@ -39,9 +39,9 @@ url = "app/static/fonts/jetbrains-mono-latin-400-normal.woff2"
 weight = 400
 
 [theme.sidebar]
-backgroundColor = "#0D0D0E"
-secondaryBackgroundColor = "#161618"
-borderColor = "#232326"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f4f4f1"
+borderColor = "#e3e3de"
 
 [client]
 toolbarMode = "viewer"
