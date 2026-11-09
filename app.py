@@ -309,20 +309,19 @@ def new_analysis() -> None:
 def render_how_it_works_page() -> None:
     st.markdown("""
     <style>
-    /* Force Streamlit main container top padding to 0 for How It Works page */
-    div[data-testid="stAppViewContainer"] > .main .block-container,
-    .main .block-container {
-        padding-top: 0rem !important;
-        margin-top: -30px !important;
+    /* Force Streamlit container to eliminate upper whitespace */
+    [data-testid="stAppViewContainer"] .main .block-container {
+        padding-top: 0.5rem !important;
     }
+    /* Pull the header card up over Streamlit's default container padding */
     .pf-page-head {
-        margin-top: 0 !important;
+        margin-top: -45px !important;
         padding-top: 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
     st.html("""
-<div class="pf pf-page-head" style="margin-top:0 !important;padding-top:0 !important">
+<div class="pf pf-page-head">
 <div class="pf-label accent">PRODUCT GUIDE</div><h1 style="margin-top:2px">How Promo Finder works</h1>
 <p>From timestamped screenplay files to a ranked, editor-ready promo shortlist.</p>
 </div>
@@ -343,7 +342,6 @@ def render_how_it_works_page() -> None:
   <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download HTML, CSV, JSON and Markdown reports to take the cut points into editing.</p></article>
 </div>
 <div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
-
 # ---------------------------------------------------------------- sidebar
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
