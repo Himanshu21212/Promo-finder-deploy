@@ -198,7 +198,7 @@ section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover {
     border-radius: 8px 8px 0 0;
 }
 </style>
-""", unsafe_allow_html=True)git add app.py
+""", unsafe_allow_html=True)
 
 
 def sb_head(n: str, text: str) -> None:
