@@ -307,8 +307,11 @@ def new_analysis() -> None:
 
 
 def render_how_it_works_page() -> None:
-    st.html("""<div class="pf pf-page-head">
-<div class="pf-label accent">PRODUCT GUIDE</div><h1>How Promo Finder works</h1>
+    st.html("""<style>
+.main .block-container { padding-top: 0.5rem !important; }
+</style>
+<div class="pf pf-page-head" style="margin-top:-15px !important;padding-top:0 !important">
+<div class="pf-label accent">PRODUCT GUIDE</div><h1 style="margin-top:2px">How Promo Finder works</h1>
 <p>From timestamped screenplay files to a ranked, editor-ready promo shortlist.</p>
 </div>
 <div class="pf pf-how-grid">
@@ -328,7 +331,6 @@ def render_how_it_works_page() -> None:
   <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download HTML, CSV, JSON and Markdown reports to take the cut points into editing.</p></article>
 </div>
 <div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
-
 
 # ---------------------------------------------------------------- sidebar
 if "active_page" not in st.session_state:
