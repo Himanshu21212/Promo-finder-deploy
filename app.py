@@ -30,76 +30,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Modernized UI Styling System (Top Space Fix & Clean Compact Layout)
+# Clean, Non-Breaking Corporate Palette Styling
 st.markdown("""
 <style>
-/* Completely hide Streamlit default top header bar & eliminate top whitespace */
-header[data-testid="stHeader"], 
-[data-testid="stHeader"],
-.stAppHeader {
-    display: none !important;
-    height: 0px !important;
-    min-height: 0px !important;
-    padding: 0px !important;
-    margin: 0px !important;
-}
-
-[data-testid="stAppViewContainer"] > .main .block-container,
-.main .block-container,
-.block-container {
-    padding-top: 0rem !important;
-    margin-top: 0rem !important;
-    max-width: 100% !important;
-}
-
-@media(min-width:861px){
-    .main .block-container {
-        padding-top: 0rem !important;
-        padding-left: 40px !important;
-        padding-right: 40px !important;
-        padding-bottom: 32px !important;
-    }
-}
-
-/* Global Modern Reset & Typography */
-.pf {
-    --bg: #FBF9F9;
-    --surface: #ffffff;
-    --surface2: #F6F5F8;
-    --surface3: #EBE9EF;
-    --line: #E6E5EA;
-    --line2: #D7D5DE;
-    --ink: #171719;
-    --ink2: #414148;
-    --mute: #5B5B63;
-    --faint: #8A8A92;
-    --hook: #E11D26;
-    --hook-bg: #FDEBEC;
-    --cliff: #A85400;
-    --cliff-bg: #FFF6E8;
-    --stitch: #5B3FD6;
-    --stitch-bg: #F2EEFF;
-    --ok: #137A3D;
-    --ok-bg: #EAF7EF;
-    --warn: #8A5A00;
-    --warn-bg: #FFF8E1;
-    --bad: #B42318;
-    --bad-bg: #FDECEB;
-    --accent: #E11D26;
-    --grad: linear-gradient(135deg, #D71920 0%, #9E0F15 100%);
-    --shadow: 0 4px 14px rgba(25, 18, 40, 0.04);
-    --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --mono: 'JetBrains Mono', monospace;
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.stApp, [data-testid="stAppViewContainer"] {
-    background: #FBF9F9 !important;
-    background-image: radial-gradient(ellipse at 96% 0%, rgba(245, 190, 196, 0.12), transparent 35%) !important;
-}
+/* Reset Header Gap without breaking inner content */
+header[data-testid="stHeader"] { display: none !important; }
+.main .block-container { padding-top: 1.5rem !important; }
 
 /* Sidebar Custom Styling */
 section[data-testid="stSidebar"] {
@@ -107,29 +43,22 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #252528 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
-section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {
-    color: #B5B5BC !important;
-}
-
 section[data-testid="stSidebar"] .st-key-nav_home button,
 section[data-testid="stSidebar"] .st-key-nav_how button {
     width: 100% !important;
-    height: 52px !important;
-    min-height: 52px !important;
-    border-radius: 12px !important;
+    height: 48px !important;
+    border-radius: 10px !important;
     justify-content: flex-start !important;
     text-align: left !important;
     padding: 0 16px !important;
     font-size: 15px !important;
     font-weight: 600 !important;
-    box-shadow: none !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
     color: #fff !important;
-    background: linear-gradient(100deg, #D71920 0%, #9E0F15 100%) !important;
-    border: 1px solid #D71920 !important;
+    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+    border: 1px solid #730A0E !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] {
@@ -138,64 +67,31 @@ section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] {
     border: 1px solid #303034 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover {
-    background: #242427 !important;
-    border-color: #48484D !important;
-}
-
-/* Card & Interactive Panel Enhancements */
-.pf-how-card, .pf-step, .pf-start-step {
-    background: #FFFFFF;
-    border: 1px solid #F0E6E7;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(20, 0, 0, 0.03);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.pf-how-card:hover, .pf-start-step:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(20, 0, 0, 0.06);
-}
-
-/* Upload Panel Refinements */
+/* Landing Header & Upload Container Fixes */
 .st-key-home_upload_panel {
     background: #FFFFFF !important;
     border: 1px solid #F0E6E7 !important;
-    border-radius: 20px !important;
-    box-shadow: 0 8px 24px rgba(20, 0, 0, 0.05) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 18px rgba(20, 0, 0, 0.04) !important;
     padding: 24px !important;
 }
 
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"] {
+[data-testid="stFileUploaderDropzone"] {
     background: #FFF5F5 !important;
     border: 1.5px dashed #F1B7BB !important;
-    border-radius: 16px !important;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    border-radius: 14px !important;
+    padding: 20px !important;
+    text-align: center !important;
 }
 
-.st-key-upload_zone [data-testid="stFileUploaderDropzone"]:hover {
-    border-color: #E11D26 !important;
-    background: #FFF0F0 !important;
-}
-
-[data-testid="stBaseButton-primary"] {
-    border-radius: 12px !important;
-    box-shadow: 0 4px 12px rgba(214, 25, 74, 0.18) !important;
+[data-testid="stFileUploaderDropzone"] button {
+    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 22px !important;
     font-weight: 700 !important;
-}
-
-/* Tab Styling Overrides */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    border-bottom: 1px solid #E6E3EB;
-}
-
-.stTabs [data-baseweb="tab"] {
-    font-size: 15px;
-    font-weight: 600;
-    padding: 10px 16px;
-    border-radius: 8px 8px 0 0;
+    margin: 0 auto !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -278,23 +174,6 @@ def process_step(number: int, icon: str, title: str, detail: str) -> str:
     )
 
 
-def film_ribbon() -> str:
-    return """<svg class="pf-film-ribbon" viewBox="0 0 420 190" preserveAspectRatio="none" aria-hidden="true">
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F5C5C8" stroke-width="64"/>
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#FFF" stroke-width="49"/>
-<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
-<path d="M-20 116 C70 -4 128 6 190 81 S310 171 445 26" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
-</svg>"""
-
-
-def feature_hero_art() -> str:
-    return film_ribbon() + mascot("pf-mascot-welcome") + (
-        '<svg class="pf-home-spark" viewBox="0 0 48 48" fill="none" stroke="#E11D26" '
-        'stroke-width="3.2" stroke-linecap="round" aria-hidden="true">'
-        '<path d="M23 2 20 13M38 8l-7 9M45 25l-10 1"/>'
-        '</svg>')
-
-
 def guess_title(files) -> str:
     z = next((f for f in files if f.name.lower().endswith(".zip")), None)
     if not z:
@@ -375,7 +254,7 @@ def render_how_it_works_page() -> None:
 <div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
 
 
-# ---------------------------------------------------------------- Sidebar Nav
+# Sidebar Nav
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
@@ -455,7 +334,7 @@ if page == "How it Works":
 
 progress_panel = st.empty()
 
-# ---------------------------------------------------------------- Landing Screen
+# Landing Screen
 if page == "Home" and "result" not in st.session_state and not go:
     features = "".join([
         feature_item("bolt", "AI + Rules Engine", "Scores & reranks promos", True),
@@ -500,84 +379,9 @@ if page == "Home" and "result" not in st.session_state and not go:
             '<div style="font-size:14px;color:#5B5B63;margin-top:4px">'
             'Drag & drop a ZIP or TXT file here.</div></div>'
         )
-        
-        st.markdown("""
-        <style>
-        /* 1. Center uploader & style upload button */
-        [data-testid="stFileUploaderDropzone"] {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
-            padding: 16px 20px !important;
-            min-height: 120px !important;
-            background: #FFF5F5 !important;
-            border: 1.5px dashed #F1B7BB !important;
-            border-radius: 14px !important;
-        }
-        [data-testid="stFileUploaderDropzoneInstructions"] {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 100% !important;
-        }
-        [data-testid="stFileUploaderDropzone"] button {
-            background: linear-gradient(135deg, #E11D26 0%, #9E0F15 100%) !important;
-            color: #FFFFFF !important;
-            border: none !important;
-            border-radius: 10px !important;
-            padding: 10px 24px !important;
-            font-weight: 700 !important;
-            font-size: 15px !important;
-            margin: 0 auto !important;
-            box-shadow: 0 4px 12px rgba(225, 29, 38, 0.2) !important;
-        }
-        [data-testid="stFileUploaderDropzone"] button:hover {
-            background: linear-gradient(135deg, #C8141D 0%, #7A0A0F 100%) !important;
-        }
-
-        /* 2. Style single file display card & action icons */
-        [data-testid="stFileUploaderFile"] {
-            margin: 8px auto 0 !important;
-            max-width: 480px !important;
-            border-radius: 10px !important;
-            background: #FFFFFF !important;
-            border: 1px solid #E5E5E8 !important;
-        }
-
-        /* 3. Action Row Layout & Centering */
-        .st-key-find_home button {
-            height: 48px !important;
-            font-size: 16px !important;
-            border-radius: 10px !important;
-            transition: all 0.25s ease !important;
-            margin: 0 !important;
-        }
-        
-        .st-key-find_home button:disabled {
-            background: #E5E5E8 !important;
-            color: #8A8A92 !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-        .st-key-find_home button:not(:disabled) {
-            background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
-            color: #FFFFFF !important;
-            box-shadow: 0 4px 14px rgba(142, 14, 18, 0.3) !important;
-            border: 1px solid #730A0E !important;
-        }
-        .st-key-find_home button:not(:disabled):hover {
-            background: linear-gradient(135deg, #A61217 0%, #700B0F 100%) !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
 
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
 
-        # Native Streamlit file uploader (handles uploaded file view automatically)
         st.file_uploader(
             "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
             key=upload_key, on_change=select_uploads, args=(upload_key,),
@@ -590,7 +394,6 @@ if page == "Home" and "result" not in st.session_state and not go:
                     f'background:#FFF1F1;border-radius:8px;color:#B4232A;font-size:13px;line-height:1.4;text-align:center;">'
                     f'{html_escape(upload_error)}</div>')
 
-        # Compact Side-by-Side Action Row
         st.html('<div style="height:12px"></div>')
         input_col, button_col = st.columns([2.5, 1.2], gap="small", vertical_alignment="bottom")
         
@@ -614,7 +417,7 @@ if page == "Home" and "result" not in st.session_state and not go:
                 f'gap:12px;align-items:center;margin:24px auto 0">{steps}</div>')
         st.stop()
 
-# ---------------------------------------------------------------- Analysis Execution
+# Execution
 if go:
     review = ReviewProgress()
     progress_panel.html(review.html())
@@ -832,92 +635,3 @@ if "compare" in st.session_state:
             st.warning("Mock judge: these 'AI' scores are fake test values.")
         st.markdown(compare_md(rules_res, res, cmp))
         st.download_button("Download comparison (CSV)", compare_csv(cmp), f"{slug}_ai_vs_rules.csv", "text/csv")
-
-        # --- FINAL LAYOUT OVERRIDE ---
-# This forces the mascot to the top right and kills the empty header space
-st.markdown("""
-<style>
-/* 1. Nuke the invisible Streamlit header completely */
-header[data-testid="stHeader"], [data-testid="stHeader"] { 
-    display: none !important; 
-    height: 0px !important; 
-}
-.main .block-container { 
-    padding-top: 1.5rem !important; 
-}
-
-/* 2. Force the hero text and mascot to align to the TOP, not the middle */
-.pf-home-hero {
-    align-items: flex-start !important;
-    width: 100% !important;
-    max-width: 100% !important;
-}
-
-/* 3. Push the mascot flush into the empty top-right corner */
-.pf-home-art {
-    justify-content: flex-end !important;
-    margin-top: -5px !important; /* Lifts the mascot up to match the text */
-    flex-grow: 1 !important;
-}
-
-/* 4. Let the feature cards expand to fill the horizontal right-side gap */
-.pf-feature-row {
-    width: 100% !important;
-    max-width: 100% !important;
-}
-</style>
-""", unsafe_allow_html=True)
-# --- PROFESSIONAL DARK RED & CENTERED BUTTON OVERRIDE ---
-st.markdown("""
-<style>
-/* 1. Darker, Executive Crimson Red for Sidebar Active Items */
-section[data-testid="stSidebar"] .st-key-nav_home [data-testid="stBaseButton-primary"],
-section[data-testid="stSidebar"] .st-key-nav_how [data-testid="stBaseButton-primary"],
-section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
-    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
-    border: 1px solid #730A0E !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"]:hover {
-    background: linear-gradient(135deg, #A61217 0%, #700B0F 100%) !important;
-}
-
-/* 2. Primary Action Button ("Find Promos") Darker Red */
-[data-testid="stBaseButton-primary"] {
-    background: linear-gradient(135deg, #8E0E12 0%, #61080B 100%) !important;
-    border: 1px solid #750A0D !important;
-    color: #FFFFFF !important;
-    font-weight: 700 !important;
-}
-
-[data-testid="stBaseButton-primary"]:hover {
-    background: linear-gradient(135deg, #A61217 0%, #720B0F 100%) !important;
-}
-
-/* 3. Center the Action Button Row inside the Upload Panel */
-.st-key-home_upload_panel [data-testid="stHorizontalBlock"] {
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-.st-key-find_home {
-    display: flex !important;
-    justify-content: center !important;
-    width: 100% !important;
-}
-
-.st-key-find_home button {
-    margin: 0 auto !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 220px !important;
-}
-
-/* 4. Remove Duplicate Helper Text under File Uploader */
-.st-key-home_upload_panel + div:has(.pf-upload-limit) {
-    display: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
