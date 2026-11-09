@@ -498,41 +498,106 @@ if page == "Home" and "result" not in st.session_state and not go:
             '<div style="font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
             'Upload your microdrama scripts</div>'
             '<div style="font-size:15px;line-height:1.45;color:#5B5B63;margin-top:5px">'
-            'Drag & drop a ZIP or TXT file here, or <span style="color:#E11D26;text-decoration:underline;'
-            'text-underline-offset:2px;font-weight:600">choose files</span></div></div>'
+            'Drag & drop a ZIP or TXT file here.</div></div>'
         )
+        
+        # Inject Custom CSS to perfectly center the upload button and style the active state
+        st.markdown("""
+        <style>
+        /* 1. Perfect Centering & Highlighting for the Upload Button */
+        [data-testid="stFileUploaderDropzone"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            padding: 30px !important;
+        }
+        [data-testid="stFileUploaderDropzoneInstructions"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+        }
+        [data-testid="stFileUploaderDropzone"] button {
+            background: linear-gradient(135deg, #E11D26 0%, #9E0F15 100%) !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 12px 28px !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 4px 12px rgba(225, 29, 38, 0.2) !important;
+        }
+        [data-testid="stFileUploaderDropzone"] button:hover {
+            background: linear-gradient(135deg, #C8141D 0%, #7A0A0F 100%) !important;
+        }
+        
+        /* 2. Hide Duplicate File Limit Text */
+        .pf-upload-limit { display: none !important; }
+        
+        /* 3. Style the Title Input & Find Promos Button */
+        .st-key-home_title { margin-top: 5px !important; }
+        .st-key-find_home button {
+            height: 54px !important;
+            font-size: 18px !important;
+            border-radius: 12px !important;
+            margin-top: 15px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        /* Make disabled Find Promos button look grayed out but structural */
+        .st-key-find_home button:disabled {
+            background: #E5E5E8 !important;
+            color: #8A8A92 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Make Active Find Promos button pop with dark executive red! */
+        .st-key-find_home button:not(:disabled) {
+            background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 6px 16px rgba(142, 14, 18, 0.3) !important;
+            border: 1px solid #730A0E !important;
+        }
+        .st-key-find_home button:not(:disabled):hover {
+            background: linear-gradient(135deg, #A61217 0%, #700B0F 100%) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
 
         if files:
+            # Center the selected file view
             with st.container(key="upload_zone_compact"):
-                upload_col, selected_col = st.columns([0.95, 1.55], gap="large", vertical_alignment="center")
-                with upload_col:
-                    st.file_uploader(
-                        "Upload more scripts", type=["zip", "txt"], accept_multiple_files=True,
-                        key=upload_key, on_change=select_uploads, args=(upload_key,),
-                        label_visibility="collapsed", max_upload_size=50,
+                st.file_uploader(
+                    "Upload more scripts", type=["zip", "txt"], accept_multiple_files=True,
+                    key=upload_key, on_change=select_uploads, args=(upload_key,),
+                    label_visibility="collapsed", max_upload_size=50,
+                )
+                cards = []
+                for uploaded in files:
+                    size_kb = uploaded.size / 1024
+                    size_label = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb / 1024:.2f} MB"
+                    safe_name = html_escape(uploaded.name)
+                    cards.append(
+                        '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;'
+                        'background:#FFFFFF;border:1px solid #E8E3E4;border-radius:12px;margin:10px auto;'
+                        'min-width:0;max-width:380px;justify-content:flex-start;">'
+                        '<span style="width:38px;height:38px;min-width:38px;display:flex;align-items:center;'
+                        'justify-content:center;border-radius:10px;background:#202024;color:#FFFFFF;'
+                        'font-size:19px">▤</span>'
+                        '<span style="display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden;text-align:left;">'
+                        f'<b style="display:block;color:#1A1A1C;font-size:14px;line-height:1.25;'
+                        f'font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{safe_name}</b>'
+                        f'<small style="display:block;color:#777780;font-size:12px;line-height:1.2">{size_label}</small>'
+                        '</span></div>'
                     )
-                with selected_col:
-                    cards = []
-                    for uploaded in files:
-                        size_kb = uploaded.size / 1024
-                        size_label = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb / 1024:.2f} MB"
-                        safe_name = html_escape(uploaded.name)
-                        cards.append(
-                            '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;'
-                            'background:#FFFFFF;border:1px solid #E8E3E4;border-radius:12px;margin:5px 0;'
-                            'min-width:0;max-width:100%">'
-                            '<span style="width:38px;height:38px;min-width:38px;display:flex;align-items:center;'
-                            'justify-content:center;border-radius:10px;background:#202024;color:#FFFFFF;'
-                            'font-size:19px">▤</span>'
-                            '<span style="display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden">'
-                            f'<b style="display:block;color:#1A1A1C;font-size:14px;line-height:1.25;'
-                            f'font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{safe_name}</b>'
-                            f'<small style="display:block;color:#777780;font-size:12px;line-height:1.2">{size_label}</small>'
-                            '</span></div>'
-                        )
-                    st.html('<div style="width:100%;min-width:0">' + "".join(cards) + '</div>')
-                st.html('<div style="font-size:14px;line-height:1.3;text-align:center;color:#5B5B63;margin:8px 0 0">Up to 50MB per file • ZIP, TXT</div>')
+                st.html('<div style="width:100%;text-align:center;">' + "".join(cards) + '</div>')
         else:
             with st.container(key="upload_zone"):
                 st.file_uploader(
@@ -540,22 +605,19 @@ if page == "Home" and "result" not in st.session_state and not go:
                     key=upload_key, on_change=select_uploads, args=(upload_key,),
                     label_visibility="collapsed", max_upload_size=50,
                 )
-                st.html('<div class="pf-upload-limit">Up to 50MB per file • ZIP, TXT</div>')
 
         upload_error = st.session_state.get("upload_error", "")
         if upload_error:
-            st.html(f'<div style="padding:10px 13px;margin:5px 0 12px;border:1px solid #F3B7BA;'
-                    f'background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5">'
+            st.html(f'<div style="padding:10px 13px;margin:5px auto 12px;max-width:500px;border:1px solid #F3B7BA;'
+                    f'background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5;text-align:center;">'
                     f'{html_escape(upload_error)}</div>')
 
-        label_col, divider_col, input_col, action_col = st.columns(
-            [0.72, 0.02, 4.25, 1.45], gap="small", vertical_alignment="center"
-        )
-        with label_col:
-            st.html('<div style="font-size:17px;font-weight:700;color:#1A1A1C;white-space:nowrap">Show title</div>')
-        with divider_col:
-            st.html('<div style="height:42px;background:#E5E5E8;width:1px"></div>')
-        with input_col:
+        # --- Stack Title and Action Button Vertically in the Center ---
+        
+        _, center_col, _ = st.columns([1, 2.5, 1])
+        
+        with center_col:
+            st.html('<div style="font-size:14px;font-weight:600;color:#5B5B63;text-align:center;margin-bottom:-10px;margin-top:10px;">Show title (optional)</div>')
             home_title = st.text_input(
                 "Show title",
                 key="home_title",
@@ -564,9 +626,10 @@ if page == "Home" and "result" not in st.session_state and not go:
                 on_change=sync_title,
                 args=("home_title", "show_title"),
             )
-        with action_col:
+            
             go = st.button("Find Promos", key="find_home", type="primary",
-                           width="stretch", disabled=not files)
+                           use_container_width=True, disabled=not files)
+            
         if go:
             title = home_title
 
