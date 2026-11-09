@@ -473,6 +473,25 @@ if page == "Home" and "result" not in st.session_state and not go:
 
         st.markdown("""
         <style>
+        /* Glowing Professional "New Analysis" Button */
+section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button {
+    background: linear-gradient(135deg, #1C191A 0%, #121011 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid #E11D26 !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 0 12px rgba(225, 29, 38, 0.35), inset 0 0 8px rgba(225, 29, 38, 0.15) !important;
+    transition: all 0.25s ease-in-out !important;
+}
+
+section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
+    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+    border-color: #FF4D55 !important;
+    box-shadow: 0 0 20px rgba(225, 29, 38, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
         /* Modernized Upload Zone Styling */
         [data-testid="stFileUploaderDropzone"] {
             background: #FFF5F5 !important;
