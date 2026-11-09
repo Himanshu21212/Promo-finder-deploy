@@ -66,14 +66,15 @@ st.markdown("<style>\n/* Final focused fix: vertically centered file picker, siz
 st.markdown("""<style>
 /* ===== HOME SCREEN FIX (scoped to Home only; keep this block LAST) ===== */
 
-/* 1) Remove the blank band above the hero. The invisible <style> wrappers still
-      apply their CSS; they just stop taking up layout gaps. */
-.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style),
-.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:empty{
-  display:none!important;
+/* 1) Remove the blank band above the hero */
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel),
+.main .block-container:has(.st-key-home_upload_panel){
+  padding-top:14px!important;
 }
-@media(min-width:861px){
-  .main .block-container:has(.st-key-home_upload_panel){padding-top:18px!important}
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style),
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:empty,
+.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style){
+  display:none!important;
 }
 
 /* 2) Find Promos: fill its column, icon + label centered together */
