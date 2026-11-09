@@ -142,11 +142,10 @@ n_single, n_stitched, llm_top, compare_too = 20, 6, 40, True
 
 def mascot(class_name: str) -> str:
     image = base64.b64encode((ROOT / "static" / "mascot.webp").read_bytes()).decode("ascii")
-    # Explicit dimensions are a hard fallback if a browser/theme drops custom CSS.
     dimensions = {
         "pf-mascot-brand": (44, 44),
-        "pf-mascot-welcome": (188, 188),
-        "pf-mascot-mobile": (52, 62),
+        "pf-mascot-welcome": (140, 140),
+        "pf-mascot-mobile": (110, 110),
     }.get(class_name, (44, 44))
     width, height = dimensions
     return (f'<img class="pf-mascot {class_name}" width="{width}" height="{height}" '
