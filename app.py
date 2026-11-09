@@ -199,18 +199,17 @@ def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> s
     return (
         f'<div class="pf-feature" style="display:flex;align-items:center;gap:13px;min-width:0;'
         f'box-sizing:border-box;padding:7px 18px;{border}">'
-        f'<span class="pf-feature-icon" style="width:46px;height:46px;min-width:46px;flex:0 0 46px;'
-        f'display:flex;align-items:center;justify-content:center;border-radius:12px;'
+        f'<span class="pf-feature-icon" style="width:40px;height:40px;min-width:40px;flex:0 0 40px;'
+        f'display:flex;align-items:center;justify-content:center;border-radius:10px;'
         f'background:#FDEBEC;color:#E11D26">{feature_svg_icon(icon)}</span>'
         f'<span style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;'
-        f'gap:3px;min-width:0;text-align:left">'
-        f'<b style="display:block;font-size:16px;line-height:1.25;font-weight:700;color:#1A1A1C;'
-        f'white-space:normal;overflow-wrap:anywhere">{title}</b>'
-        f'<small style="display:block;font-size:14px;line-height:1.35;font-weight:400;color:#5B5B63;'
-        f'white-space:normal;overflow-wrap:anywhere">{detail}</small>'
+        f'gap:2px;min-width:0;text-align:left">'
+        f'<b style="display:block;font-size:15px;line-height:1.2;font-weight:700;color:#1A1A1C;'
+        f'white-space:normal">{title}</b>'
+        f'<small style="display:block;font-size:13px;line-height:1.3;font-weight:400;color:#5B5B63;'
+        f'white-space:normal">{detail}</small>'
         f'</span></div>'
     )
-
 
 def process_step(number: int, icon: str, title: str, detail: str) -> str:
     symbols = {"upload": "↑", "list": "☷", "clapper": "▤"}
