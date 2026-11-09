@@ -793,3 +793,38 @@ if "compare" in st.session_state:
             st.warning("Mock judge: these 'AI' scores are fake test values.")
         st.markdown(compare_md(rules_res, res, cmp))
         st.download_button("Download comparison (CSV)", compare_csv(cmp), f"{slug}_ai_vs_rules.csv", "text/csv")
+
+        # --- FINAL LAYOUT OVERRIDE ---
+# This forces the mascot to the top right and kills the empty header space
+st.markdown("""
+<style>
+/* 1. Nuke the invisible Streamlit header completely */
+header[data-testid="stHeader"], [data-testid="stHeader"] { 
+    display: none !important; 
+    height: 0px !important; 
+}
+.main .block-container { 
+    padding-top: 1.5rem !important; 
+}
+
+/* 2. Force the hero text and mascot to align to the TOP, not the middle */
+.pf-home-hero {
+    align-items: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* 3. Push the mascot flush into the empty top-right corner */
+.pf-home-art {
+    justify-content: flex-end !important;
+    margin-top: -5px !important; /* Lifts the mascot up to match the text */
+    flex-grow: 1 !important;
+}
+
+/* 4. Let the feature cards expand to fill the horizontal right-side gap */
+.pf-feature-row {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
