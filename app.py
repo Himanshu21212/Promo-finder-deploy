@@ -23,21 +23,16 @@ from promo_finder.report import to_csv, to_html, to_json, to_markdown
 from promo_finder.usage import SarvamConfig
 
 ROOT = Path(__file__).parent
-st.set_page_config(
-    page_title="Promo Finder", 
-    page_icon=str(ROOT / "static" / "favicon.png"),
-    layout="wide", 
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Promo Finder", page_icon=str(ROOT / "static" / "favicon.png"),
+                   layout="wide", initial_sidebar_state="expanded")
 
-# --- Global CSS Styling ---
-st.markdown("""
-<style>
-/* 1. Reduce top gap on results view & enlarge mascot header */
+
+
+st.markdown("""<style>
+/* 1. Reduce top padding on results page & enlarge mascot header */
 .main .block-container {
     padding-top: 0.5rem !important;
 }
-
 .pf-report-head {
     margin-top: -10px !important;
     padding-top: 0 !important;
@@ -47,70 +42,102 @@ st.markdown("""
 /* 2. Hide default Streamlit header */
 header[data-testid="stHeader"] { display: none !important; }
 
-/* 3. Glowing Professional "New Analysis" Button */
-section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button {
-    background: linear-gradient(135deg, #1C191A 0%, #121011 100%) !important;
-    color: #FFFFFF !important;
-    border: 1px solid #E11D26 !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
-    font-size: 15px !important;
-    letter-spacing: 0.3px !important;
-    box-shadow: 0 0 12px rgba(225, 29, 38, 0.35), inset 0 0 8px rgba(225, 29, 38, 0.15) !important;
-    transition: all 0.25s ease-in-out !important;
-}
-
-section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
-    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
-    border-color: #FF4D55 !important;
-    box-shadow: 0 0 20px rgba(225, 29, 38, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
-    transform: translateY(-1px) !important;
-}
-
-/* 4. Base Kuku Palette Variables */
-.pf{--bg:#f6f6f3;--surface:#ffffff;--surface2:#f4f4f1;--surface3:#e8e8e3;--line:#e3e3de;--line2:#cfcfc8;
---ink:#121216;--ink2:#34343c;--mute:#55555f;--faint:#6b6b75;
---hook:#d6194a;--hook-bg:#fff0f3;--cliff:#a85400;--cliff-bg:#fff6e8;--stitch:#5b3fd6;--stitch-bg:#f2eeff;
---ok:#137a3d;--ok-bg:#eaf7ef;--warn:#8a5a00;--warn-bg:#fff8e1;--bad:#b42318;--bad-bg:#fdeceb;
---accent:#d6194a;--grad:linear-gradient(135deg,#ff3d6e 0%,#ff7a45 100%);
---shadow:0 1px 2px rgba(18,18,22,.05),0 2px 8px -2px rgba(18,18,22,.06);
---sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
---mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
-font-feature-settings:"cv11","ss01";font-variant-numeric:tabular-nums}
-
-/* Sidebar Custom Styling */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0D0D0E 0%, #151516 100%) !important;
-    border-right: 1px solid #252528 !important;
-}
-
+.pf{--bg:#f6f6f3;--surface:#surface;--surface2:#f4f4f1;
+st.html("""<style>
+/* Final scoped uploader and viewport sizing overrides. */
+.main .block-container{padding-top:1.25rem!important;padding-bottom:1.4rem!important}
+.st-key-home_upload_panel{max-width:100%!important;width:100%!important;padding:22px!important;background:#FFFFFF!important;border:1px solid #F0E6E7!important;border-radius:20px!important;box-shadow:0 8px 24px rgba(20,0,0,.06)!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"]{min-height:205px!important;height:205px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important;padding:14px!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p,
+.st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] span{display:none!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button{width:250px!important;height:56px!important;min-height:56px!important;border-radius:14px!important;background:#E11D26!important;border:1px solid #E11D26!important;color:transparent!important;font-size:0!important;text-indent:-9999px!important;box-shadow:0 5px 14px rgba(225,29,38,.18)!important;position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;margin:0!important;overflow:hidden!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button *{display:none!important;visibility:hidden!important;opacity:0!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button::before{content:"↑";display:block!important;position:absolute;left:42px;top:50%;transform:translateY(-52%);font-size:24px!important;font-weight:500!important;color:#FFFFFF!important;text-indent:0!important}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button::after{content:"Choose Files";display:flex!important;position:absolute;inset:0;align-items:center;justify-content:center;text-indent:0!important;color:#FFFFFF!important;font-size:18px!important;font-weight:700!important;padding-left:24px}
+.st-key-upload_zone [data-testid="stFileUploaderDropzone"] button:hover{background:#C8141D!important;border-color:#C8141D!important}
+.st-key-find_home button{height:56px!important;min-height:56px!important;border-radius:14px!important;background:#E11D26!important;color:#FFFFFF!important;font-size:18px!important;font-weight:700!important}
+.st-key-find_home button:disabled{background:#E5E5E8!important;border-color:#E5E5E8!important;color:#8A8A92!important}
+.st-key-home_title input{height:56px!important;border:1px solid #E3E3E7!important;border-radius:14px!important;font-size:16px!important}
 section[data-testid="stSidebar"] .st-key-nav_home button,
-section[data-testid="stSidebar"] .st-key-nav_how button {
-    width: 100% !important;
-    height: 48px !important;
-    border-radius: 10px !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    padding: 0 16px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
+section[data-testid="stSidebar"] .st-key-nav_how button{color:#FFFFFF!important;text-align:left!important;justify-content:flex-start!important;padding-left:18px!important}
+@media(max-width:1050px){.main .block-container{padding-left:22px!important;padding-right:22px!important}}
+</style>""")
+
+
+st.markdown("<style>\n/* Final overrides appended after all base styles. */\n@media(min-width:861px){.main .block-container{max-width:1392px!important;padding:28px 54px 38px!important}}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home [data-testid^=\"stBaseButton\"],\nsection[data-testid=\"stSidebar\"] .st-key-nav_how [data-testid^=\"stBaseButton\"]{\n  width:100%!important;height:54px!important;min-height:54px!important;display:flex!important;\n  align-items:center!important;justify-content:flex-start!important;gap:12px!important;\n  text-align:left!important;padding:0 18px!important;border-radius:12px!important;\n  color:#FFFFFF!important;font-family:Inter,system-ui,sans-serif!important;font-size:16px!important;font-weight:600!important;\n  line-height:1.2!important;box-shadow:none!important\n}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home [data-testid=\"stBaseButton-primary\"],\nsection[data-testid=\"stSidebar\"] .st-key-nav_how [data-testid=\"stBaseButton-primary\"]{\n  background:linear-gradient(105deg,#D71920 0%,#9E0F15 100%)!important;border:1px solid #D71920!important;color:#FFFFFF!important\n}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home [data-testid=\"stBaseButton-secondary\"],\nsection[data-testid=\"stSidebar\"] .st-key-nav_how [data-testid=\"stBaseButton-secondary\"]{\n  background:#171719!important;border:1px solid #303034!important;color:#FFFFFF!important\n}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home [data-testid=\"stBaseButton-secondary\"]:hover,\nsection[data-testid=\"stSidebar\"] .st-key-nav_how [data-testid=\"stBaseButton-secondary\"]:hover{\n  background:#242427!important;border-color:#48484D!important\n}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home button span,\nsection[data-testid=\"stSidebar\"] .st-key-nav_how button span{color:#FFFFFF!important}\nsection[data-testid=\"stSidebar\"] .st-key-nav_home button svg,\nsection[data-testid=\"stSidebar\"] .st-key-nav_how button svg{width:20px!important;height:20px!important;min-width:20px!important}\n.pf-feature-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important;gap:0!important;margin:7px 0 20px!important}\n.pf-feature{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important;padding:7px 16px!important}\n.pf-feature-icon{width:46px!important;height:46px!important;min-width:46px!important;flex:0 0 46px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#FDEBEC!important;border-radius:12px!important;color:#E11D26!important}\n.pf-feature-icon svg{display:block!important;width:24px!important;height:24px!important;stroke:#E11D26!important}\n.pf-feature b{display:block!important;font-size:16px!important;line-height:1.25!important;font-weight:700!important;color:#1A1A1C!important;white-space:normal!important}\n.pf-feature small{display:block!important;font-size:14px!important;line-height:1.35!important;color:#5B5B63!important;white-space:normal!important}\n.st-key-home_upload_panel{padding:20px 22px 17px!important;margin:0!important;gap:0!important}\n.st-key-upload_zone{height:auto!important;min-height:0!important;padding:0!important;margin:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{height:auto!important;min-height:0!important;padding:0!important;margin:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{height:170px!important;min-height:170px!important;max-height:170px!important;margin:0!important;padding:10px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important}\n.st-key-home_upload_panel [data-testid=\"stVerticalBlock\"]{gap:8px!important}\n.st-key-home_upload_panel > div{margin-bottom:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"] button{width:230px!important;height:50px!important;min-height:50px!important;margin:0 auto!important;position:relative!important;inset:auto!important;transform:none!important;border-radius:13px!important;background:#E11D26!important;border:1px solid #E11D26!important;color:#FFFFFF!important;box-shadow:0 4px 12px rgba(225,29,38,.16)!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"] button::before{font-size:21px!important;margin-right:9px!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"] button::after{font-size:17px!important}\n.st-key-home_upload_panel .st-key-home_title input{height:54px!important;min-height:54px!important;border:1px solid #E3E3E7!important;border-radius:13px!important}\n.st-key-home_upload_panel .st-key-find_home button{height:54px!important;min-height:54px!important;border-radius:13px!important;background:#E11D26!important;color:#FFFFFF!important;font-size:17px!important;font-weight:700!important}\n.st-key-home_upload_panel .st-key-find_home button:disabled{background:#E5E5E8!important;border-color:#E5E5E8!important;color:#8A8A92!important;box-shadow:none!important}\n@media(max-width:1100px){.pf-feature{padding:6px 9px!important}.pf-feature b{font-size:15px!important}.pf-feature small{font-size:13px!important}}\n@media(max-width:850px){.pf-feature-row{grid-template-columns:1fr!important;gap:7px!important}.pf-feature{border-right:0!important;padding:5px 0!important}}\n</style>", unsafe_allow_html=True)
+
+
+st.markdown("<style>\n.st-key-upload_zone{position:relative!important;height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{height:190px!important;min-height:190px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{height:190px!important;min-height:190px!important;max-height:190px!important;padding-bottom:42px!important}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){position:absolute!important;left:0!important;right:0!important;bottom:8px!important;z-index:6!important;pointer-events:none!important}\n.pf-upload-limit{font-family:Inter,system-ui,sans-serif!important;font-size:14px!important;line-height:18px!important;text-align:center!important;color:#5B5B63!important;margin:0!important;padding:0!important}\n.st-key-home_upload_panel{padding-bottom:16px!important}\n</style>", unsafe_allow_html=True)
+
+
+st.markdown("<style>\n/* A single real uploader action button; no pseudo-button duplicates. */\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"] > button,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzone\"] > button{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"],\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"]{\n  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;\n  justify-content:center!important;width:100%!important;height:100%!important;min-height:0!important;\n  padding:0!important;margin:0!important;opacity:1!important;pointer-events:auto!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] span,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] span{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button{\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  position:relative!important;inset:auto!important;transform:none!important;left:auto!important;bottom:auto!important;\n  width:240px!important;height:54px!important;min-height:54px!important;margin:0 auto!important;padding:0 18px!important;\n  border:1px solid #E11D26!important;border-radius:14px!important;background:#E11D26!important;color:#FFFFFF!important;\n  font-size:17px!important;font-weight:700!important;text-indent:0!important;box-shadow:0 4px 12px rgba(225,29,38,.17)!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after{content:none!important;display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover,\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover{background:#C8141D!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{\n  min-height:180px!important;height:180px!important;max-height:180px!important;\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  padding:10px!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important\n}\n.st-key-upload_zone_compact{min-height:108px!important;padding:12px!important;border:1px dashed #F1B7BB!important;\n  border-radius:16px!important;background:#FFF5F5!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzone\"]{\n  height:78px!important;min-height:78px!important;max-height:78px!important;\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  border:0!important;background:transparent!important;padding:0!important\n}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"] button{width:220px!important;height:52px!important;min-height:52px!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderFile\"],\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderFileName\"],\n.st-key-upload_zone_compact .stFileUploaderFile{display:none!important}\n.st-key-upload_zone_compact [data-testid=\"stFileUploaderDropzoneInstructions\"]{height:auto!important}\n</style>", unsafe_allow_html=True)
+
+
+st.markdown("<style>\n/* Requested final refinements: visible limit text below one button, and crisp feature icons. */\n.st-key-upload_zone{position:relative!important;height:124px!important;min-height:124px!important;margin:0!important;padding:0!important}\n.st-key-upload_zone [data-testid=\"stFileUploader\"],\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{\n  position:relative!important;width:100%!important;height:124px!important;min-height:124px!important;\n  max-height:124px!important;box-sizing:border-box!important;margin:0!important;padding:0!important;\n  background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important;\n  display:block!important;overflow:hidden!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"]{\n  position:absolute!important;inset:0!important;width:100%!important;height:124px!important;min-height:124px!important;\n  display:block!important;padding:0!important;margin:0!important;opacity:1!important;pointer-events:auto!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] span{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button{\n  position:absolute!important;top:18px!important;left:50%!important;right:auto!important;bottom:auto!important;\n  transform:translateX(-50%)!important;width:240px!important;height:52px!important;min-height:52px!important;\n  margin:0!important;padding:0 18px!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  border:1px solid #E11D26!important;border-radius:13px!important;background:#E11D26!important;color:#FFFFFF!important;\n  font-size:17px!important;font-weight:700!important;text-indent:0!important;box-shadow:0 4px 12px rgba(225,29,38,.16)!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after{content:none!important;display:none!important}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){\n  position:absolute!important;top:82px!important;left:0!important;right:0!important;bottom:auto!important;\n  width:100%!important;height:20px!important;margin:0!important;padding:0!important;\n  z-index:5!important;pointer-events:none!important\n}\n.pf-upload-limit{\n  display:block!important;width:100%!important;margin:0!important;padding:0!important;\n  text-align:center!important;color:#5B5B63!important;font-family:Inter,system-ui,sans-serif!important;\n  font-size:14px!important;line-height:20px!important;white-space:nowrap!important\n}\n.pf-feature{display:flex!important;align-items:center!important;gap:13px!important;min-width:0!important}\n.pf-feature-icon{\n  width:46px!important;height:46px!important;min-width:46px!important;flex:0 0 46px!important;\n  display:flex!important;align-items:center!important;justify-content:center!important;\n  background:#FDEBEC!important;border-radius:12px!important;color:#E11D26!important\n}\n.pf-feature-icon svg{\n  display:block!important;width:24px!important;height:24px!important;min-width:24px!important;\n  stroke:#E11D26!important;stroke-width:1.9!important;fill:none!important\n}\n.pf-feature b{display:block!important;color:#1A1A1C!important;font-size:16px!important;line-height:1.25!important}\n.pf-feature small{display:block!important;color:#5B5B63!important;font-size:14px!important;line-height:1.35!important}\n</style>", unsafe_allow_html=True)
+
+st.markdown("<style>\n/* Final focused fix: vertically centered file picker, size note immediately below. */\n.st-key-upload_zone{\n  position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;\n  justify-content:flex-start!important;gap:2px!important;width:100%!important;height:auto!important;min-height:0!important;\n  box-sizing:border-box!important;margin:0!important;padding:9px 14px 8px!important;\n  border:1px dashed #F1B7BB!important;border-radius:16px!important;background:#FFF5F5!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{\n  display:block!important;width:100%!important;height:auto!important;min-height:0!important;\n  margin:0!important;padding:0!important;background:transparent!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{\n  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:100%!important;height:64px!important;min-height:64px!important;max-height:64px!important;\n  margin:0!important;padding:0!important;box-sizing:border-box!important;\n  border:0!important;border-radius:0!important;background:transparent!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"]{\n  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:100%!important;height:64px!important;min-height:64px!important;margin:0!important;padding:0!important;\n  opacity:1!important;overflow:visible!important;pointer-events:auto!important;background:transparent!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] span{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button{\n  position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;\n  transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:240px!important;height:50px!important;min-height:50px!important;margin:0 auto!important;padding:0 18px!important;\n  box-sizing:border-box!important;border:1px solid #E11D26!important;border-radius:13px!important;\n  background:#E11D26!important;color:transparent!important;font-size:0!important;text-indent:-9999px!important;\n  box-shadow:0 4px 12px rgba(225,29,38,.16)!important;overflow:hidden!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button *{\n  display:none!important;visibility:hidden!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before{\n  content:\"↑\";position:absolute!important;left:58px!important;top:50%!important;transform:translateY(-52%)!important;\n  display:block!important;color:#FFFFFF!important;font-size:23px!important;line-height:1!important;text-indent:0!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after{\n  content:\"Choose Files\";position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;\n  justify-content:center!important;padding-left:26px!important;color:#FFFFFF!important;font-size:17px!important;\n  font-weight:700!important;line-height:1!important;text-indent:0!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover{\n  background:#C8141D!important;border-color:#C8141D!important\n}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){\n  position:static!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;\n  margin:0!important;padding:0!important;inset:auto!important;z-index:auto!important;pointer-events:none!important\n}\n.pf-upload-limit{\n  display:block!important;position:static!important;width:100%!important;height:auto!important;min-height:18px!important;\n  margin:0!important;padding:0!important;text-align:center!important;white-space:nowrap!important;\n  color:#5B5B63!important;font-family:Inter,system-ui,sans-serif!important;font-size:14px!important;line-height:18px!important\n}\n.pf-feature-icon svg{display:block!important;width:24px!important;height:24px!important;min-width:24px!important}\n</style>", unsafe_allow_html=True)
+
+st.markdown("""<style>
+/* ===== HOME SCREEN FIX (scoped to Home only; keep this block LAST) ===== */
+
+/* 1) Remove the blank band above the hero */
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel),
+.main .block-container:has(.st-key-home_upload_panel){
+  padding-top:14px!important;
+}
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style),
+[data-testid="stMainBlockContainer"]:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:empty,
+.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style){
+  display:none!important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
-    color: #fff !important;
-    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
-    border: 1px solid #730A0E !important;
+/* 2) Find Promos: fill its column, icon + label centered together */
+.st-key-home_upload_panel .st-key-find_home{width:100%!important;max-width:none!important}
+.st-key-home_upload_panel .st-key-find_home button{
+  width:100%!important;height:56px!important;min-height:56px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:10px!important;padding:0 18px!important;border-radius:14px!important;
+  font-size:18px!important;font-weight:800!important;letter-spacing:.2px;
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;
+  border:0!important;color:#FFFFFF!important;
+  box-shadow:0 8px 18px rgba(225,29,38,.32)!important;
+  transition:transform .15s,box-shadow .15s,filter .15s;
+}
+.st-key-home_upload_panel .st-key-find_home button [data-testid="stMarkdownContainer"]{
+  width:auto!important;flex:0 0 auto!important;margin:0!important;
+}
+.st-key-home_upload_panel .st-key-find_home button p{
+  margin:0!important;line-height:1!important;color:inherit!important;
+}
+.st-key-home_upload_panel .st-key-find_home button::before{margin:0!important;flex:0 0 19px}
+.st-key-home_upload_panel .st-key-find_home button:hover:not(:disabled){
+  transform:translateY(-1px);filter:brightness(1.07);
+  box-shadow:0 12px 24px rgba(225,29,38,.40)!important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] {
-    color: #fff !important;
-    background: #171719 !important;
-    border: 1px solid #303034 !important;
+/* Disabled: still clearly a red button, clearly inactive (readable, not washed out) */
+.st-key-home_upload_panel .st-key-find_home button:disabled{
+  background:#FDE8EA!important;color:#C0262D!important;
+  border:1.5px solid #F2B7BC!important;box-shadow:none!important;
+  cursor:not-allowed!important;opacity:1!important;transform:none!important;filter:none!important;
 }
-</style>
-""", unsafe_allow_html=True)
+.st-key-home_upload_panel .st-key-find_home button:disabled::before{
+  opacity:1!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23C0262D'%3E%3Cpath d='m8 5 12 7-12 7z'/%3E%3C/svg%3E")!important;
+}
 
+/* 3) Choose Files: same punchy red gradient + hover */
+.st-key-home_upload_panel .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button,
+.st-key-home_upload_panel .st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;
+  border:0!important;box-shadow:0 8px 18px rgba(225,29,38,.32)!important;
+  transition:filter .15s,box-shadow .15s;
+}
+.st-key-home_upload_panel .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button:hover,
+.st-key-home_upload_panel .st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button:hover{
+  filter:brightness(1.07);box-shadow:0 12px 24px rgba(225,29,38,.40)!important;
+}
+</style>""", unsafe_allow_html=True)
 
 def sb_head(n: str, text: str) -> None:
     st.html(f'<div class="pf-sbh"><b>{n}</b>{text}</div>')
@@ -119,7 +146,7 @@ def sb_head(n: str, text: str) -> None:
 def secret(name: str) -> str:
     try:
         return st.secrets.get(name, "") or os.getenv(name, "")
-    except Exception:
+    except Exception:  # no secrets file configured
         return os.getenv(name, "")
 
 
@@ -141,7 +168,27 @@ def mascot(class_name: str) -> str:
             f'alt="Promo Finder clapperboard mascot" />')
 
 
+def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
+    """Inline Lucide-style line icons for the landing screen."""
+    paths = {
+        "home": '<path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/>',
+        "info": '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+        "bolt": '<path d="m13 2-3 8h7l-6 12 2-9H6l7-11z"/>',
+        "target": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m16.5 7.5 4-4"/>',
+        "layers": '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/>',
+        "cloud-upload": '<path d="M16 16l-4-4-4 4"/><path d="M12 12v9"/><path d="M20 16.5a4.5 4.5 0 0 0-.7-8.95A7 7 0 0 0 5.2 9.4 4 4 0 0 0 5 17h3"/>',
+        "upload": '<path d="M12 16V4m-5 5 5-5 5 5"/><path d="M20 16.5v2A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-2"/>',
+        "play": '<path d="m8 5 12 7-12 7z"/>',
+        "list": '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+        "clapper": '<path d="M4 8h16v12H4z"/><path d="m4 8 2-5h16l-2 5"/><path d="M9 3 7 8m7-5-2 5m7-5-2 5"/><circle cx="9" cy="14" r="1"/><path d="m12 18 3-2 2 2"/>',
+    }
+    return (f'<svg class="{class_name}" width="{size}" height="{size}" viewBox="0 0 24 24" '
+            f'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{paths.get(name, "")}</svg>')
+
+
 def feature_svg_icon(name: str) -> str:
+    """Feature icons with explicit SVG colors so they remain visible in every container."""
     artwork = {
         "bolt": (
             '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E11D26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
@@ -160,7 +207,6 @@ def feature_svg_icon(name: str) -> str:
     }
     return f'<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">{artwork.get(name, "")}</div>'
 
-
 def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> str:
     border = "border-right:1px solid #E5E5E8;" if bordered else ""
     return (
@@ -177,7 +223,6 @@ def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> s
         f'white-space:normal">{detail}</small>'
         f'</span></div>'
     )
-
 
 def process_step(number: int, icon: str, title: str, detail: str) -> str:
     symbols = {"upload": "↑", "list": "☷", "clapper": "▤"}
@@ -197,6 +242,23 @@ def process_step(number: int, icon: str, title: str, detail: str) -> str:
         f'<small style="display:block;font-size:14px;line-height:1.45;color:#5B5B63">{detail}</small>'
         f'</span></div>'
     )
+
+
+def film_ribbon() -> str:
+    return """<svg class="pf-film-ribbon" viewBox="0 0 420 190" preserveAspectRatio="none" aria-hidden="true">
+<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F5C5C8" stroke-width="64"/>
+<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#FFF" stroke-width="49"/>
+<path d="M-20 145 C70 25 128 35 190 110 S310 200 445 55" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
+<path d="M-20 116 C70 -4 128 6 190 81 S310 171 445 26" fill="none" stroke="#F4BFC3" stroke-width="1.5" stroke-dasharray="4 8"/>
+</svg>"""
+
+
+def feature_hero_art() -> str:
+    return film_ribbon() + mascot("pf-mascot-welcome") + (
+        '<svg class="pf-home-spark" viewBox="0 0 48 48" fill="none" stroke="#E11D26" '
+        'stroke-width="3.2" stroke-linecap="round" aria-hidden="true">'
+        '<path d="M23 2 20 13M38 8l-7 9M45 25l-10 1"/>'
+        '</svg>')
 
 
 def guess_title(files) -> str:
@@ -221,6 +283,7 @@ MAX_FILE_BYTES = 50 * 1024 * 1024
 
 
 def select_uploads(widget_key: str) -> None:
+    """Validate upload choices only; the AI workflow begins only on Find Promos."""
     clear_report()
     incoming = list(st.session_state.get(widget_key) or [])
     valid, errors = [], []
@@ -238,6 +301,7 @@ def select_uploads(widget_key: str) -> None:
     st.session_state.show_title = suggested
     st.session_state.home_title = suggested
     if errors:
+        # Force a fresh uploader widget while retaining any valid files in session state.
         st.session_state.home_upload_version = st.session_state.get("home_upload_version", 0) + 1
 
 
@@ -258,9 +322,11 @@ def new_analysis() -> None:
 def render_how_it_works_page() -> None:
     st.markdown("""
     <style>
+    /* Force Streamlit container to eliminate upper whitespace */
     [data-testid="stAppViewContainer"] .main .block-container {
         padding-top: 0.5rem !important;
     }
+    /* Pull the header card up over Streamlit's default container padding */
     .pf-page-head {
         margin-top: -45px !important;
         padding-top: 0 !important;
@@ -289,9 +355,7 @@ def render_how_it_works_page() -> None:
   <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download HTML, CSV, JSON and Markdown reports to take the cut points into editing.</p></article>
 </div>
 <div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
-
-
-# --- Sidebar Setup ---
+# ---------------------------------------------------------------- sidebar
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
@@ -316,7 +380,7 @@ with st.sidebar:
                   type="primary" if active else "secondary",
                   width="stretch", on_click=set_active_page, args=(label,))
 
-    # Glowing "New analysis" button shifted above the AI status indicator
+    # Shift "New analysis" button ABOVE the AI Review badge
     if "result" in st.session_state:
         st.html('<div style="height:12px"></div>')
         st.button("New analysis", key="sidebar_new_analysis", width="stretch",
@@ -366,14 +430,15 @@ with st.sidebar:
                               help="The title helps the system understand the show's premise.")
         go = st.button("Find Promos", type="primary", width="stretch",
                        disabled=not files)
-
+# The guide page is independent of the upload and analysis workflow.
 if page == "How it Works":
     render_how_it_works_page()
     st.stop()
 
+# Reserve the first main-area slot so progress appears above the upload form.
 progress_panel = st.empty()
 
-# --- Landing Page Render ---
+# ---------------------------------------------------------------- first visit
 if page == "Home" and "result" not in st.session_state and not go:
     features = "".join([
         feature_item("bolt", "AI + Rules Engine", "Scores & reranks promos", True),
@@ -421,6 +486,26 @@ if page == "Home" and "result" not in st.session_state and not go:
 
         st.markdown("""
         <style>
+        /* Glowing Professional "New Analysis" Button */
+section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button {
+    background: linear-gradient(135deg, #1C191A 0%, #121011 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid #E11D26 !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 0 12px rgba(225, 29, 38, 0.35), inset 0 0 8px rgba(225, 29, 38, 0.15) !important;
+    transition: all 0.25s ease-in-out !important;
+}
+
+section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
+    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+    border-color: #FF4D55 !important;
+    box-shadow: 0 0 20px rgba(225, 29, 38, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+        /* Modernized Upload Zone Styling */
         [data-testid="stFileUploaderDropzone"] {
             background: #FFF5F5 !important;
             border: 1.5px dashed #F1B7BB !important;
@@ -438,6 +523,7 @@ if page == "Home" and "result" not in st.session_state and not go:
             margin: 0 auto !important;
             box-shadow: 0 4px 12px rgba(142, 14, 18, 0.25) !important;
         }
+        /* Style uploaded file list item cleanly inside container */
         [data-testid="stFileUploaderFile"] {
             background: #FFFFFF !important;
             border: 1px solid #E5E5E8 !important;
@@ -450,6 +536,7 @@ if page == "Home" and "result" not in st.session_state and not go:
 
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
 
+        # Single native Streamlit file uploader (handles uploaded file badges automatically)
         st.file_uploader(
             "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
             key=upload_key, on_change=select_uploads, args=(upload_key,),
@@ -485,7 +572,7 @@ if page == "Home" and "result" not in st.session_state and not go:
                 f'gap:12px;align-items:stretch;margin:18px auto 0">{steps}</div>')
         st.stop()
 
-# --- Execution Pipeline ---
+# ---------------------------------------------------------------- run
 if go:
     review = ReviewProgress()
     progress_panel.html(review.html())
@@ -495,7 +582,7 @@ if go:
         data = f.getvalue()
         if f.name.lower().endswith(".zip"):
             try:
-                raw += load_zip_bytes(data, [])
+                raw += load_zip_bytes(data, [])     # finalize() below reports problems once, across all files
             except zipfile.BadZipFile:
                 warnings.append(f"{f.name}: not a valid zip file")
         else:
@@ -535,7 +622,7 @@ if go:
     try:
         if compare_too:
             rules_res, res, cmp = compare(eps, show_title, judge, llm_top, progress=show_progress,
-                                          n_single=n_single, n_stitched=n_stitched)
+                                         n_single=n_single, n_stitched=n_stitched)
             st.session_state.compare = (rules_res, cmp)
         else:
             res = run(eps, show_title, judge, n_single, n_stitched, llm_top,
@@ -552,7 +639,6 @@ if go:
     st.session_state.checks = run_checks(res)
     st.rerun()
 
-# --- Results & Reporting View ---
 res = st.session_state.result
 checks = st.session_state.get("checks") or run_checks(res)
 s = res.stats
@@ -603,7 +689,7 @@ with t[0]:
     c1, c2, c3, c4 = st.columns([2.1, 1.7, 1.4, 1.4], vertical_alignment="bottom")
     kind = c1.segmented_control("Type", ["All", "Single clips", "Stitched"], default="All", key="kind")
     tiers = c2.pills("Tier", ["A", "B", "C"], selection_mode="multi", default=["A", "B", "C"], key="tiers",
-                      help="A = strong, B = usable, C = weak")
+                     help="A = strong, B = usable, C = weak")
     clean = c3.toggle("Hide flagged", value=False, help="Hide promos that have something for a human to check")
     order = c4.selectbox("Sort by", ["Posting order", "Score", "Episode"])
     shown = [p for p in res.promos
