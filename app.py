@@ -63,6 +63,66 @@ st.markdown("<style>\n/* Requested final refinements: visible limit text below o
 
 st.markdown("<style>\n/* Final focused fix: vertically centered file picker, size note immediately below. */\n.st-key-upload_zone{\n  position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;\n  justify-content:flex-start!important;gap:2px!important;width:100%!important;height:auto!important;min-height:0!important;\n  box-sizing:border-box!important;margin:0!important;padding:9px 14px 8px!important;\n  border:1px dashed #F1B7BB!important;border-radius:16px!important;background:#FFF5F5!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploader\"]{\n  display:block!important;width:100%!important;height:auto!important;min-height:0!important;\n  margin:0!important;padding:0!important;background:transparent!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzone\"]{\n  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:100%!important;height:64px!important;min-height:64px!important;max-height:64px!important;\n  margin:0!important;padding:0!important;box-sizing:border-box!important;\n  border:0!important;border-radius:0!important;background:transparent!important;overflow:visible!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"]{\n  position:static!important;inset:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:100%!important;height:64px!important;min-height:64px!important;margin:0!important;padding:0!important;\n  opacity:1!important;overflow:visible!important;pointer-events:auto!important;background:transparent!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] p,\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] span{display:none!important}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button{\n  position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;\n  transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important;\n  width:240px!important;height:50px!important;min-height:50px!important;margin:0 auto!important;padding:0 18px!important;\n  box-sizing:border-box!important;border:1px solid #E11D26!important;border-radius:13px!important;\n  background:#E11D26!important;color:transparent!important;font-size:0!important;text-indent:-9999px!important;\n  box-shadow:0 4px 12px rgba(225,29,38,.16)!important;overflow:hidden!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button *{\n  display:none!important;visibility:hidden!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::before{\n  content:\"↑\";position:absolute!important;left:58px!important;top:50%!important;transform:translateY(-52%)!important;\n  display:block!important;color:#FFFFFF!important;font-size:23px!important;line-height:1!important;text-indent:0!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button::after{\n  content:\"Choose Files\";position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;\n  justify-content:center!important;padding-left:26px!important;color:#FFFFFF!important;font-size:17px!important;\n  font-weight:700!important;line-height:1!important;text-indent:0!important\n}\n.st-key-upload_zone [data-testid=\"stFileUploaderDropzoneInstructions\"] button:hover{\n  background:#C8141D!important;border-color:#C8141D!important\n}\n.st-key-upload_zone [data-testid=\"stElementContainer\"]:has(.pf-upload-limit){\n  position:static!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;\n  margin:0!important;padding:0!important;inset:auto!important;z-index:auto!important;pointer-events:none!important\n}\n.pf-upload-limit{\n  display:block!important;position:static!important;width:100%!important;height:auto!important;min-height:18px!important;\n  margin:0!important;padding:0!important;text-align:center!important;white-space:nowrap!important;\n  color:#5B5B63!important;font-family:Inter,system-ui,sans-serif!important;font-size:14px!important;line-height:18px!important\n}\n.pf-feature-icon svg{display:block!important;width:24px!important;height:24px!important;min-width:24px!important}\n</style>", unsafe_allow_html=True)
 
+st.html("""<style>
+/* ===== HOME SCREEN FIX (scoped to Home only; keep this block LAST) ===== */
+
+/* 1) Remove the blank band above the hero. The invisible <style> wrappers still
+      apply their CSS; they just stop taking up layout gaps. */
+.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:has(style),
+.block-container:has(.st-key-home_upload_panel) [data-testid="stElementContainer"]:empty{
+  display:none!important;
+}
+@media(min-width:861px){
+  .main .block-container:has(.st-key-home_upload_panel){padding-top:18px!important}
+}
+
+/* 2) Find Promos: fill its column, icon + label centered together */
+.st-key-home_upload_panel .st-key-find_home{width:100%!important;max-width:none!important}
+.st-key-home_upload_panel .st-key-find_home button{
+  width:100%!important;height:56px!important;min-height:56px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:10px!important;padding:0 18px!important;border-radius:14px!important;
+  font-size:18px!important;font-weight:800!important;letter-spacing:.2px;
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;
+  border:0!important;color:#FFFFFF!important;
+  box-shadow:0 8px 18px rgba(225,29,38,.32)!important;
+  transition:transform .15s,box-shadow .15s,filter .15s;
+}
+.st-key-home_upload_panel .st-key-find_home button [data-testid="stMarkdownContainer"]{
+  width:auto!important;flex:0 0 auto!important;margin:0!important;
+}
+.st-key-home_upload_panel .st-key-find_home button p{
+  margin:0!important;line-height:1!important;color:inherit!important;
+}
+.st-key-home_upload_panel .st-key-find_home button::before{margin:0!important;flex:0 0 19px}
+.st-key-home_upload_panel .st-key-find_home button:hover:not(:disabled){
+  transform:translateY(-1px);filter:brightness(1.07);
+  box-shadow:0 12px 24px rgba(225,29,38,.40)!important;
+}
+
+/* Disabled: still clearly a red button, clearly inactive (readable, not washed out) */
+.st-key-home_upload_panel .st-key-find_home button:disabled{
+  background:#FDE8EA!important;color:#C0262D!important;
+  border:1.5px solid #F2B7BC!important;box-shadow:none!important;
+  cursor:not-allowed!important;opacity:1!important;transform:none!important;filter:none!important;
+}
+.st-key-home_upload_panel .st-key-find_home button:disabled::before{
+  opacity:1!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23C0262D'%3E%3Cpath d='m8 5 12 7-12 7z'/%3E%3C/svg%3E")!important;
+}
+
+/* 3) Choose Files: same punchy red gradient + hover */
+.st-key-home_upload_panel .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button,
+.st-key-home_upload_panel .st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button{
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;
+  border:0!important;box-shadow:0 8px 18px rgba(225,29,38,.32)!important;
+  transition:filter .15s,box-shadow .15s;
+}
+.st-key-home_upload_panel .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] button:hover,
+.st-key-home_upload_panel .st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button:hover{
+  filter:brightness(1.07);box-shadow:0 12px 24px rgba(225,29,38,.40)!important;
+}
+</style>""")
 
 def sb_head(n: str, text: str) -> None:
     st.html(f'<div class="pf-sbh"><b>{n}</b>{text}</div>')
@@ -353,10 +413,10 @@ if page == "Home" and "result" not in st.session_state and not go:
     steps = (
         process_step(1, "upload", "Upload your story",
                      "One episode or a full season of timestamped screenplays.")
-        + '<div style="font-size:27px;color:#E11D26;text-align:center">→</div>'
+        + '<div style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
         + process_step(2, "list", "Review the strongest moments",
                        "Ranked 20–60 second cuts, with hooks and cliffhangers.")
-        + '<div style="font-size:27px;color:#E11D26;text-align:center">→</div>'
+        + '<div style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
         + process_step(3, "clapper", "Take it to your editor",
                        "Exact cut points, editorial notes and reports to share.")
     )
@@ -461,7 +521,7 @@ if page == "Home" and "result" not in st.session_state and not go:
 
     if not go:
         st.html(f'<div style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
-                f'gap:12px;align-items:center;margin:18px auto 0">{steps}</div>')
+                f'gap:12px;align-items:stretch;margin:18px auto 0">{steps}</div>')
         st.stop()
 
 # ---------------------------------------------------------------- run
