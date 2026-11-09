@@ -177,13 +177,22 @@ def svg_icon(name: str, size: int = 24, class_name: str = "") -> str:
 def feature_svg_icon(name: str) -> str:
     """Feature icons with explicit SVG colors so they remain visible in every container."""
     artwork = {
-        "bolt": '<path d="M13.5 2.5 5 13h6l-.7 8.5L19 10.5h-6.2l.7-8z" fill="#E11D26" stroke="#E11D26" stroke-width="1.2" stroke-linejoin="round"/>',
-        "target": '<circle cx="11" cy="13" r="8" fill="none" stroke="#E11D26" stroke-width="2"/><circle cx="11" cy="13" r="4.5" fill="none" stroke="#E11D26" stroke-width="2"/><circle cx="11" cy="13" r="1.5" fill="#E11D26"/><path d="m16.8 7.2 4-4m-4 0h4v4" fill="none" stroke="#E11D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-        "layers": '<path d="m12 3 9 5-9 5-9-5 9-5z" fill="none" stroke="#E11D26" stroke-width="2" stroke-linejoin="round"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5" fill="none" stroke="#E11D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        "bolt": (
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E11D26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+            '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
+        ),
+        "target": (
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E11D26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+            '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+        ),
+        "layers": (
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E11D26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+            '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>'
+            '<polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>'
+            '<line x1="16" y1="17" x2="8" y2="17"></line></svg>'
+        ),
     }
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" '
-            f'aria-hidden="true" style="display:block;width:24px;height:24px;flex:0 0 24px">{artwork.get(name, "")}</svg>')
-
+    return f'<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">{artwork.get(name, "")}</div>'
 
 def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> str:
     border = "border-right:1px solid #E5E5E8;" if bordered else ""
