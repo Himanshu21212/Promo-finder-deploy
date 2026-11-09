@@ -828,3 +828,57 @@ header[data-testid="stHeader"], [data-testid="stHeader"] {
 }
 </style>
 """, unsafe_allow_html=True)
+# --- PROFESSIONAL DARK RED & CENTERED BUTTON OVERRIDE ---
+st.markdown("""
+<style>
+/* 1. Darker, Executive Crimson Red for Sidebar Active Items */
+section[data-testid="stSidebar"] .st-key-nav_home [data-testid="stBaseButton-primary"],
+section[data-testid="stSidebar"] .st-key-nav_how [data-testid="stBaseButton-primary"],
+section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
+    background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
+    border: 1px solid #730A0E !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"]:hover {
+    background: linear-gradient(135deg, #A61217 0%, #700B0F 100%) !important;
+}
+
+/* 2. Primary Action Button ("Find Promos") Darker Red */
+[data-testid="stBaseButton-primary"] {
+    background: linear-gradient(135deg, #8E0E12 0%, #61080B 100%) !important;
+    border: 1px solid #750A0D !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+[data-testid="stBaseButton-primary"]:hover {
+    background: linear-gradient(135deg, #A61217 0%, #720B0F 100%) !important;
+}
+
+/* 3. Center the Action Button Row inside the Upload Panel */
+.st-key-home_upload_panel [data-testid="stHorizontalBlock"] {
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.st-key-find_home {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.st-key-find_home button {
+    margin: 0 auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 220px !important;
+}
+
+/* 4. Remove Duplicate Helper Text under File Uploader */
+.st-key-home_upload_panel + div:has(.pf-upload-limit) {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
