@@ -492,26 +492,29 @@ if page == "Home" and "result" not in st.session_state and not go:
 </div>
 """)
 
-    with st.container(key="home_upload_panel"):
+  with st.container(key="home_upload_panel"):
         st.html(
-            '<div style="text-align:center;padding:0 0 14px">'
-            '<div style="font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
+            '<div style="text-align:center;padding:0 0 10px">'
+            '<div style="font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
             'Upload your microdrama scripts</div>'
-            '<div style="font-size:15px;line-height:1.45;color:#5B5B63;margin-top:5px">'
+            '<div style="font-size:14px;color:#5B5B63;margin-top:4px">'
             'Drag & drop a ZIP or TXT file here.</div></div>'
         )
         
-        # Inject Custom CSS to perfectly center the upload button and style the active state
         st.markdown("""
         <style>
-        /* 1. Perfect Centering & Highlighting for the Upload Button */
+        /* 1. Center uploader & style upload button */
         [data-testid="stFileUploaderDropzone"] {
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
             justify-content: center !important;
             text-align: center !important;
-            padding: 30px !important;
+            padding: 16px 20px !important;
+            min-height: 120px !important;
+            background: #FFF5F5 !important;
+            border: 1.5px dashed #F1B7BB !important;
+            border-radius: 14px !important;
         }
         [data-testid="stFileUploaderDropzoneInstructions"] {
             display: flex !important;
@@ -525,30 +528,34 @@ if page == "Home" and "result" not in st.session_state and not go:
             color: #FFFFFF !important;
             border: none !important;
             border-radius: 10px !important;
-            padding: 12px 28px !important;
+            padding: 10px 24px !important;
             font-weight: 700 !important;
-            font-size: 16px !important;
+            font-size: 15px !important;
             margin: 0 auto !important;
             box-shadow: 0 4px 12px rgba(225, 29, 38, 0.2) !important;
         }
         [data-testid="stFileUploaderDropzone"] button:hover {
             background: linear-gradient(135deg, #C8141D 0%, #7A0A0F 100%) !important;
         }
-        
-        /* 2. Hide Duplicate File Limit Text */
-        .pf-upload-limit { display: none !important; }
-        
-        /* 3. Style the Title Input & Find Promos Button */
-        .st-key-home_title { margin-top: 5px !important; }
+
+        /* 2. Style single file display card & action icons */
+        [data-testid="stFileUploaderFile"] {
+            margin: 8px auto 0 !important;
+            max-width: 480px !important;
+            border-radius: 10px !important;
+            background: #FFFFFF !important;
+            border: 1px solid #E5E5E8 !important;
+        }
+
+        /* 3. Action Row Layout & Centering */
         .st-key-find_home button {
-            height: 54px !important;
-            font-size: 18px !important;
-            border-radius: 12px !important;
-            margin-top: 15px !important;
-            transition: all 0.3s ease !important;
+            height: 48px !important;
+            font-size: 16px !important;
+            border-radius: 10px !important;
+            transition: all 0.25s ease !important;
+            margin: 0 !important;
         }
         
-        /* Make disabled Find Promos button look grayed out but structural */
         .st-key-find_home button:disabled {
             background: #E5E5E8 !important;
             color: #8A8A92 !important;
@@ -556,11 +563,10 @@ if page == "Home" and "result" not in st.session_state and not go:
             box-shadow: none !important;
         }
         
-        /* Make Active Find Promos button pop with dark executive red! */
         .st-key-find_home button:not(:disabled) {
             background: linear-gradient(135deg, #8E0E12 0%, #5C080B 100%) !important;
             color: #FFFFFF !important;
-            box-shadow: 0 6px 16px rgba(142, 14, 18, 0.3) !important;
+            box-shadow: 0 4px 14px rgba(142, 14, 18, 0.3) !important;
             border: 1px solid #730A0E !important;
         }
         .st-key-find_home button:not(:disabled):hover {
@@ -571,68 +577,37 @@ if page == "Home" and "result" not in st.session_state and not go:
 
         upload_key = f'home_files_{st.session_state.get("home_upload_version", 0)}'
 
-        if files:
-            # Center the selected file view
-            with st.container(key="upload_zone_compact"):
-                st.file_uploader(
-                    "Upload more scripts", type=["zip", "txt"], accept_multiple_files=True,
-                    key=upload_key, on_change=select_uploads, args=(upload_key,),
-                    label_visibility="collapsed", max_upload_size=50,
-                )
-                cards = []
-                for uploaded in files:
-                    size_kb = uploaded.size / 1024
-                    size_label = f"{size_kb:.1f} KB" if size_kb < 1024 else f"{size_kb / 1024:.2f} MB"
-                    safe_name = html_escape(uploaded.name)
-                    cards.append(
-                        '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;'
-                        'background:#FFFFFF;border:1px solid #E8E3E4;border-radius:12px;margin:10px auto;'
-                        'min-width:0;max-width:380px;justify-content:flex-start;">'
-                        '<span style="width:38px;height:38px;min-width:38px;display:flex;align-items:center;'
-                        'justify-content:center;border-radius:10px;background:#202024;color:#FFFFFF;'
-                        'font-size:19px">▤</span>'
-                        '<span style="display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden;text-align:left;">'
-                        f'<b style="display:block;color:#1A1A1C;font-size:14px;line-height:1.25;'
-                        f'font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{safe_name}</b>'
-                        f'<small style="display:block;color:#777780;font-size:12px;line-height:1.2">{size_label}</small>'
-                        '</span></div>'
-                    )
-                st.html('<div style="width:100%;text-align:center;">' + "".join(cards) + '</div>')
-        else:
-            with st.container(key="upload_zone"):
-                st.file_uploader(
-                    "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
-                    key=upload_key, on_change=select_uploads, args=(upload_key,),
-                    label_visibility="collapsed", max_upload_size=50,
-                )
+        # Native Streamlit file uploader (handles uploaded file view automatically)
+        st.file_uploader(
+            "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
+            key=upload_key, on_change=select_uploads, args=(upload_key,),
+            label_visibility="collapsed", max_upload_size=50,
+        )
 
         upload_error = st.session_state.get("upload_error", "")
         if upload_error:
-            st.html(f'<div style="padding:10px 13px;margin:5px auto 12px;max-width:500px;border:1px solid #F3B7BA;'
-                    f'background:#FFF1F1;border-radius:10px;color:#B4232A;font-size:13px;line-height:1.5;text-align:center;">'
+            st.html(f'<div style="padding:8px 12px;margin:8px auto;max-width:500px;border:1px solid #F3B7BA;'
+                    f'background:#FFF1F1;border-radius:8px;color:#B4232A;font-size:13px;line-height:1.4;text-align:center;">'
                     f'{html_escape(upload_error)}</div>')
 
-        # --- Stack Title and Action Button Vertically in the Center ---
+        # Compact Side-by-Side Action Row
+        st.html('<div style="height:12px"></div>')
+        input_col, button_col = st.columns([2.5, 1.2], gap="small", vertical_alignment="bottom")
         
-        _, center_col, _ = st.columns([1, 2.5, 1])
-        
-        with center_col:
-            st.html('<div style="font-size:14px;font-weight:600;color:#5B5B63;text-align:center;margin-bottom:-10px;margin-top:10px;">Show title (optional)</div>')
+        with input_col:
             home_title = st.text_input(
-                "Show title",
+                "Show title (optional)",
                 key="home_title",
                 placeholder="e.g. The Maid Was the Heiress",
-                label_visibility="collapsed",
                 on_change=sync_title,
                 args=("home_title", "show_title"),
             )
-            
+        with button_col:
             go = st.button("Find Promos", key="find_home", type="primary",
                            use_container_width=True, disabled=not files)
             
         if go:
             title = home_title
-
     if not go:
         st.html(f'<div style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
                 f'gap:12px;align-items:center;margin:18px auto 0">{steps}</div>')
