@@ -307,10 +307,22 @@ def new_analysis() -> None:
 
 
 def render_how_it_works_page() -> None:
-    st.html("""<style>
-.main .block-container { padding-top: 0.5rem !important; }
-</style>
-<div class="pf pf-page-head" style="margin-top:-15px !important;padding-top:0 !important">
+    st.markdown("""
+    <style>
+    /* Force Streamlit main container top padding to 0 for How It Works page */
+    div[data-testid="stAppViewContainer"] > .main .block-container,
+    .main .block-container {
+        padding-top: 0rem !important;
+        margin-top: -30px !important;
+    }
+    .pf-page-head {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    st.html("""
+<div class="pf pf-page-head" style="margin-top:0 !important;padding-top:0 !important">
 <div class="pf-label accent">PRODUCT GUIDE</div><h1 style="margin-top:2px">How Promo Finder works</h1>
 <p>From timestamped screenplay files to a ranked, editor-ready promo shortlist.</p>
 </div>
