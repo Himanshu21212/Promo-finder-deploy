@@ -492,7 +492,7 @@ if page == "Home" and "result" not in st.session_state and not go:
 </div>
 """)
 
-  with st.container(key="home_upload_panel"):
+    with st.container(key="home_upload_panel"):
         st.html(
             '<div style="text-align:center;padding:0 0 10px">'
             '<div style="font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
@@ -608,9 +608,10 @@ if page == "Home" and "result" not in st.session_state and not go:
             
         if go:
             title = home_title
+
     if not go:
         st.html(f'<div style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
-                f'gap:12px;align-items:center;margin:18px auto 0">{steps}</div>')
+                f'gap:12px;align-items:center;margin:24px auto 0">{steps}</div>')
         st.stop()
 
 # ---------------------------------------------------------------- Analysis Execution
