@@ -357,28 +357,34 @@ with st.sidebar:
         f'{mascot("pf-mascot-brand")}'
         '<b style="font-size:24px;line-height:1.1;font-weight:700;letter-spacing:-.6px;color:#FFFFFF">Promo Finder</b>'
         '</div>'
-        '<p style="font-size:15px;line-height:1.55;color:#B5B5BC;margin:7px 0 26px;max-width:250px">'
+        '<p style="font-size:15px;line-height:1.55;color:#B5B5BC;margin:7px 0 20px;max-width:250px">'
         'Finds promo cuts in microdrama scripts.</p>'
     )
     for label, key, nav_icon in (("Home", "home", ":material/home:"),
-                                      ("How it Works", "how", ":material/info:")):
+                                   ("How it Works", "how", ":material/info:")):
         active = st.session_state.active_page == label
         st.button(label, key=f"nav_{key}", icon=nav_icon,
                   type="primary" if active else "secondary",
                   width="stretch", on_click=set_active_page, args=(label,))
 
-    st.html('<div style="height:1px;background:#2A2A2D;margin:24px 0"></div>')
+    # Shift "New analysis" button ABOVE the AI Review badge
+    if "result" in st.session_state:
+        st.html('<div style="height:12px"></div>')
+        st.button("New analysis", key="sidebar_new_analysis", width="stretch",
+                  type="secondary", on_click=new_analysis)
+
+    st.html('<div style="height:1px;background:#2A2A2D;margin:20px 0"></div>')
     if config.configured:
         st.html('<div style="display:flex;align-items:center;gap:11px;padding:17px 16px;'
                 'background:#161618;border:1px solid #232326;border-radius:14px;color:#FFFFFF;'
-                'font-size:16px;font-weight:600;margin:0 0 28px">'
+                'font-size:16px;font-weight:600;margin:0 0 20px">'
                 '<span style="width:12px;height:12px;border-radius:50%;background:#22C55E;'
                 'box-shadow:0 0 0 4px rgba(34,197,94,.12),0 0 12px rgba(34,197,94,.55)"></span>'
                 'AI review enabled</div>')
     else:
         st.html('<div style="display:flex;align-items:center;gap:11px;padding:17px 16px;'
                 'background:#161618;border:1px solid #232326;border-radius:14px;color:#FFFFFF;'
-                'font-size:16px;font-weight:600;margin:0 0 28px">'
+                'font-size:16px;font-weight:600;margin:0 0 20px">'
                 '<span style="width:12px;height:12px;border-radius:50%;background:#F59E0B"></span>'
                 'AI review unavailable</div>')
 
@@ -400,10 +406,6 @@ with st.sidebar:
         '</div>'
     )
 
-    if "result" in st.session_state:
-        st.button("New analysis", key="sidebar_new_analysis", width="stretch",
-                  on_click=new_analysis)
-
     page = st.session_state.active_page
     go = False
     title = st.session_state.get("show_title", "")
@@ -415,7 +417,6 @@ with st.sidebar:
                               help="The title helps the system understand the show's premise.")
         go = st.button("Find Promos", type="primary", width="stretch",
                        disabled=not files)
-
 # The guide page is independent of the upload and analysis workflow.
 if page == "How it Works":
     render_how_it_works_page()
