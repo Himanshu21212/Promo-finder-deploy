@@ -43,12 +43,10 @@ st.markdown("""<style>
 header[data-testid="stHeader"] { display: none !important; }
 
 .pf{--bg:#f6f6f3;--surface:#surface;--surface2:#f4f4f1;
-st.markdown("""<style>
 .main .block-container {
     padding-top: 1.25rem !important;
     padding-bottom: 1.4rem !important;
 }
-</style>""", unsafe_allow_html=True)
 .st-key-home_upload_panel{max-width:100%!important;width:100%!important;padding:22px!important;background:#FFFFFF!important;border:1px solid #F0E6E7!important;border-radius:20px!important;box-shadow:0 8px 24px rgba(20,0,0,.06)!important}
 .st-key-upload_zone [data-testid="stFileUploaderDropzone"]{min-height:205px!important;height:205px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#FFF5F5!important;border:1px dashed #F1B7BB!important;border-radius:16px!important;padding:14px!important}
 .st-key-upload_zone [data-testid="stFileUploaderDropzoneInstructions"] p,
