@@ -30,9 +30,37 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Modernized UI Styling System (Kuku Red Accent & Clean Compact Layout)
+# Modernized UI Styling System (Top Space Fix & Clean Compact Layout)
 st.markdown("""
 <style>
+/* Completely hide Streamlit default top header bar & eliminate top whitespace */
+header[data-testid="stHeader"], 
+[data-testid="stHeader"],
+.stAppHeader {
+    display: none !important;
+    height: 0px !important;
+    min-height: 0px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+[data-testid="stAppViewContainer"] > .main .block-container,
+.main .block-container,
+.block-container {
+    padding-top: 0rem !important;
+    margin-top: 0rem !important;
+    max-width: 100% !important;
+}
+
+@media(min-width:861px){
+    .main .block-container {
+        padding-top: 0rem !important;
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+        padding-bottom: 32px !important;
+    }
+}
+
 /* Global Modern Reset & Typography */
 .pf {
     --bg: #FBF9F9;
@@ -66,19 +94,6 @@ st.markdown("""
     font-family: var(--sans);
     font-size: 16px;
     line-height: 1.6;
-}
-
-/* Collapse empty top white space from Streamlit main container */
-.block-container, .main .block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 2rem !important;
-    max-width: 100% !important;
-}
-
-@media(min-width:861px){
-    .main .block-container {
-        padding: 10px 40px 32px !important;
-    }
 }
 
 .stApp, [data-testid="stAppViewContainer"] {
@@ -183,7 +198,7 @@ section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover {
     border-radius: 8px 8px 0 0;
 }
 </style>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)git add app.py
 
 
 def sb_head(n: str, text: str) -> None:
