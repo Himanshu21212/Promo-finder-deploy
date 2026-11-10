@@ -1,5 +1,28 @@
 # Changelog
 
+## Final polish (10 Nov 2026)
+
+### Added
+
+- **More script layouts.** Besides the original Promo Finder format, the reader now accepts timed labels
+  in other styles (no bold, times on the label line, `[00:05 - 00:08]`, `00:05 --> 00:08`), SRT and
+  WebVTT subtitles, and standard screenplays (INT./EXT., CHARACTER cues, parentheticals). The original
+  format is still tried first and gives the same results.
+- **Estimated timing, clearly labelled.** Screenplays with no timestamps get times estimated from word
+  count. The report shows a banner and every affected cut carries a check note in all exports.
+- **PDF report.** New first download button on the report page (replaces the Markdown button in the app;
+  the CLI still writes `promos.md`). Uses fpdf2 and the bundled DejaVu Sans font.
+- **Uploads** accept `.srt` and `.vtt` (also inside ZIPs). Episode numbers are also read from
+  `EPISODE 3` lines and names like `ep03` or `S01E03`.
+
+### Changed (design only)
+
+- Home: feature icons render, upload panel shows a clean file card, Find Promos sits centered under
+  the title field, and the layout stacks properly on phones.
+- Animated mascot with speech bubble on Home and the report page.
+- Sidebar navigation, **New analysis** and the sidebar title field are easier to see; brand-red buttons.
+- Removed the blank band above the How it Works and report pages; download buttons have icons.
+
 ## Review pass (Nov 2026)
 
 A review and polish of the first submission. It keeps the same pipeline, scoring weights and output
