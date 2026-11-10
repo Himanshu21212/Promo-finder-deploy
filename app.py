@@ -304,6 +304,66 @@ section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseBu
   .pf-mascot-bob,.pf-mascot-shadow,.pf-spark,.pf-mascot-bubble,.pf-mascot-stage:hover .pf-mascot-bob{animation:none!important}
   .pf-spark{opacity:.8}
 }
+
+/* 9) Every page: drop empty style-only blocks (each added a 16px gap) and the tall top padding. */
+[data-testid="stMainBlockContainer"] [data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] > style:only-child){
+  display:none!important;
+}
+[data-testid="stMainBlockContainer"]{padding-top:20px!important}
+
+/* 10) Report header mascot: same living mascot as Home, sized for the report. */
+.pf-mascot-stage-report{width:118px;height:132px;flex:0 0 118px;margin-right:6px}
+.pf-mascot-stage-report .pf-mascot{display:block!important;width:110px!important;height:110px!important;max-width:110px!important;max-height:110px!important}
+.pf-mascot-stage-report .pf-mascot-shadow{width:66px}
+.pf-mascot-stage-report .pf-mascot-bubble{top:2px}
+@media (max-width:860px){
+  .pf-mascot-stage-report{width:76px;height:88px;flex-basis:76px}
+  .pf-mascot-stage-report .pf-mascot{width:70px!important;height:70px!important;max-width:70px!important;max-height:70px!important}
+  .pf-mascot-stage-report .pf-mascot-shadow{width:44px;height:7px}
+  .pf-mascot-stage-report .pf-mascot-bubble{display:none}
+}
+
+/* 11) Sidebar "New analysis": clearly visible red-outlined action. */
+section[data-testid="stSidebar"] div.st-key-sidebar_new_analysis button[data-testid^="stBaseButton"]{
+  height:48px!important;min-height:48px!important;border-radius:12px!important;
+  background:rgba(225,29,38,.12)!important;border:1px solid rgba(242,39,47,.65)!important;
+  box-shadow:none!important;transition:background .15s,border-color .15s,box-shadow .15s;
+}
+section[data-testid="stSidebar"] div.st-key-sidebar_new_analysis button[data-testid^="stBaseButton"] *{
+  color:#FFFFFF!important;font-size:15px!important;font-weight:600!important;
+}
+section[data-testid="stSidebar"] div.st-key-sidebar_new_analysis button[data-testid^="stBaseButton"] span[data-testid="stIconMaterial"]{
+  color:#FF5A61!important;font-size:20px!important;
+}
+section[data-testid="stSidebar"] div.st-key-sidebar_new_analysis button[data-testid^="stBaseButton"]:hover{
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;border-color:#F2272F!important;
+  box-shadow:0 6px 16px rgba(225,29,38,.30)!important;
+}
+section[data-testid="stSidebar"] div.st-key-sidebar_new_analysis button[data-testid^="stBaseButton"]:hover span[data-testid="stIconMaterial"]{color:#FFFFFF!important}
+
+/* 12) Sidebar re-run form: readable title field and brand-red Find Promos. */
+section[data-testid="stSidebar"] div.st-key-show_title [data-testid="stTextInputRootElement"]{
+  background:#161618!important;border:1px solid #2E2E33!important;border-radius:10px!important;
+}
+section[data-testid="stSidebar"] div.st-key-show_title [data-testid="stTextInputRootElement"]:focus-within{border-color:#E11D26!important}
+section[data-testid="stSidebar"] div.st-key-show_title input{color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;background:transparent!important}
+section[data-testid="stSidebar"] div.st-key-show_title input::placeholder{color:#7A7A83!important;-webkit-text-fill-color:#7A7A83!important}
+section[data-testid="stSidebar"] div.st-key-show_title [data-testid="stWidgetLabel"] p{color:#B5B5BC!important}
+section[data-testid="stSidebar"] div.stElementContainer:not([class*="st-key-nav_"]) > div[data-testid="stButton"] > button[data-testid="stBaseButton-primary"]{
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;border:1px solid #F2272F!important;border-radius:12px!important;
+}
+
+/* 13) Report downloads: icon + label, red accent on hover. */
+[data-testid="stMainBlockContainer"] [data-testid="stDownloadButton"] button{
+  height:48px!important;border-radius:12px!important;background:#FFFFFF!important;border:1px solid #ECE4E5!important;
+  box-shadow:0 2px 6px rgba(20,0,0,.04)!important;transition:border-color .15s,box-shadow .15s,transform .15s;
+}
+[data-testid="stMainBlockContainer"] [data-testid="stDownloadButton"] button p{font-weight:600!important;color:#1A1A1C!important}
+[data-testid="stMainBlockContainer"] [data-testid="stDownloadButton"] button span[data-testid="stIconMaterial"]{color:#E11D26!important}
+[data-testid="stMainBlockContainer"] [data-testid="stDownloadButton"] button:hover{
+  border-color:#E11D26!important;box-shadow:0 6px 16px rgba(225,29,38,.14)!important;transform:translateY(-1px);
+}
+[data-testid="stMainBlockContainer"] [data-testid="stDownloadButton"] button:hover p{color:#E11D26!important}
 </style>""", unsafe_allow_html=True)
 
 def sb_head(n: str, text: str) -> None:
@@ -560,7 +620,7 @@ with st.sidebar:
     if "result" in st.session_state:
         st.html('<div style="height:12px"></div>')
         st.button("New analysis", key="sidebar_new_analysis", width="stretch",
-                  type="secondary", on_click=new_analysis)
+                  type="secondary", on_click=new_analysis, icon=":material/add:")
 
     st.html('<div style="height:1px;background:#2A2A2D;margin:20px 0"></div>')
     if config.configured:
@@ -846,15 +906,24 @@ else:
     badge = (f'<span class="pf-mode ai">AI reviewed {ai["judged"]} of '
              f'{ai.get("shortlisted", 0)} shortlisted clips</span>')
 
+_n_promos = len(res.promos)
+_bubble_idle = (f"{_n_promos} promo{'s' if _n_promos != 1 else ''} ready!" if _n_promos
+                else "Let's try another script")
 st.html(f"""<div class="pf"><div class="pf-report-head"><div><div class="pf-label accent">Promo report</div>
-<h1 class="pf-h2">{ui.e(res.title)}</h1><div>{badge}</div></div>{mascot("pf-mascot-mobile")}</div>
+<h1 class="pf-h2">{ui.e(res.title)}</h1><div>{badge}</div></div>
+<div class="pf-mascot-stage pf-mascot-stage-report">
+<span class="pf-mascot-bubble"><span class="pf-bubble-idle">{_bubble_idle}</span><span class="pf-bubble-hover">Take a look below ↓</span></span>
+<span class="pf-spark pf-spark-1"></span><span class="pf-spark pf-spark-2"></span><span class="pf-spark pf-spark-3"></span>
+<div class="pf-mascot-bob">{mascot("pf-mascot-mobile")}</div><span class="pf-mascot-shadow"></span>
+</div></div>
 {ui.run_summary({**s, "ai": {}}, checks)}</div>""")
 slug = re.sub(r"\W+", "_", res.title.lower()).strip("_")[:40] or "show"
 d1, d2, d3, d4 = st.columns(4)
-d1.download_button("Report (HTML)", to_html(res), f"{slug}_promo_report.html", "text/html", width="stretch")
-d2.download_button("Ranked list (CSV)", to_csv(res.promos), f"{slug}_promos_ranked.csv", "text/csv", width="stretch")
-d3.download_button("Everything (JSON)", to_json(res), f"{slug}_promos.json", "application/json", width="stretch")
-d4.download_button("Summary (Markdown)", to_markdown(res), f"{slug}_promos.md", "text/markdown", width="stretch")
+_dl = ":material/download:"
+d1.download_button("Report (HTML)", to_html(res), f"{slug}_promo_report.html", "text/html", width="stretch", icon=_dl)
+d2.download_button("Ranked list (CSV)", to_csv(res.promos), f"{slug}_promos_ranked.csv", "text/csv", width="stretch", icon=_dl)
+d3.download_button("Everything (JSON)", to_json(res), f"{slug}_promos.json", "application/json", width="stretch", icon=_dl)
+d4.download_button("Summary (Markdown)", to_markdown(res), f"{slug}_promos.md", "text/markdown", width="stretch", icon=_dl)
 
 tabs = ["Ranked promos", "Top pick", "By episode", "Season map", "All candidates", "Checks"]
 if "compare" in st.session_state:
