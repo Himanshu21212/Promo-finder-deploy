@@ -128,6 +128,14 @@ def run(episodes: list[Episode], title: str = "Untitled show", model: str | Judg
     for p in ordered + by_ep:
         if not p.why:
             p.why = why_line(p, premise)
+    # Scripts with no timestamps get estimated times: say so on every cut that uses them (display only).
+    estimated = sorted(e.num for e in episodes if getattr(e, "timing_estimated", False))
+    if estimated:
+        note = ("Estimated timing: this script has no timestamps, so cut points are approximate. "
+                "Match them to the video before cutting")
+        for p in {id(x): x for x in ordered + by_ep + all_singles + stitched_all}.values():
+            if set(p.episodes) & set(estimated) and note not in p.flags:
+                p.flags = p.flags + [note]
     covered = sorted({e for p in ordered for e in p.episodes})
     stats = dict(episodes=len(episodes), beats=sum(len(e.beats) for e in episodes),
                  minutes=round(sum(e.duration for e in episodes) / 60, 1),
@@ -136,4 +144,5 @@ def run(episodes: list[Episode], title: str = "Untitled show", model: str | Judg
                  model_requested=judge.spec, ai=ai)
     say(f"Selected {len(ordered)} promos covering {len(covered)} episodes in {stats['seconds']}s.")
     stats["library"] = len(by_ep)
+    stats["estimated_timing_episodes"] = estimated
     return Result(title, mode, episodes, ordered, all_singles + stitched_all, by_ep, premise, stats, log)

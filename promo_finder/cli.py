@@ -22,7 +22,7 @@ def guess_title(path: str) -> str:
             tops = {n.split("/")[0] for n in z.namelist() if "/" in n and not n.startswith("__MACOSX")}
         if len(tops) == 1:
             name = tops.pop()
-    name = re.sub(r"\.(zip|txt)$", "", name, flags=re.I)        # not .stem: titles contain dots
+    name = re.sub(r"\.(zip|txt|srt|vtt)$", "", name, flags=re.I)        # not .stem: titles contain dots
     return re.sub(r"[-_ ]?scripts.*$", "", name, flags=re.I).strip() or "Untitled show"
 
 

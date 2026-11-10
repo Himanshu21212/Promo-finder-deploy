@@ -19,7 +19,7 @@ from promo_finder.llm import Judge
 from promo_finder.parser import finalize, fmt, load_zip_bytes, parse_text
 from promo_finder.pipeline import run
 from promo_finder.progress import ReviewProgress
-from promo_finder.report import to_csv, to_html, to_json, to_pdf
+from promo_finder.report import timing_note, to_csv, to_html, to_json, to_pdf
 from promo_finder.usage import SarvamConfig
 
 ROOT = Path(__file__).parent
@@ -520,8 +520,8 @@ def select_uploads(widget_key: str) -> None:
     valid, errors = [], []
     for uploaded in incoming:
         suffix = Path(uploaded.name).suffix.lower()
-        if suffix not in {".zip", ".txt"}:
-            errors.append(f"{uploaded.name}: only ZIP and TXT files are accepted.")
+        if suffix not in {".zip", ".txt", ".srt", ".vtt"}:
+            errors.append(f"{uploaded.name}: only ZIP, TXT, SRT and VTT files are accepted.")
         elif uploaded.size > MAX_FILE_BYTES:
             errors.append(f"{uploaded.name}: exceeds the 50MB per-file limit.")
         else:
@@ -576,7 +576,7 @@ def render_how_it_works_page() -> None:
 </div>
 <div class="pf pf-how-grid">
   <article class="pf-how-card"><span class="num">01</span><h3>Upload your scripts</h3>
-  <p>Upload a ZIP of episode .txt files or individual .txt screenplays. Promo Finder reads dialogue, action and source timestamps, and reports files or blocks it cannot parse.</p></article>
+  <p>Upload a ZIP of episode scripts or individual .txt, .srt or .vtt files. Promo Finder reads timestamped scripts, subtitle files and standard screenplays (INT./EXT. layout). Screenplays without timestamps get estimated timing, clearly marked in the report. Files or blocks it cannot parse are reported.</p></article>
   <article class="pf-how-card"><span class="num">02</span><h3>Find hooks and cliffhangers</h3>
   <p>The rules engine scores screenplay beats for hook strength, cliffhanger strength, intensity and dependence on backstory. The show premise is inferred from its title and early episode loglines.</p></article>
   <article class="pf-how-card"><span class="num">03</span><h3>Generate valid promo cuts</h3>
@@ -722,7 +722,7 @@ if page == "Home" and "result" not in st.session_state and not go:
             '<div style="font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.55px;color:#1A1A1C">'
             'Upload your microdrama scripts</div>'
             '<div style="font-size:14px;color:#5B5B63;margin-top:4px">'
-            'Drag & drop a ZIP or TXT file here.</div></div>'
+            'Drag & drop a ZIP, TXT, SRT or VTT file here.</div></div>'
         )
 
         st.markdown("""
@@ -779,7 +779,7 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
 
         # Single native Streamlit file uploader (handles uploaded file badges automatically)
         st.file_uploader(
-            "Upload your microdrama scripts", type=["zip", "txt"], accept_multiple_files=True,
+            "Upload your microdrama scripts", type=["zip", "txt", "srt", "vtt"], accept_multiple_files=True,
             key=upload_key, on_change=select_uploads, args=(upload_key,),
             label_visibility="collapsed", max_upload_size=50,
         )
@@ -830,8 +830,9 @@ if go:
         st.warning(w)
     if not eps:
         progress_panel.empty()
-        st.error("No timestamped episodes found. Each script needs blocks like '**SPEAKER:**' followed by "
-                 "'Start: (MM:SS.ss) | End: (MM:SS.ss)'.")
+        st.error("No readable episodes found. Promo Finder reads timestamped scripts (e.g. 'MIA: line' with "
+                 "'Start: 00:05 | End: 00:08' or '[00:05 - 00:08] MIA: line'), SRT/VTT subtitle files, and "
+                 "standard screenplays (INT./EXT. headings, CHARACTER names on their own line).")
         st.stop()
     review.stage = 1
     progress_panel.html(review.html())
@@ -906,6 +907,8 @@ else:
     badge = (f'<span class="pf-mode ai">AI reviewed {ai["judged"]} of '
              f'{ai.get("shortlisted", 0)} shortlisted clips</span>')
 
+if (_timing := timing_note(res)):
+    st.warning(_timing, icon=":material/schedule:")
 _n_promos = len(res.promos)
 _bubble_idle = (f"{_n_promos} promo{'s' if _n_promos != 1 else ''} ready!" if _n_promos
                 else "Let's try another script")

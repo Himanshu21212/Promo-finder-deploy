@@ -44,6 +44,16 @@ def promo_dict(p: Promo) -> dict:
     }
 
 
+def timing_note(r: Result) -> str:
+    """One-line warning when any episode's times were estimated (no timestamps in the script); else ''."""
+    eps = r.stats.get("estimated_timing_episodes") or []
+    if not eps:
+        return ""
+    which = "this script" if len(r.episodes) == 1 else f"Ep {', '.join(map(str, eps))}"
+    return (f"Estimated timing: {which} had no timestamps, so cut points were estimated from the text "
+            "(about 2.5 spoken words per second). Match them to the video before cutting.")
+
+
 def to_json(r: Result) -> str:
     return json.dumps({
         "show": r.title, "model": r.model, "stats": r.stats, "premise_tropes": sorted(r.premise),
@@ -85,6 +95,8 @@ def to_markdown(r: Result) -> str:
     out = [f"# Promo Finder — {r.title}", "",
            f"Model: `{r.model}` · {s['episodes']} episodes · {s['minutes']} min · "
            f"{s['candidates']:,} candidates scored · {s['promos']} promos ranked · {s['seconds']} s", ""]
+    if timing_note(r):
+        out += [f"> **{timing_note(r)}**", ""]
     out += ["## Ranked promos (post in this order)", ""]
     for p in r.promos:
         d = promo_dict(p)
@@ -176,6 +188,12 @@ def to_pdf(r: Result) -> bytes:
     pdf.multi_cell(0, 5.5, t(f"{s['episodes']} episodes · {s['minutes']} min of script · "
                              f"{s['candidates']:,} possible cuts scored · {s['promos']} promos ranked"),
                    new_x="LMARGIN", new_y="NEXT")
+    if timing_note(r):
+        pdf.ln(2)
+        pdf.set_font(fam, "B", 9.5)
+        pdf.set_text_color(*_AMBER)
+        pdf.set_fill_color(255, 248, 225)
+        pdf.multi_cell(0, 5.4, t(timing_note(r)), fill=True, padding=2.5, new_x="LMARGIN", new_y="NEXT")
     pdf.ln(4)
     rule()
     pdf.ln(6)
@@ -322,11 +340,15 @@ def to_html(r: Result, theme: str | None = None, embed: bool = False) -> str:
     nav = "" if embed else f"""<nav class="pf-nav"><div class="in">{ui.logo()}<span class="show">{ui.e(r.title)}</span>
 <div class="links"><a href="#spotlight">Top pick</a><a href="#promos">Promos</a><a href="#map">Season map</a><a href="#library">Episodes</a><a href="#checks">Checks</a></div>
 <button class="pf-btn" id="pf-theme" type="button" title="Switch light / dark"><span class="pf-moon"></span>Theme</button></div></nav>"""
+    note = timing_note(r)
+    times = ("Timestamps are copied from the scripts, so they can go straight into the edit." if not note else
+             "Some scripts had no timestamps, so those cut points are estimated.")
+    warn = (f'<div class="pf-mode mock" style="display:block;margin:0 0 14px">{ui.e(note)}</div>' if note else "")
     hero = "" if embed else f"""<header class="pf-hero"><div class="pf-label accent">Promo report</div>
 <h1 class="pf-h1" style="margin-top:10px">{ui.e(r.title)}</h1>
 <p class="pf-sub">Promo cuts found by reading the episode scripts. Each one opens on a hook within 3 seconds and ends on
-an unresolved moment. Timestamps are copied from the scripts, so they can go straight into the edit.</p>
-<div style="margin-bottom:14px">{badge}</div>{summary}</header>"""
+an unresolved moment. {times}</p>
+{warn}<div style="margin-bottom:14px">{badge}</div>{summary}</header>"""
     spot = _section("spotlight", "Top pick", "Post this one first",
                     "The highest-ranked promo, shown the way it would play in the feed.", ui.spotlight(top, eyebrow=f"Ranked #1 of {len(r.promos)}")) if top else ""
     filters = ('<div class="pf-filters"><button class="pf-chip on" data-filter="all">All</button><button class="pf-chip" data-filter="single">Single clips</button>'
