@@ -1,4 +1,4 @@
-"""Writers: JSON (machine), CSV (spreadsheet), Markdown (quick read), HTML (visual report)."""
+"""Writers: JSON (machine), CSV (spreadsheet), Markdown (quick read), HTML (visual report), PDF (print/share)."""
 from __future__ import annotations
 
 import csv
@@ -107,6 +107,140 @@ def to_markdown(r: Result) -> str:
     if missing:
         out += ["", f"No qualifying promo found in: Ep {', '.join(map(str, missing))}"]
     return "\n".join(out) + "\n"
+
+
+# ----------------------------------------------------------------- PDF
+FONT_DIR = Path(__file__).resolve().parent.parent / "static" / "fonts"
+_RED, _INK, _MUTE, _LINE, _AMBER = (225, 29, 38), (26, 26, 28), (91, 91, 99), (236, 228, 229), (138, 90, 0)
+
+
+def to_pdf(r: Result) -> bytes:
+    """Printable report for producers and reviewers: same content as the Markdown summary."""
+    from fpdf import FPDF  # local import: only needed when a PDF is requested
+
+    regular, bold = FONT_DIR / "DejaVuSans.ttf", FONT_DIR / "DejaVuSans-Bold.ttf"
+    unicode_ok = regular.exists() and bold.exists()
+
+    def t(text) -> str:
+        text = str(text)
+        return text if unicode_ok else text.encode("latin-1", "replace").decode("latin-1")
+
+    class _PDF(FPDF):
+        def footer(self):
+            self.set_y(-12)
+            self.set_font(fam, "", 8)
+            self.set_text_color(*_MUTE)
+            self.cell(0, 6, t(f"Promo Finder · {r.title}"), align="L")
+            self.set_x(self.l_margin)
+            self.cell(0, 6, f"Page {self.page_no()}/{{nb}}", align="R")
+
+    pdf = _PDF(format="A4")
+    if unicode_ok:
+        pdf.add_font("DejaVu", "", str(regular))
+        pdf.add_font("DejaVu", "B", str(bold))
+        fam = "DejaVu"
+    else:
+        fam = "Helvetica"
+    pdf.set_margins(16, 16, 16)
+    pdf.set_auto_page_break(True, margin=18)
+    pdf.set_title(t(f"Promo report: {r.title}"))
+    pdf.set_author("Promo Finder")
+    pdf.add_page()
+
+    def label(text: str, color=_RED) -> None:
+        pdf.set_font(fam, "B", 8.5)
+        pdf.set_text_color(*color)
+        pdf.cell(0, 5, t(text.upper()), new_x="LMARGIN", new_y="NEXT")
+
+    def field(doc, name: str, value: str, color=_INK) -> None:
+        doc.set_font(fam, "B", 9.5)
+        doc.set_text_color(*color)
+        doc.write(5.2, t(f"{name}  "))
+        doc.set_font(fam, "", 9.5)
+        doc.write(5.2, t(value))
+        doc.ln(6.4)
+
+    def rule(target=None) -> None:
+        target = target or pdf
+        target.set_draw_color(*_LINE)
+        target.cell(0, 0, "", border="T", new_x="LMARGIN", new_y="NEXT")
+
+    # Header
+    s = r.stats
+    label("Promo report")
+    pdf.set_font(fam, "B", 22)
+    pdf.set_text_color(*_INK)
+    pdf.multi_cell(0, 10, t(r.title), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font(fam, "", 10)
+    pdf.set_text_color(*_MUTE)
+    pdf.multi_cell(0, 5.5, t(f"{s['episodes']} episodes · {s['minutes']} min of script · "
+                             f"{s['candidates']:,} possible cuts scored · {s['promos']} promos ranked"),
+                   new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
+    rule()
+    pdf.ln(6)
+
+    # Ranked promos
+    label("Ranked promos · post in this order")
+    pdf.ln(2)
+    if not r.promos:
+        pdf.set_font(fam, "", 10)
+        pdf.set_text_color(*_MUTE)
+        pdf.multi_cell(0, 5.5, t("No promo passed the rules for these scripts."), new_x="LMARGIN", new_y="NEXT")
+    for p in r.promos:
+        d = promo_dict(p)
+        kind = "Single clip" if p.kind == "single" else "Stitched"
+        cuts = "  +  ".join(f"Ep {x['episode']}  {x['start']} → {x['end']}" for x in d["segments"])
+        with pdf.unbreakable() as doc:
+            doc.set_font(fam, "B", 12.5)
+            doc.set_text_color(*_RED)
+            doc.cell(10, 7, t(f"{p.rank}."))
+            doc.set_text_color(*_INK)
+            doc.cell(0, 7, t(f"{kind} · Tier {d['tier']} · {p.duration:.0f} s · Score {ui.score100(p)}"),
+                     new_x="LMARGIN", new_y="NEXT")
+            doc.ln(1)
+            field(doc, "Cut points", cuts)
+            field(doc, f"Hook ({p.hook_at:.1f} s)", p.hook_beat.short(160))
+            field(doc, "Cliffhanger", p.cliff_beat.short(160))
+            field(doc, "Why it works", p.why)
+            field(doc, "Why post it now", p.post_reason)
+            if p.flags:
+                field(doc, "Check", "; ".join(p.flags), color=_AMBER)
+            doc.ln(2)
+            rule(doc)
+            doc.ln(5)
+
+    # Best clip per episode
+    if r.by_episode:
+        pdf.ln(2)
+        with pdf.unbreakable() as doc:
+            label("Best single clip in every episode")
+            doc.ln(2)
+        from fpdf.fonts import FontFace
+
+        pdf.set_font(fam, "", 8.5)
+        pdf.set_text_color(*_INK)
+        pdf.set_draw_color(*_LINE)
+        with pdf.table(col_widths=(8, 24, 10, 9, 49.5, 49.5), text_align="LEFT", line_height=4.6,
+                       headings_style=FontFace(emphasis="BOLD", color=_INK, fill_color=(253, 235, 236)),
+                       borders_layout="HORIZONTAL_LINES", padding=1.6) as table:
+            row = table.row()
+            for h in ("Ep", "Clip", "Len", "Tier", "Hook", "Cliffhanger"):
+                row.cell(t(h))
+            for p in r.by_episode:
+                sg = p.segments[0]
+                row = table.row()
+                for v in (sg.ep, f"{fmt(sg.start)}–{fmt(sg.end)}", f"{p.duration:.0f}s", tier(p),
+                          p.hook_beat.short(80), p.cliff_beat.short(80)):
+                    row.cell(t(v))
+    missing = sorted({e.num for e in r.episodes} - {p.episodes[0] for p in r.by_episode})
+    if missing:
+        pdf.ln(3)
+        pdf.set_font(fam, "", 9)
+        pdf.set_text_color(*_MUTE)
+        pdf.multi_cell(0, 5, t(f"No qualifying promo found in: Ep {', '.join(map(str, missing))}"),
+                       new_x="LMARGIN", new_y="NEXT")
+    return bytes(pdf.output())
 
 
 # ----------------------------------------------------------------- HTML

@@ -48,3 +48,11 @@ def test_unknown_provider_errors():
     except ValueError:
         return
     raise AssertionError("expected ValueError")
+
+
+def test_pdf_report_renders():
+    from promo_finder.report import to_pdf
+    r = run(load_path(DEMO), "The Maid Was the Heiress")
+    pdf = to_pdf(r)
+    assert pdf.startswith(b"%PDF") and len(pdf) > 2000
+    from fpdf import FPDF  # noqa: F401  (dependency must be installed for the app's PDF button)

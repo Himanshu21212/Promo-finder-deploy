@@ -102,7 +102,7 @@ promo_finder/
   usage.py       server-side Sarvam configuration and usage
   compare.py     rules-only vs AI comparison
   checks.py      post-run validation
-  report.py      HTML / CSV / JSON / Markdown exports
+  report.py      PDF / HTML / CSV / JSON / Markdown exports
   ui.py          shared report and app UI components
   cli.py         command-line interface
 app.py           Streamlit application

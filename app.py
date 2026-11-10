@@ -19,7 +19,7 @@ from promo_finder.llm import Judge
 from promo_finder.parser import finalize, fmt, load_zip_bytes, parse_text
 from promo_finder.pipeline import run
 from promo_finder.progress import ReviewProgress
-from promo_finder.report import to_csv, to_html, to_json, to_markdown
+from promo_finder.report import to_csv, to_html, to_json, to_pdf
 from promo_finder.usage import SarvamConfig
 
 ROOT = Path(__file__).parent
@@ -588,7 +588,7 @@ def render_how_it_works_page() -> None:
   <article class="pf-how-card"><span class="num">06</span><h3>Validate every cut</h3>
   <p>Code checks AI trim suggestions against the original screenplay. It rejects suggestions that break duration, timestamp, hook or spoken-line constraints. Unusable AI replies retain the rules score.</p></article>
   <article class="pf-how-card"><span class="num">07</span><h3>Review and export</h3>
-  <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download HTML, CSV, JSON and Markdown reports to take the cut points into editing.</p></article>
+  <p>Editors inspect the ranked list, top pick, episode library, season map and quality checks. Download PDF, HTML, CSV and JSON reports to take the cut points into editing.</p></article>
 </div>
 <div class="pf pf-how-note"><b>Human approval stays in the loop.</b> Promo Finder analyses screenplay text, not finished footage. Editors should check visual impact, pacing, context and spoiler risk before publishing. AI can only rerank candidates found by the rules pipeline; it cannot recover moments that candidate generation missed.</div>""")
 # ---------------------------------------------------------------- sidebar
@@ -920,10 +920,10 @@ st.html(f"""<div class="pf"><div class="pf-report-head"><div><div class="pf-labe
 slug = re.sub(r"\W+", "_", res.title.lower()).strip("_")[:40] or "show"
 d1, d2, d3, d4 = st.columns(4)
 _dl = ":material/download:"
-d1.download_button("Report (HTML)", to_html(res), f"{slug}_promo_report.html", "text/html", width="stretch", icon=_dl)
-d2.download_button("Ranked list (CSV)", to_csv(res.promos), f"{slug}_promos_ranked.csv", "text/csv", width="stretch", icon=_dl)
-d3.download_button("Everything (JSON)", to_json(res), f"{slug}_promos.json", "application/json", width="stretch", icon=_dl)
-d4.download_button("Summary (Markdown)", to_markdown(res), f"{slug}_promos.md", "text/markdown", width="stretch", icon=_dl)
+d1.download_button("Report (PDF)", to_pdf(res), f"{slug}_promo_report.pdf", "application/pdf", width="stretch", icon=_dl)
+d2.download_button("Report (HTML)", to_html(res), f"{slug}_promo_report.html", "text/html", width="stretch", icon=_dl)
+d3.download_button("Ranked list (CSV)", to_csv(res.promos), f"{slug}_promos_ranked.csv", "text/csv", width="stretch", icon=_dl)
+d4.download_button("Everything (JSON)", to_json(res), f"{slug}_promos.json", "application/json", width="stretch", icon=_dl)
 
 tabs = ["Ranked promos", "Top pick", "By episode", "Season map", "All candidates", "Checks"]
 if "compare" in st.session_state:
