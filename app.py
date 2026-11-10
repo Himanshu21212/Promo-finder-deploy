@@ -171,6 +171,83 @@ section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseB
 section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-secondary"]:hover span{
   color:#FFFFFF!important;
 }
+
+/* 5) Uploaded-file state: a clean file card + quiet "Add files" action instead of
+      the big red blocks the generic dropzone-button rules produced. */
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"]:has([data-testid="stFileChips"]){
+  min-height:0!important;padding:18px!important;justify-content:center!important;
+}
+.st-key-home_upload_panel [data-testid="stFileChips"]{
+  display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important;gap:10px!important;
+}
+.st-key-home_upload_panel [data-testid="stFileChip"]{
+  display:flex!important;align-items:center!important;gap:12px!important;
+  min-width:280px!important;max-width:420px!important;height:auto!important;
+  padding:10px 8px 10px 10px!important;background:#FFFFFF!important;
+  border:1px solid #ECE4E5!important;border-radius:12px!important;
+  box-shadow:0 2px 8px rgba(20,0,0,.05)!important;
+}
+.st-key-home_upload_panel [data-testid="stFileChip"] > div:first-child{
+  width:36px!important;height:36px!important;min-width:36px!important;border-radius:9px!important;
+  background:#FDEBEC!important;color:#E11D26!important;display:flex!important;align-items:center!important;justify-content:center!important;
+}
+.st-key-home_upload_panel [data-testid="stFileChip"] > div:first-child svg{color:#E11D26!important;fill:currentColor!important}
+.st-key-home_upload_panel [data-testid="stFileChip"] > div:nth-child(2){flex:1 1 auto!important;min-width:0!important;text-align:left!important}
+.st-key-home_upload_panel [data-testid="stFileChipName"]{font-size:14px!important;font-weight:600!important;color:#1A1A1C!important}
+.st-key-home_upload_panel [data-testid="stFileChipName"] + div{font-size:12px!important;color:#7A7A83!important}
+.st-key-home_upload_panel [data-testid="stFileChipDeleteBtn"]{margin-left:auto!important;display:flex!important}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] [data-testid="stFileChipDeleteBtn"] button[data-testid="stBaseButton-minimal"]{
+  min-width:30px!important;width:30px!important;height:30px!important;min-height:30px!important;padding:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:transparent!important;border:0!important;border-radius:8px!important;box-shadow:none!important;color:#8A8A92!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] [data-testid="stFileChipDeleteBtn"] button[data-testid="stBaseButton-minimal"]:hover{
+  background:#FDEBEC!important;color:#E11D26!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] [data-testid="stFileChipDeleteBtn"] button svg{
+  width:16px!important;height:16px!important;color:inherit!important;fill:currentColor!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"]{
+  min-width:0!important;width:auto!important;height:40px!important;min-height:40px!important;padding:0 16px!important;
+  display:inline-flex!important;align-items:center!important;gap:6px!important;
+  background:#FFFFFF!important;border:1px dashed #F1B7BB!important;border-radius:10px!important;box-shadow:none!important;
+  color:#E11D26!important;font-size:14px!important;font-weight:600!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"]:hover{
+  background:#FFF5F5!important;border-style:solid!important;border-color:#E11D26!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"] *{color:#E11D26!important}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"]::after{
+  content:"Add files";font-size:14px;font-weight:600;color:#E11D26;
+}
+
+/* 6) Title field + Find Promos: one centered column instead of a right-hand button. */
+.st-key-home_upload_panel .st-key-home_actions{
+  width:100%!important;max-width:520px!important;margin:16px auto 0!important;gap:12px!important;
+}
+.st-key-home_upload_panel .st-key-home_actions [data-testid="stWidgetLabel"] p{
+  font-size:14px!important;font-weight:600!important;color:#34343C!important;
+}
+/* The field was 54px inside a 40px wrapper, clipping its top/bottom border. */
+.st-key-home_upload_panel .st-key-home_actions [data-testid="stTextInputRootElement"]{
+  height:52px!important;min-height:52px!important;overflow:visible!important;
+  border:1px solid #E3E3E7!important;border-radius:12px!important;background:#FFFFFF!important;
+  transition:border-color .15s,box-shadow .15s;
+}
+.st-key-home_upload_panel .st-key-home_actions [data-testid="stTextInputRootElement"]:focus-within{
+  border-color:#E11D26!important;box-shadow:0 0 0 3px rgba(225,29,38,.12)!important;
+}
+.st-key-home_upload_panel .st-key-home_actions div.st-key-home_title input[data-testid="stTextInputField"]{
+  height:50px!important;min-height:50px!important;border:0!important;box-shadow:none!important;background-color:transparent!important;
+}
+/* Find Promos: keep the play icon right next to the label, centered as a pair. */
+.st-key-home_upload_panel .st-key-home_actions .st-key-find_home button > div{
+  width:auto!important;flex:0 0 auto!important;
+}
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"],
+.st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"] > div{
+  white-space:nowrap!important;width:auto!important;
+}
 </style>""", unsafe_allow_html=True)
 
 def sb_head(n: str, text: str) -> None:
@@ -592,10 +669,8 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
                     f'background:#FFF1F1;border-radius:8px;color:#B4232A;font-size:13px;line-height:1.4;text-align:center;">'
                     f'{html_escape(upload_error)}</div>')
 
-        st.html('<div style="height:12px"></div>')
-        input_col, button_col = st.columns([2.5, 1.2], gap="small", vertical_alignment="bottom")
-        
-        with input_col:
+        # Title + primary action stacked in one centered column under the dropzone.
+        with st.container(key="home_actions"):
             home_title = st.text_input(
                 "Show title (optional)",
                 key="home_title",
@@ -603,10 +678,9 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
                 on_change=sync_title,
                 args=("home_title", "show_title"),
             )
-        with button_col:
             go = st.button("Find Promos", key="find_home", type="primary",
                            use_container_width=True, disabled=not files)
-            
+
         if go:
             title = home_title
 
