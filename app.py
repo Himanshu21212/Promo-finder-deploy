@@ -248,6 +248,23 @@ section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseBu
 .st-key-home_upload_panel section[data-testid="stFileUploaderDropzone"] button[data-testid="stBaseButton-borderlessIcon"] > div{
   white-space:nowrap!important;width:auto!important;
 }
+
+/* 7) Phones / narrow tablets: stack hero, features and steps (desktop untouched). */
+@media (max-width:760px){
+  .pf-home-hero{flex-direction:column-reverse!important;align-items:flex-start!important;gap:6px!important;min-height:0!important;margin:0 0 8px!important}
+  .pf-home-hero-art{width:96px!important;min-width:0!important;height:96px!important;justify-content:flex-start!important}
+  .pf-home-hero-art .pf-mascot{width:96px!important;height:96px!important;max-width:96px!important;max-height:96px!important}
+  .pf-home-h1{font-size:36px!important;line-height:1.08!important;letter-spacing:-1px!important;margin:8px 0 10px!important}
+  .pf-home-lede{font-size:16px!important}
+  .pf-home-features{grid-template-columns:1fr!important;gap:2px!important;margin:4px 0 18px!important}
+  .pf-home-features .pf-feature{border-right:0!important;padding:8px 0!important}
+  .pf-home-steps{grid-template-columns:1fr!important;gap:8px!important}
+  .pf-home-steps .pf-step-arrow{transform:rotate(90deg);font-size:22px!important;line-height:1}
+}
+@media (min-width:761px) and (max-width:1100px){
+  .pf-home-h1{font-size:44px!important}
+  .pf-home-features .pf-feature{padding:7px 12px!important}
+}
 </style>""", unsafe_allow_html=True)
 
 def sb_head(n: str, text: str) -> None:
@@ -568,29 +585,29 @@ if page == "Home" and "result" not in st.session_state and not go:
     steps = (
         process_step(1, "upload", "Upload your story",
                      "One episode or a full season of timestamped screenplays.")
-        + '<div style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
+        + '<div class="pf-step-arrow" style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
         + process_step(2, "list", "Review the strongest moments",
                        "Ranked 20–60 second cuts, with hooks and cliffhangers.")
-        + '<div style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
+        + '<div class="pf-step-arrow" style="font-size:27px;color:#E11D26;text-align:center;align-self:center">→</div>'
         + process_step(3, "clapper", "Take it to your editor",
                        "Exact cut points, editorial notes and reports to share.")
     )
     st.html(f"""
-<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:158px;margin:0 0 14px">
-  <div style="flex:1 1 auto;min-width:0;max-width:820px">
+<div class="pf-home-hero" style="display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:158px;margin:0 0 14px">
+  <div class="pf-home-hero-text" style="flex:1 1 auto;min-width:0;max-width:820px">
     <div style="font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.5px;color:#E11D26;text-transform:uppercase">PROMO FINDER</div>
-    <h1 style="font-family:Inter,system-ui,sans-serif;font-size:56px;line-height:1.04;letter-spacing:-1.8px;font-weight:750;color:#1A1A1C;margin:10px 0 12px">
+    <h1 class="pf-home-h1" style="font-family:Inter,system-ui,sans-serif;font-size:56px;line-height:1.04;letter-spacing:-1.8px;font-weight:750;color:#1A1A1C;margin:10px 0 12px">
       Find the moments<br><span style="color:#E11D26">worth promoting</span>
     </h1>
-    <p style="font-size:18px;line-height:1.45;color:#5B5B63;margin:0;max-width:820px">
+    <p class="pf-home-lede" style="font-size:18px;line-height:1.45;color:#5B5B63;margin:0;max-width:820px">
       Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.
     </p>
   </div>
-  <div style="position:relative;display:flex;align-items:center;justify-content:center;width:230px;min-width:210px;height:160px;overflow:hidden">
+  <div class="pf-home-hero-art" style="position:relative;display:flex;align-items:center;justify-content:center;width:230px;min-width:210px;height:160px;overflow:hidden">
     {mascot("pf-mascot-welcome")}
   </div>
 </div>
-<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:8px 0 24px">
+<div class="pf-home-features" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:8px 0 24px">
   {features}
 </div>
 """)
@@ -685,7 +702,7 @@ section[data-testid="stSidebar"] .st-key-sidebar_new_analysis button:hover {
             title = home_title
 
     if not go:
-        st.html(f'<div style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
+        st.html(f'<div class="pf-home-steps" style="display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);'
                 f'gap:12px;align-items:stretch;margin:18px auto 0">{steps}</div>')
         st.stop()
 
