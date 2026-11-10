@@ -123,6 +123,54 @@ st.markdown("""<style>
 .st-key-home_upload_panel .st-key-upload_zone_compact [data-testid="stFileUploaderDropzoneInstructions"] button:hover{
   filter:brightness(1.07);box-shadow:0 12px 24px rgba(225,29,38,.40)!important;
 }
+
+/* 4) Sidebar nav: one consistent, left-aligned style for Home / How it Works.
+      Selectors are deliberately more specific than the older nav rules above. */
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid^="stBaseButton"],
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid^="stBaseButton"]{
+  height:50px!important;min-height:50px!important;padding:0 16px!important;margin:0 0 6px!important;
+  border-radius:12px!important;font-size:15.5px!important;font-weight:600!important;
+  justify-content:flex-start!important;box-shadow:none!important;transition:background .15s,border-color .15s,color .15s;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid^="stBaseButton"] > div,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid^="stBaseButton"] > div{
+  width:100%!important;justify-content:flex-start!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid^="stBaseButton"] > div > span,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid^="stBaseButton"] > div > span{
+  gap:12px!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button span[data-testid="stIconMaterial"],
+section[data-testid="stSidebar"] div.st-key-nav_how button span[data-testid="stIconMaterial"]{
+  font-size:20px!important;width:20px!important;
+}
+/* Active page */
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-primary"],
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-primary"]{
+  background:linear-gradient(135deg,#F2272F 0%,#C8141D 100%)!important;
+  border:1px solid #F2272F!important;box-shadow:0 6px 16px rgba(225,29,38,.28)!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-primary"] span,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-primary"] span{
+  color:#FFFFFF!important;
+}
+/* Inactive page */
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-secondary"],
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-secondary"]{
+  background:#161618!important;border:1px solid #232326!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-secondary"] span,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-secondary"] span{
+  color:#C9C9CF!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-secondary"]:hover,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-secondary"]:hover{
+  background:#1F1F22!important;border-color:#3A3A3F!important;
+}
+section[data-testid="stSidebar"] div.st-key-nav_home button[data-testid="stBaseButton-secondary"]:hover span,
+section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseButton-secondary"]:hover span{
+  color:#FFFFFF!important;
+}
 </style>""", unsafe_allow_html=True)
 
 def sb_head(n: str, text: str) -> None:
@@ -191,7 +239,11 @@ def feature_svg_icon(name: str) -> str:
             '<line x1="16" y1="17" x2="8" y2="17"></line></svg>'
         ),
     }
-    return f'<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">{artwork.get(name, "")}</div>'
+    # st.html sanitizes inline <svg> away, so ship each icon as an <img> data URI instead.
+    svg = artwork.get(name, "").replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ', 1)
+    encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    return (f'<img src="data:image/svg+xml;base64,{encoded}" width="22" height="22" alt="" '
+            f'style="width:22px;height:22px;display:block" />')
 
 def feature_item(icon: str, title: str, detail: str, bordered: bool = True) -> str:
     border = "border-right:1px solid #E5E5E8;" if bordered else ""
@@ -308,13 +360,18 @@ def new_analysis() -> None:
 def render_how_it_works_page() -> None:
     st.markdown("""
     <style>
-    /* Force Streamlit container to eliminate upper whitespace */
-    [data-testid="stAppViewContainer"] .main .block-container {
-        padding-top: 0.5rem !important;
+    /* Match the Home page: trim top padding and drop the empty style-only
+       containers whose 16px flex gaps stacked up into a blank band. */
+    [data-testid="stMainBlockContainer"]:has(.pf-page-head),
+    .main .block-container:has(.pf-page-head) {
+        padding-top: 14px !important;
     }
-    /* Pull the header card up over Streamlit's default container padding */
+    [data-testid="stMainBlockContainer"]:has(.pf-page-head) [data-testid="stElementContainer"]:has(style),
+    [data-testid="stMainBlockContainer"]:has(.pf-page-head) [data-testid="stElementContainer"]:empty {
+        display: none !important;
+    }
     .pf-page-head {
-        margin-top: -45px !important;
+        margin-top: 0 !important;
         padding-top: 0 !important;
     }
     </style>
