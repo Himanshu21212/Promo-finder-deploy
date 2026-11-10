@@ -252,7 +252,7 @@ section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseBu
 /* 7) Phones / narrow tablets: stack hero, features and steps (desktop untouched). */
 @media (max-width:760px){
   .pf-home-hero{flex-direction:column-reverse!important;align-items:flex-start!important;gap:6px!important;min-height:0!important;margin:0 0 8px!important}
-  .pf-home-hero-art{width:96px!important;min-width:0!important;height:96px!important;justify-content:flex-start!important}
+  .pf-home-hero-art{width:96px!important;min-width:0!important;height:auto!important;justify-content:flex-start!important}
   .pf-home-hero-art .pf-mascot{width:96px!important;height:96px!important;max-width:96px!important;max-height:96px!important}
   .pf-home-h1{font-size:36px!important;line-height:1.08!important;letter-spacing:-1px!important;margin:8px 0 10px!important}
   .pf-home-lede{font-size:16px!important}
@@ -264,6 +264,45 @@ section[data-testid="stSidebar"] div.st-key-nav_how button[data-testid="stBaseBu
 @media (min-width:761px) and (max-width:1100px){
   .pf-home-h1{font-size:44px!important}
   .pf-home-features .pf-feature{padding:7px 12px!important}
+}
+
+/* 8) Living mascot: pop-in, gentle float, twinkling sparkles, speech bubble, hover reaction. */
+.pf-mascot-stage{position:relative;width:140px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:default}
+.pf-mascot-bob{position:relative;z-index:2;animation:pf-pop .7s cubic-bezier(.34,1.56,.64,1) both, pf-float 3.4s ease-in-out .7s infinite;transform-origin:50% 90%}
+.pf-mascot-bob .pf-mascot{transition:transform .25s ease}
+.pf-mascot-shadow{display:block;width:78px;height:10px;margin-top:2px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(26,26,28,.22) 0%,rgba(26,26,28,0) 70%);
+  animation:pf-shadow 3.4s ease-in-out .7s infinite}
+.pf-spark{position:absolute;z-index:1;display:block;background:#E11D26;opacity:0;
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:pf-twinkle 2.6s ease-in-out infinite}
+.pf-spark-1{width:16px;height:16px;top:34px;left:-14px;animation-delay:.9s}
+.pf-spark-2{width:11px;height:11px;top:96px;right:-12px;background:#F5A3A8;animation-delay:1.6s}
+.pf-spark-3{width:9px;height:9px;top:14px;right:8px;animation-delay:2.2s}
+.pf-mascot-bubble{position:absolute;z-index:3;top:-10px;right:100%;margin-right:2px;white-space:nowrap;
+  padding:7px 12px;border-radius:12px 12px 2px 12px;background:#1A1A1C;color:#FFFFFF;
+  font-size:12.5px;font-weight:600;letter-spacing:.1px;box-shadow:0 6px 16px rgba(20,0,0,.16);
+  transform-origin:100% 100%;animation:pf-bubble-in .45s cubic-bezier(.34,1.56,.64,1) 1.1s both, pf-bubble-bob 3.4s ease-in-out 1.6s infinite}
+.pf-bubble-hover{display:none}
+.pf-mascot-stage:hover .pf-bubble-idle{display:none}
+.pf-mascot-stage:hover .pf-bubble-hover{display:inline}
+.pf-mascot-stage:hover .pf-mascot-bubble{background:#E11D26}
+.pf-mascot-stage:hover .pf-mascot-bob{animation:pf-wiggle .6s ease-in-out}
+.pf-mascot-stage:hover .pf-spark{animation-duration:1.1s}
+@keyframes pf-pop{0%{opacity:0;transform:translateY(16px) scale(.6)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes pf-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+@keyframes pf-shadow{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.72);opacity:.55}}
+@keyframes pf-twinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes pf-bubble-in{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes pf-bubble-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes pf-wiggle{0%{transform:translateY(0) rotate(0)}20%{transform:translateY(-12px) rotate(-8deg)}40%{transform:translateY(-12px) rotate(7deg)}60%{transform:translateY(-6px) rotate(-4deg)}80%{transform:translateY(0) rotate(2deg)}100%{transform:translateY(0) rotate(0)}}
+@media (max-width:760px){
+  .pf-mascot-stage{width:96px;height:110px}
+  .pf-mascot-shadow{width:56px;height:8px}
+  .pf-mascot-bubble{right:auto;left:100%;margin:0 0 0 2px;top:30px;border-radius:12px 12px 12px 2px;transform-origin:0 100%}
+}
+@media (prefers-reduced-motion:reduce){
+  .pf-mascot-bob,.pf-mascot-shadow,.pf-spark,.pf-mascot-bubble,.pf-mascot-stage:hover .pf-mascot-bob{animation:none!important}
+  .pf-spark{opacity:.8}
 }
 </style>""", unsafe_allow_html=True)
 
@@ -603,8 +642,13 @@ if page == "Home" and "result" not in st.session_state and not go:
       Find ranked 20–60 second promo cuts, with hooks and cliffhangers ready for your editor.
     </p>
   </div>
-  <div class="pf-home-hero-art" style="position:relative;display:flex;align-items:center;justify-content:center;width:230px;min-width:210px;height:160px;overflow:hidden">
-    {mascot("pf-mascot-welcome")}
+  <div class="pf-home-hero-art" style="position:relative;display:flex;align-items:center;justify-content:center;width:230px;min-width:210px;height:160px;overflow:visible">
+    <div class="pf-mascot-stage">
+      <span class="pf-mascot-bubble"><span class="pf-bubble-idle">Let's find a hit!</span><span class="pf-bubble-hover">Drop a script below ↓</span></span>
+      <span class="pf-spark pf-spark-1"></span><span class="pf-spark pf-spark-2"></span><span class="pf-spark pf-spark-3"></span>
+      <div class="pf-mascot-bob">{mascot("pf-mascot-welcome")}</div>
+      <span class="pf-mascot-shadow"></span>
+    </div>
   </div>
 </div>
 <div class="pf-home-features" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:8px 0 24px">
